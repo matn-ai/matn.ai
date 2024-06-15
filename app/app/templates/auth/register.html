@@ -1,13 +1,52 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}App - Register{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>Register</h1>
-</div>
-<div class="col-md-4">
-    {{ wtf.quick_form(form) }}
-</div>
+
+<section class="login d-flex align-items-center">
+    <div class="container">
+        <div class="row py-4 justify-content-center">
+            <div class="col-lg-5">
+                <div class="card login-form-card">
+                    <div class="card-body p-md-5">
+                        <h3 class="login-heading mb-4 mb-md-5">ساخت‌ حساب کاربری</h3>
+                        <form method="POST" action="{{ url_for('auth.register') }}">
+                            {{ form.hidden_tag() }}
+                            <div class="form-group mb-4 mt-2">
+                                <label for="email" class="mb-2">{{ form.email.label }} </label> 
+                                 {{ form.email(size=32, class_="form-control") }}
+                            </div>
+                            <div class="form-group mb-4 mt-2">
+                                <label for="password" class="mb-2"> {{ form.username.label }}  </label>
+                                 {{ form.username(size=32, class_="form-control") }}
+                             </div>
+                            <div class="form-group mb-4 mt-2">
+                               <label for="password" class="mb-2"> {{ form.password.label }}  </label>
+                                {{ form.password(size=32, class_="form-control") }}
+                            </div>
+                            <div class="form-group mb-4 mt-2">
+                                <label for="confirm-password" class="mb-2">  {{ form.password2.label }} </label> {{ form.password2(size=32, class_="form-control") }}
+                            </div>
+                            <div class="form-group text-center mt-4 pt-4">
+                                {{ form.submit(class_="btn btn-primary text-white w-50") }}
+                            </div>
+                            <div class="form-group text-center mt-4 pt-3">
+                                ثبت نام در به‌نویس به منزله موافقت با قوانین است
+                                <!-- <a href="" class="btn btn-link">بازیابی رمز عبور</a> -->
+                            </div>
+                            <p class="mt-4 mt-md-5 mb-0">
+                                <span class="opacity-50 me-2">اکر حساب دارید می‌توانید به </span>
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-link p-0 text-dark text-decoration-none">صفحه ورود</a>
+                                بروید
+                              </p>
+                        </form>
+                        
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

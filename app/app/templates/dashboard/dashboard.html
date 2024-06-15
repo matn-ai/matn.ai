@@ -1,0 +1,97 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+
+<section class="dashboard">
+    <div class="container">
+      <div class="row">
+        <!-- nav -->
+        <div class="col-12 col-md-3 col-lg-2">
+          <div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start">
+            <ul class="nav flex-column w-100">
+              <!-- مقاله section -->
+              <li class="nav-item">
+                <a class="nav-link active d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseArticle" role="button" aria-expanded="false" aria-controls="collapseArticle">
+                  <span>مقاله</span>
+                  <i class="fas fa-chevron-down"></i>
+                </a>
+                <div class="collapse" id="collapseArticle">
+                  <ul class="nav flex-column ms-3">
+                    <li class="nav-item">
+                      <a class="nav-link" href="#"><i class="fas fa-file-alt me-2"></i>مقاله عمومی</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#"><i class="fas fa-file-alt me-2"></i>مقاله تخصصی</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#"><i class="fas fa-blog me-2"></i>بلاگ</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <!-- پردازش ایده section -->
+              <li class="nav-item">
+                <a class="nav-link" href="#">پردازش ایده</a>
+              </li>
+              <!-- توصیف محصول section -->
+              <li class="nav-item">
+                <a class="nav-link" href="#">توصیف محصول</a>
+              </li>
+              <!-- شبکه‌های اجتماعی section -->
+              <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseSocial" role="button" aria-expanded="false" aria-controls="collapseSocial">
+                  <span>شبکه‌های اجتماعی</span>
+                  <i class="fas fa-chevron-down"></i>
+                </a>
+                <div class="collapse" id="collapseSocial">
+                  <ul class="nav flex-column ms-3">
+                    <li class="nav-item">
+                      <a class="nav-link" href="#"><i class="fab fa-linkedin me-2"></i>لینکدین</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#"><i class="fab fa-twitter me-2"></i>شبکه ایکس</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#"><i class="fab fa-instagram me-2"></i>اینستاگرام</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <!-- ترجمه section -->
+              <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseTranslate" role="button" aria-expanded="false" aria-controls="collapseTranslate">
+                  <span>ترجمه</span>
+                  <i class="fas fa-chevron-down"></i>
+                </a>
+                <div class="collapse" id="collapseTranslate">
+                  <ul class="nav flex-column ms-3">
+                    <li class="nav-item">
+                      <a class="nav-link" href="#"><i class="fas fa-language me-2"></i>از فارسی</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#"><i class="fas fa-language me-2"></i>به فارسی</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- content -->
+        <div class="col-12 col-md-9 col-lg-10 mt-5 mt-md-0">
+          <div class="dashboard-card p-4" style="min-height: 65vh;">
+            <div class="px-lg-5">
+              <h1 class="dashboard-heading text-center">Dashboard</h1>
+              <div class="row justify-content-between mt-4 mt-md-5">
+                
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

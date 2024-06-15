@@ -36,9 +36,9 @@ def login():
             login_user(user, form.remember_me.data)
             next = request.args.get('next')
             if next is None or not next.startswith('/'):
-                next = url_for('main.index')
+                next = url_for('dashboard.index')
             return redirect(next)
-        flash('Invalid email or password.')
+        flash('ایمیل یا رمزعبور صحیح نیست.')
     return render_template('auth/login.html', form=form)
 
 
@@ -60,9 +60,9 @@ def register():
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()
-        send_email(user.email, 'Confirm Your Account',
+        send_email(user.email, 'حساب خود را تایید کنید',
                    'auth/email/confirm', user=user, token=token)
-        flash('A confirmation email has been sent to you by email.')
+        flash('یک ایمیل تایید حساب برای شما ارسال شده است، Inbox یا Spam ایمیل خود را چک کنید')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 

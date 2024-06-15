@@ -1,13 +1,13 @@
-Dear {{ user.username }},
+کاربر عزیز {{ user.username }},
 
-Welcome to App!
+به اپلیکیشن خوش آمدید!
 
-To confirm your account please click on the following link:
+برای تأیید حساب کاربری خود لطفاً بر روی لینک زیر کلیک کنید:
 
 {{ url_for('auth.confirm', token=token, _external=True) }}
 
-Sincerely,
+با احترام،
 
-The App Team
+تیم به‌نویس
 
-Note: replies to this email address are not monitored.
+توجه: به پیام‌های ارسالی به این نشانی ایمیل پاسخ داده نمی‌شود.

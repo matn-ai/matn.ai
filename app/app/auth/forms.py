@@ -3,66 +3,70 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from ..models import User
+from flask import flash
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Length(1, 64),
+    email = StringField('ایمیل', validators=[DataRequired(), Length(1, 64),
                                              Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    remember_me = BooleanField('Keep me logged in')
-    submit = SubmitField('Log In')
+    password = PasswordField('رمز عبور', validators=[DataRequired()])
+    remember_me = BooleanField('این دستگاه را بخاطر بسپار', default=True)
+    submit = SubmitField('ورود')
 
 
 class RegistrationForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Length(1, 64),
+    email = StringField('ایمیل', validators=[DataRequired(), Length(1, 64),
                                              Email()])
-    username = StringField('Username', validators=[
+    username = StringField('نام کاربری', validators=[
         DataRequired(), Length(1, 64),
         Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                'Usernames must have only letters, numbers, dots or '
                'underscores')])
-    password = PasswordField('Password', validators=[
-        DataRequired(), EqualTo('password2', message='Passwords must match.')])
-    password2 = PasswordField('Confirm password', validators=[DataRequired()])
-    submit = SubmitField('Register')
+    password = PasswordField('رمزعبور', validators=[
+        DataRequired(), EqualTo('password2', message='رمزعبور اشتباه است')])
+    password2 = PasswordField('تکرار رمزعبور', validators=[DataRequired()])
+    submit = SubmitField('ثبت‌نام')
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data.lower()).first():
-            raise ValidationError('Email already registered.')
+            flash('این ایمیل قبلا ثبت شده است.')
+            raise ValidationError
 
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
-            raise ValidationError('Username already in use.')
+            flash('این نام‌کاربری قبلا استفاده شده است')
+            raise ValidationError
 
 
 class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField('Old password', validators=[DataRequired()])
-    password = PasswordField('New password', validators=[
+    old_password = PasswordField('رمز‌عبور قدیمی', validators=[DataRequired()])
+    password = PasswordField('رمزعبور جدید', validators=[
         DataRequired(), EqualTo('password2', message='Passwords must match.')])
-    password2 = PasswordField('Confirm new password',
+    password2 = PasswordField('تکرار رمز عبور جدید',
                               validators=[DataRequired()])
-    submit = SubmitField('Update Password')
+    submit = SubmitField('به‌روزرسانی')
 
 
 class PasswordResetRequestForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Length(1, 64),
+    email = StringField('ایمیل', validators=[DataRequired(), Length(1, 64),
                                              Email()])
-    submit = SubmitField('Reset Password')
+    submit = SubmitField('بازنشانی رمزعبور')
 
 
 class PasswordResetForm(FlaskForm):
-    password = PasswordField('New Password', validators=[
+    password = PasswordField('رمز عبور جدید', validators=[
         DataRequired(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('Confirm password', validators=[DataRequired()])
-    submit = SubmitField('Reset Password')
+    password2 = PasswordField('تکرار رمز عبور جدید', validators=[DataRequired()])
+    submit = SubmitField('بازنشانی رمز عبور')
 
 
 class ChangeEmailForm(FlaskForm):
-    email = StringField('New Email', validators=[DataRequired(), Length(1, 64),
+    email = StringField('ایمیل جدید', validators=[DataRequired(), Length(1, 64),
                                                  Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Update Email Address')
+    password = PasswordField('رمزعبور', validators=[DataRequired()])
+    submit = SubmitField('به‌روزرسانی ایمیل جدید')
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data.lower()).first():
-            raise ValidationError('Email already registered.')
+            flash('این ایمیل قبلا ثبت شده است.')
+            raise ValidationError

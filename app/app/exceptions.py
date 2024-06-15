@@ -1,2 +1,7 @@
+from flask import flash
+
 class ValidationError(ValueError):
-    pass
+    def __init__(self, message):
+        flash(message, 'error')
+        super().__init__(message)
+        return False

@@ -1,11 +1,11 @@
-Dear {{ user.username }},
+کاربر عزیز {{ user.username }},
 
-To confirm your new email address click on the following link:
+برای تأیید نشانی ایمیل جدیدتان بر روی لینک زیر کلیک کنید:
 
 {{ url_for('auth.change_email', token=token, _external=True) }}
 
-Sincerely,
+با احترام،
 
-The App Team
+تیم به‌نویس
 
-Note: replies to this email address are not monitored.
+توجه: به پیام‌های ارسالی به این نشانی ایمیل پاسخ داده نمی‌شود.

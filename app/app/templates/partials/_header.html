@@ -1,0 +1,57 @@
+<div class="beh-nav">
+    <nav class="navbar navbar-expand-lg py-3">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                به‌نویس
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span>
+                    <span></span>
+                </span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 mt-4 mt-lg-0">
+                    <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.index') }}">خانه</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            خدمات
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
+                            <li><a class="dropdown-item" href="#">نوشتن مقاله</a></li>
+                            <li><a class="dropdown-item" href="#">توصیف محصول</a></li>
+                            <li><a class="dropdown-item" href="#">پردازش ایده</a></li>
+                            <li><a class="dropdown-item" href="#">نوشتن خلاصه کتاب</a></li>
+                            <li><a class="dropdown-item" href="#">شبکه‌های اجتماعی</a></li>
+                            <li><a class="dropdown-item" href="#">پرسش و پاسخ (FAQ)</a></li>
+                            <li><a class="dropdown-item" href="#">ترجمه</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#">خرید اعتبار</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">دانشنامه</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">درباره</a></li>
+                </ul>
+                <ul class="navbar-nav flex-row mb-2 mb-lg-0 ms-lg-3" id="left-side">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('main.edit_profile') }}">پروفایل</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">خروج</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item me-2">
+                        <a class="btn btn-outline-primary px-3" href="{{ url_for('auth.register') }}">ثبت‌نام</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary px-3" href="{{ url_for('auth.login') }}">ورود</a>
+                    </li>
+                {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>

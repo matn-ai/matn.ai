@@ -4,10 +4,17 @@
 {% block title %}App - Change Email Address{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>Change Your Email Address</h1>
-</div>
-<div class="col-md-4">
-    {{ wtf.quick_form(form) }}
-</div>
+<section class="login d-flex align-items-center">
+    <div class="container">
+        <div class="row py-4 justify-content-center">
+            <div class="col-lg-5">
+                <div class="card login-form-card">
+                    <div class="card-body p-md-5">
+                        {{ wtf.quick_form(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

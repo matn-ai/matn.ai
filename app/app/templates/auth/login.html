@@ -1,16 +1,50 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}App - Login{% endblock %}
+{% block title %}به‌نویس | ورود{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>Login</h1>
-</div>
-<div class="col-md-4">
-    {{ wtf.quick_form(form) }}
-    <br>
-    <p>Forgot your password? <a href="{{ url_for('auth.password_reset_request') }}">Click here to reset it</a>.</p>
-    <p>New user? <a href="{{ url_for('auth.register') }}">Click here to register</a>.</p>
-</div>
+<section class="login d-flex align-items-center">
+    <div class="container">
+        <div class="row py-4 justify-content-center">
+            <div class="col-lg-5">
+                <div class="card login-form-card">
+                    <div class="card-body p-md-5">
+                        <h3 class="login-heading mb-4 mb-md-5">ورود به به‌نویس</h3>
+
+
+                        <form  action="{{url_for('auth.login')}}" class="form-group mb-4 mt-2" method="POST">
+                            {{ form.hidden_tag() }}
+                            <div class="form-group mb-4 mt-2">
+                                <label for="email" class="mb-2">
+                                    {{ form.email.label }} 
+                                </label>
+                                {{ form.email(size=32, class_="form-control") }}
+                            </div>
+                            <div class="form-group mb-4 mt-2 pb-4">
+                                <label for="password" class="mb-2">
+                                    {{ form.password.label }} 
+                                </label>
+                                {{ form.password(size=32, class_="form-control") }}
+                            </div>
+                        
+                            <div class="form-group text-center mt-4">
+                                {{ form.submit(class_="btn btn-primary text-white w-50") }}
+                            </div>
+                            <div class="form-group text-center mt-4">
+                                <a href="{{url_for('auth.password_reset_request')}}" class="btn btn-link text-decoration-none">بازیابی رمز عبور</a>
+                            </div>
+                            <p class="mt-4 mt-md-5 mb-0">
+                                <span class="opacity-50 me-2">اکر حساب ندارید می‌توانید به صفحه</span>
+                                <a href="{{ url_for('auth.register') }}" class="btn btn-link p-0 text-dark text-decoration-none"> ثبت نام</a>
+                                <span class="opacity-50 ms-2">بروید</span>
+                              </p>
+                        </form>
+                        
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

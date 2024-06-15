@@ -1,29 +1,273 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% import "_macros.html" as macros %}
 
-{% block title %}App{% endblock %}
+{% block content %}
 
-{% block page_content %}
-<div class="page-header">
-    <h1>Hello, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Stranger{% endif %}!</h1>
-</div>
-<div>
-    {% if current_user.can(Permission.WRITE) %}
-    {{ wtf.quick_form(form) }}
-    {% endif %}
-</div>
-<div class="post-tabs">
-    {% include '_contents.html' %}
-</div>
-{% if pagination %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination, '.index') }}
-</div>
-{% endif %}
-{% endblock %}
+<section class="heading_one">
+    <div class="container position-relative">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-lg-12 text-center">
+                <h2 class="heading_one-heading mb-4">به‌نویس، نویسنده‌ی هوشمند شما</h2>
+                <p class="heading_one-sub-heading px-5">
+                    به‌نویس، نویسنده‌ی هوشمند شما با قدرت هوش مصنوعی و زبان فارسی
+                    <br />
+                    تولید محتوا هیچ‌وقت ازین راحت‌تر نبود!
+                </p>
+                <a href="" class="btn btn-light heading_one-btn fs-5 mt-4 mt-md-5"><span
+                        class="fas fa-arrow-left me-2"></span>امتحان کنید</a>
+                <p class="heading_one-registration-note mb-0 mt-4">بدون ثبت نام</p>
+            </div>
+            <div class="col-lg-10 mt-5">
+                <img src="https://cdn.easyfrontend.com/pictures/hero/hero-13.png" alt=""
+                    class="img-fluid heading_one-feature-img" />
+            </div>
+        </div>
+    </div>
+</section>
 
-{% block scripts %}
-{{ super() }}
-{{ pagedown.include_pagedown() }}
+
+
+<section class="headingTwo">
+    <div class="container">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-12 col-md-6">
+                <h3 class="mb-4 text-primary">
+                    نویسندگی با هوش مصنوعی به‌نویس </h3>
+                <h2 class="headingTwo-heading mb-4">
+                    چطور به‌نویس می‌تونه به کیفیت محتوای شما کمک کنه؟
+                </h2>
+
+                <p class="headingTwo-sub-heading">
+                <p>
+                    به‌نویس تمام ابزارهای مورد نیاز شما برای تولید محتوا را در خود دارد.
+                    رعایت قوانین سئو (SEO)،
+                    دوری از متن‌های کلیشه‌ای، املای صحیح، رعایت قواعد نگارشی دستور زبان فارسی، توانایی نوشتن محتوا بر
+                    اساس لینک‌ها یا فایل‌های ورودی از جمله امکانات نویسنده‌ی هوش مصنوعی به‌نویس است.
+
+                </p>
+
+
+                ابزار هوش مصنوعی مورد نیاز خود را انتخاب کنید، ورودی های لازم را وارد کنید و متنی صریح، شفاف و بدون
+                کلیشه و بهینه شده برای سئو دریافت کنید.
+                </p>
+            </div>
+            <!-- image -->
+            <div class="col-12 col-md-5 position-relative">
+                <a class="headingTwo-play mb-4"><i class="fa-solid fa-play"></i></a>
+                <img src="https://cdn.easyfrontend.com/pictures/blog/blog_13_3.jpg" alt=""
+                    class="img-fluid my-5 my-md-0" />
+
+                <!-- <video controls class="img-fluid my-5 my-md-0">
+                    <source src="{{ url_for('static', filename='media/intro.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video> -->
+            </div>
+
+        </div>
+        <!-- cards -->
+        <div class="row mt-5">
+            <!-- card starts -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="p-xl-3 mt-4">
+                    <div class="mb-3 text-center">
+
+                        <img src="{{ url_for('static', filename='images/1.png') }}" width="90%" />
+                    </div>
+
+                    <h4 class="headingTwo-title fs-4 mb-3">نوشتن مقالات</h4>
+                    <p class="headingTwo-content mb-0">
+                        با کمک به‌نویس، مقالاتی بی‌نظیر و کاملاً بهینه‌شده برای سئو بنویسید. شما می‌توانید با وارد کردن
+                        اطلاعات مورد نیاز، متنی فوق‌العاده و دقیق و کاملاً بهینه‌شده برای سئو دریافت کنید
+                    </p>
+                    <div style="text-align: left;" class="mt-3">
+                        <a href="#" class="btn btn-link text-decoration-none">بیشتر بخوانید</a>
+                    </div>
+
+                </div>
+            </div>
+            <!-- card ends -->
+            <!-- card starts -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="p-xl-3 mt-4">
+                    <div class="mb-3 text-center">
+
+                        <img src="{{ url_for('static', filename='images/2.png') }}" width="90%" />
+                    </div>
+
+                    <h4 class="headingTwo-title fs-4 mb-3">توصیف محصول</h4>
+                    <p class="headingTwo-content mb-0">
+                        برای توصیف محصول، محتوایی جذاب و دقیق تولید کنید. محتوایی جذاب و دقیق تولید کنید. به‌نویس به شما
+                        کمک می‌کند تا ویژگی‌ها و مزایای محصولات را به بهترین شکل ممکن بیان کنید.
+                    </p>
+                    <div style="text-align: left;" class="mt-3">
+                        <a href="#" class="btn btn-link text-decoration-none">بیشتر بخوانید</a>
+                    </div>
+
+                </div>
+            </div>
+            <!-- card ends -->
+            <!-- card starts -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="p-xl-3 mt-4">
+                    <div class="mb-3 text-center">
+
+                        <img src="{{ url_for('static', filename='images/3.png') }}" width="90%" />
+                    </div>
+                    <h4 class="headingTwo-title fs-4 mb-3">پردازش ایده</h4>
+                    <p class="headingTwo-content mb-0">
+                        به‌نویس در پردازش ایده‌های نوآورانه و تبدیل آنها به محتوای باکیفیت به شما کمک می‌کند. با
+                        به‌نویس، ایده‌های خود را به راحتی به محتوای قابل استفاده تبدیل کنید.
+                    </p>
+                    <div style="text-align: left;" class="mt-3">
+                        <a href="#" class="btn btn-link text-decoration-none">بیشتر بخوانید</a>
+                    </div>
+                </div>
+            </div>
+            <!-- card ends -->
+            <!-- card starts -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="p-xl-3 mt-4">
+                    <div class="mb-3 text-center">
+
+                        <img src="{{ url_for('static', filename='images/4.png') }}" width="90%" />
+                    </div>
+                    <h4 class="headingTwo-title fs-4 mb-3"> خلاصه کتاب یا PDF</h4>
+                    <p class="headingTwo-content mb-0">
+
+                        محتوای خلاصه شده و مفید از کتاب‌ها یا فایل‌های PDF را با به‌نویس تهیه کنید. این ابزار به شما
+                        امکان می‌دهد تا به سرعت محتوای خلاصه و کارآمد ایجاد کنید.
+                    </p>
+                    <div style="text-align: left;" class="mt-3">
+                        <a href="#" class="btn btn-link text-decoration-none">بیشتر بخوانید</a>
+                    </div>
+                </div>
+            </div>
+            <!-- card ends -->
+            <!-- card starts -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="p-xl-3 mt-4">
+                    <div class="mb-3 text-center">
+
+                        <img src="{{ url_for('static', filename='images/5.png') }}" width="90%" />
+                    </div>
+                    <h4 class="headingTwo-title fs-4 mb-3">شبکه‌های اجتماعی</h4>
+                    <p class="headingTwo-content mb-0">
+                        برای پست‌های شبکه‌های اجتماعی، محتوای بهینه و به دور از کلیشه تولید کنید. به‌نویس به شما کمک
+                        می‌کند تا محتوای مناسب و مؤثر برای افزایش تعامل کاربران در شبکه‌های اجتماعی بنویسید.
+                    </p>
+                    <div style="text-align: left;" class="mt-3">
+                        <a href="#" class="btn btn-link text-decoration-none">بیشتر بخوانید</a>
+                    </div>
+
+                </div>
+            </div>
+            <!-- card ends -->
+            <!-- card starts -->
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="p-xl-3 mt-4">
+                    <div class="mb-3 text-center">
+
+                        <img src="{{ url_for('static', filename='images/6.png') }}" width="90%" />
+                    </div>
+                    <h4 class="headingTwo-title fs-4 mb-3">ترجمه</h4>
+                    <p class="headingTwo-content mb-0">
+                        استفاده از قابلیت‌های ترجمه به‌نویس برای تولید محتوای چند زبانه، با خوانش راحت و دقیق. با
+                        به‌نویس می‌توانید محتوای خود را به زبان‌های مختلف ترجمه کرده و در دسترس مخاطبان بیشتری قرار
+                        دهید.
+                    </p>
+                    <div style="text-align: left;" class="mt-3">
+                        <a href="#" class="btn btn-link text-decoration-none">بیشتر بخوانید</a>
+                    </div>
+
+                </div>
+            </div>
+            <!-- card ends -->
+        </div>
+    </div>
+</section>
+
+
+
+
+<section class="pricing">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <h2 class="pricing-heading mb-0">به اندازه‌ای که نیاز دارید خرید کنید</h2>
+            </div>
+        </div>
+        <div class="row align-items-start">
+            <div class="col-md-7">
+                <div class="d-flex flex-column gap-3 position-relative">
+                    <div class="me-4 p-4 rounded fs-4 w-75" style="z-index: 201; position: absolute; background-color: rgba(255,255,255,0.7);">
+                        به‌نویس این امکان را دارد که هرچقدر که نیاز دارید خرید کنید
+                        <br/>
+                    چه برای استفاده شخصی و چه برای تیم‌های تولید محتوا، میتوانید هزینه‌های خود را مدیریت کنید. 
+                    </div>
+                    <div style="z-index: 200; position: absolute;" class="text-center">
+
+                        <lottie-player src="{{ url_for('static', filename='media/rocket.json') }}" background="transparent"  speed="1"  style="width: 300px; height: 300px;" loop autoplay></lottie-player>
+                            
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 rounded bg-white p-4">
+
+                <div class="d-flex justify-content-evenly mb-4">
+                    <div class="text-center">
+                        <span class="badge badge-primary text-dark"> کلمه</span>
+                        <div id="rangeThumb" class="range-thumb rounded p-2 bg-light fs-4" style="right: 0%;">۲۰۰۰</div>
+                    </div>
+                    <div class="text-center">
+                        <span class="badge badge-primary text-dark"> قیمت هر کلمه</span>
+                        <div id="pricePerWord" class="text-muted rounded p-2 bg-light fs-4"> ۲۰
+                        </div>
+                    </div>
+                </div>
+
+                <div class="range-slider mb-4 text-center mt-4 pt-4">
+                    <label for="wordCountSlider" class="form-label">تعداد کلمات مورد نیاز</label>
+                    <input id="wordCountSlider" type="range" class="form-range" min="2000" max="100000" value="2000"
+                        oninput="updatePrice()">
+                </div>
+
+                <div class="text-center mt-4 pt-4">
+                    <span class="badge badge-primary text-dark"> جمع</span>
+                    <div id="total" class="font-weight-bold fs-4">۴۰٬۰۰۰ تومان</div>
+
+                </div>
+                <div class="text-center mt-4">
+                    <a id="purchaseLink" class="btn btn-primary w-50 text-white">خرید</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function updatePrice() {
+        const rangeValue = document.getElementById('wordCountSlider').value;
+        let pricePerWord;
+
+        if (rangeValue <= 10000) {
+            pricePerWord = 20;
+        } else if (rangeValue <= 80000) {
+            pricePerWord = 18;
+        } else {
+            pricePerWord = 17;
+        }
+
+        const totalPrice = rangeValue * pricePerWord;
+        document.getElementById('pricePerWord').textContent = `${parseInt(pricePerWord).toLocaleString('fa-IR')}`;
+        document.getElementById('total').textContent = `${totalPrice.toLocaleString('fa-IR')} تومان`;
+        document.getElementById('rangeThumb').style.right = `${((rangeValue - 2000) / 98000) * 100}%`;
+        //        document.getElementById('rangeValue').textContent = rangeValue.toLocaleString('fa-IR');
+
+        document.getElementById('rangeThumb').textContent = parseInt(rangeValue).toLocaleString('fa-IR');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updatePrice();
+    });
+</script>
+
 {% endblock %}
