@@ -21,7 +21,7 @@
                             <li><a class="dropdown-item" href="#">نوشتن مقاله</a></li>
                             <li><a class="dropdown-item" href="#">توصیف محصول</a></li>
                             <li><a class="dropdown-item" href="#">پردازش ایده</a></li>
-                            <li><a class="dropdown-item" href="#">نوشتن خلاصه کتاب</a></li>
+                            <!-- <li><a class="dropdown-item" href="#">نوشتن خلاصه کتاب</a></li> -->
                             <li><a class="dropdown-item" href="#">شبکه‌های اجتماعی</a></li>
                             <li><a class="dropdown-item" href="#">پرسش و پاسخ (FAQ)</a></li>
                             <li><a class="dropdown-item" href="#">ترجمه</a></li>
@@ -33,6 +33,11 @@
                 </ul>
                 <ul class="navbar-nav flex-row mb-2 mb-lg-0 ms-lg-3" id="left-side">
                     {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary" href="{{ url_for('dashboard.index') }}">
+                            داشبورد
+                        </a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle"></i>

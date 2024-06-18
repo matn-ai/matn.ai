@@ -1000,9 +1000,6 @@
   }
   
   @media (min-width: 768px) {
-    .dashboard {
-      padding: 100px 0;
-    }
   }
   
   /* Gray Block Style */
@@ -1104,3 +1101,15 @@
     color: var(--ezy-theme-color);
   }
   
+  .active-nav{
+	font-weight: bold;
+	background-color: #f2f2f2;
+  }
+
+  .card-shadow{
+	box-shadow: 0px 6px 44px rgba(173, 174, 197, 0.2);
+  }
+
+  #loading-content{
+	width: 300px;
+  }

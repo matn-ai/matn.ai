@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.rtl.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="{{ url_for('static', filename='js/htmx.min.js') }}"></script>
+
 </head>
 <body>
     
@@ -43,6 +44,7 @@
         {% include 'partials/_footer.html' %}
     </footer>
 </body>
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/all.min.js') }}"></script>

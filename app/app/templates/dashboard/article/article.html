@@ -1,0 +1,56 @@
+{% block dashboard %}
+
+<div class="container">
+    <div class="mx-auto p-4 bg-white rounded shadow" style="max-width: 728px;">
+        <form class="w-100">
+            <!-- عنوان مقاله -->
+            <div class="mb-3">
+                <label for="title" class="form-label">عنوان مقاله</label>
+                <input type="text" class="form-control" id="title" placeholder="عنوان مقاله را وارد نمایید">
+            </div>
+
+            <!-- لینک ورودی -->
+            <div class="mb-3">
+                <label for="inputLink" class="form-label">لینک ورودی</label>
+                <input type="text" class="form-control" id="inputLink" placeholder="لطفا لینک را وارد نمایید">
+                <button class="btn btn-primary mt-2">+</button>
+            </div>
+
+            <!-- عبارت کلیدی -->
+            <div class="mb-3">
+                <label for="keywordPhrase" class="form-label">عبارت کلیدی</label>
+                <input type="text" class="form-control" id="keywordPhrase" placeholder="یک عبارت کلیدی وارد کنید">
+            </div>
+
+            <!-- کلمات کلیدی -->
+            <div class="mb-3">
+                <label for="keywords" class="form-label">کلمات کلیدی</label>
+                <input type="text" class="form-control" id="keywords" placeholder="عبارات کلیدی وارد نشده است">
+            </div>
+
+            <!-- انتخاب زبان -->
+            <div class="mb-3">
+                <label class="form-label">انتخاب زبان</label>
+                <div>
+                    <input type="radio" class="form-check-input" id="persian" name="language" value="فارسی">
+                    <label class="form-check-label" for="persian">فارسی</label>
+                    <input type="radio" class="form-check-input ms-2" id="english" name="language" value="انگلیسی">
+                    <label class="form-check-label" for="english">انگلیسی</label>
+                </div>
+            </div>
+
+            <!-- زمان حدودی -->
+            <div class="mb-3">
+                <label class="form-label">زمان حدودی:</label>
+                <p>۴ الی ۶ دقیقه</p>
+            </div>
+
+            <!-- دکمه تولید مقدمه و سرتیتر -->
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">تولید مقدمه و سرتیتر</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

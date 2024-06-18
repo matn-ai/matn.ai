@@ -1,97 +1,69 @@
 {% extends "dashboard/base.html" %}
+{% from "_macros.html" import nav_item %}
+
 
 {% block content %}
 
 <section class="dashboard">
-    <div class="container">
-      <div class="row">
-        <!-- nav -->
-        <div class="col-12 col-md-3 col-lg-2">
-          <div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start">
-            <ul class="nav flex-column w-100">
-              <!-- مقاله section -->
-              <li class="nav-item">
-                <a class="nav-link active d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseArticle" role="button" aria-expanded="false" aria-controls="collapseArticle">
-                  <span>مقاله</span>
-                  <i class="fas fa-chevron-down"></i>
-                </a>
-                <div class="collapse" id="collapseArticle">
-                  <ul class="nav flex-column ms-3">
-                    <li class="nav-item">
-                      <a class="nav-link" href="#"><i class="fas fa-file-alt me-2"></i>مقاله عمومی</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="#"><i class="fas fa-file-alt me-2"></i>مقاله تخصصی</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="#"><i class="fas fa-blog me-2"></i>بلاگ</a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <!-- پردازش ایده section -->
-              <li class="nav-item">
-                <a class="nav-link" href="#">پردازش ایده</a>
-              </li>
-              <!-- توصیف محصول section -->
-              <li class="nav-item">
-                <a class="nav-link" href="#">توصیف محصول</a>
-              </li>
-              <!-- شبکه‌های اجتماعی section -->
-              <li class="nav-item">
-                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseSocial" role="button" aria-expanded="false" aria-controls="collapseSocial">
-                  <span>شبکه‌های اجتماعی</span>
-                  <i class="fas fa-chevron-down"></i>
-                </a>
-                <div class="collapse" id="collapseSocial">
-                  <ul class="nav flex-column ms-3">
-                    <li class="nav-item">
-                      <a class="nav-link" href="#"><i class="fab fa-linkedin me-2"></i>لینکدین</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="#"><i class="fab fa-twitter me-2"></i>شبکه ایکس</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="#"><i class="fab fa-instagram me-2"></i>اینستاگرام</a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <!-- ترجمه section -->
-              <li class="nav-item">
-                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#collapseTranslate" role="button" aria-expanded="false" aria-controls="collapseTranslate">
-                  <span>ترجمه</span>
-                  <i class="fas fa-chevron-down"></i>
-                </a>
-                <div class="collapse" id="collapseTranslate">
-                  <ul class="nav flex-column ms-3">
-                    <li class="nav-item">
-                      <a class="nav-link" href="#"><i class="fas fa-language me-2"></i>از فارسی</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="#"><i class="fas fa-language me-2"></i>به فارسی</a>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        <!-- content -->
-        <div class="col-12 col-md-9 col-lg-10 mt-5 mt-md-0">
-          <div class="dashboard-card p-4" style="min-height: 65vh;">
-            <div class="px-lg-5">
-              <h1 class="dashboard-heading text-center">Dashboard</h1>
-              <div class="row justify-content-between mt-4 mt-md-5">
-                
-                
-              </div>
-            </div>
-          </div>
+  <div class="container">
+    <div class="row">
+      <!-- nav -->
+      <div class="col-12 col-lg-2">
+        <div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start">
+          <ul class="nav flex-column w-100">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('dashboard.index') }}">
+                داشبورد 
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('dashboard.index') }}">
+                تقویم تولید محتوا
+              </a>
+            </li>
+            {{ nav_item('#collapseArticle', 'مقاله', '', [
+            { 'url': '/dashboard/article', 'name': 'مقاله عمومی', 'icon': 'fas fa-file-alt' },
+            { 'url': '/dashboard/article/professional', 'name': 'مقاله تخصصی', 'icon': 'fas fa-file-alt' },
+            { 'url': '/dashboard/article/blog', 'name': 'بلاگ', 'icon': 'fas fa-blog' }
+            ]) }}
+            {{ nav_item('/dashboard/idea/brainstorming', 'پردازش ایده') }}
+            {{ nav_item('/dashboard/product/product-description', 'توصیف محصول') }}
+            {{ nav_item('#collapseSocial', 'شبکه‌های اجتماعی', '', [
+            { 'url': '/dashboard/social/linkedin', 'name': 'لینکدین', 'icon': 'fab fa-linkedin' },
+            { 'url': '/dashboard/social/x', 'name': 'شبکه ایکس', 'icon': 'fab fa-twitter' },
+            { 'url': '/dashboard/social/instagram', 'name': 'اینستاگرام', 'icon': 'fab fa-instagram' }
+            ]) }}
+            {{ nav_item('#collapseTranslate', 'ترجمه', '', [
+            { 'url': '/dashboard/translate/from-persian', 'name': 'از فارسی', 'icon': 'fas fa-language' },
+            { 'url': '/dashboard/translate/to-persian', 'name': 'به فارسی', 'icon': 'fas fa-language' }
+            ]) }}
+          </ul>
         </div>
       </div>
+
+      <!-- content -->
+      <div class="col-12 col-lg-10 p-0">
+        <div id="dashboard-content" style="min-height: 65vh;">
+          {% if dashboard %}
+
+          {% block dashboard %}
+          {% endblock %}
+
+          {% else %}
+          <!-- content -->
+
+          {% include "dashboard/main/index.html" %}
+
+          <!-- content -->
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- content -->
+
+
     </div>
-  </section>
+  </div>
+</section>
 
 {% endblock %}

@@ -344,3 +344,6 @@ class Job(db.Model):
 
     def __repr__(self):
         return '<Job %r>' % self.id
+    
+    
+    
