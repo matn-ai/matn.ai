@@ -4,12 +4,11 @@
     <div class="col-4">
         <div class="bg-white rounded p-4 card-shadow">
             <div class="mb-4 w-100 text-center">
-                <!-- <img src="/static/images/content-writing-64x64.png" width="48" />
- -->
                 <h4 class="flex-fill">
                     تولید مقاله عمومی</h4>
             </div>
-            <form id="submission_form" class="form-group mb-4 mt-2" action="{{url_for('dashboard.article_blog')}}" method="post">
+            <form id="submission_form" class="form-group mb-4 mt-2" action="{{url_for('dashboard.article_blog')}}"
+                method="post">
                 {{ form.hidden_tag() }}
                 <div class="form-group mb-4 mt-2">
                     <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
@@ -31,9 +30,11 @@
     </div>
     <div class="col-8">
         <div class="rounded card-shadow position-relative p-1">
-            <div id="loading-content" class="text-center mr-auto mx-auto" style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+            <div id="loading-content" class="text-center mr-auto mx-auto"
+                style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
                 <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
-                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}" background="transparent" speed="1" loop autoplay></lottie-player>
+                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
+                        background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
             </div>
             <div id="text-editor-area">
@@ -43,8 +44,9 @@
     </div>
 </div>
 
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ckeditor.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tagify.min.js') }}"></script>
 
 <script>
     let editor;
@@ -65,48 +67,54 @@
     var input = document.getElementById('tags-input');
     new Tagify(input);
 
-    $('#submission_form').submit(function(e) {
-        e.preventDefault();
+    $(document).ready(function () {
+        $('#submission_form').submit(function (e) {
+            e.preventDefault();
 
-        // Show the loading content
-        $('#loading-content').show();
+            // Show the loading content
+            $('#loading-content').show();
 
-        // Serialize the form data
-        var formData = $(this).serialize();
+            // Serialize the form data including the CKEditor content
+            var formData = $(this).serializeArray();
+            formData.push({ name: "body", value: editor.getData() });
 
-        // Submit the form using AJAX
-        $.ajax({
-            type: "POST",
-            url: "{{url_for('dashboard.article_blog')}}",
-            data: formData,
-            success: function(data) {
-                // Handle the successful response
-                const jobId = data.job_id;
-                const contentId = data.content_id;
-                checkJobStatus(jobId, contentId);
-            },
-            error: function(xhr, status, error) {
-                // Handle the error response
-                console.error(error);
-            }
+            // Convert the form data to a format that can be sent via AJAX
+            var serializedData = $.param(formData);
+
+            // Submit the form using AJAX
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('dashboard.article_blog') }}",
+                data: serializedData,
+                success: function (data) {
+                    // Handle the successful response
+                    const jobId = data.job_id;
+                    const contentId = data.content_id;
+                    checkJobStatus(jobId, contentId);
+                },
+                error: function (xhr, status, error) {
+                    // Handle the error response
+                    console.error(error);
+                }
+            });
         });
+
+        function checkJobStatus(jobId, contentId) {
+            $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
+                if (data.status === 'SUCCESS') {
+                    fetchContent(contentId);
+                } else {
+                    setTimeout(() => checkJobStatus(jobId, contentId), 2000);
+                }
+            });
+        }
+
+        function fetchContent(contentId) {
+            $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
+                $('#loading-content').hide();
+                editor.setData(data.content);
+            });
+        }
     });
-
-    function checkJobStatus(jobId, contentId) {
-        $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
-            if (data.status === 'SUCCESS') {
-                fetchContent(contentId);
-            } else {
-                setTimeout(() => checkJobStatus(jobId, contentId), 2000);
-            }
-        });
-    }
-
-    function fetchContent(contentId) {
-        $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
-            $('#loading-content').hide();
-            editor.setData(data.content);
-        });
-    }
 </script>
 {% endblock %}

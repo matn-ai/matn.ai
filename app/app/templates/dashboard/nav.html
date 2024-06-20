@@ -2,29 +2,118 @@
 
 <ul class="nav flex-column w-100">
     <li class="nav-item">
-      <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active-nav{% endif %}" href="{{ url_for('dashboard.index') }}">
-        داشبورد
+        <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active-nav{% endif %}" href="{{ url_for('dashboard.index') }}">
+            داشبورد
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'dashboard.article_blog_content' %}active-nav{% endif %}" href="{{ url_for('dashboard.index') }}">
+            تقویم تولید محتوا
+        </a>
+    </li>
+    
+    <!-- مقالات Dropdown -->
+    <li class="nav-item">
+        <a class="nav-link d-flex justify-content-between align-items-center"
+           id="مقالهLink"
+           href="#مقالهCollapse"
+           data-bs-toggle="collapse"
+           role="button"
+           aria-controls="مقالهCollapse"
+           aria-expanded="{{ 'true' if 'article' in request.path else 'false' }}">
+          <span>مقاله</span>
+          <i class="fas fa-chevron-down"></i>
+        </a>
+        <div class="collapse {{ 'show' if 'article' in request.path else '' }}" id="مقالهCollapse">
+          <ul class="nav flex-column ms-3">
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'dashboard.article' %}active-nav{% endif %}" id="مقاله عمومیLink" href="{{ url_for('dashboard.article') }}">
+                <i class="fas fa-file-alt me-2"></i>مقاله عمومی
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'dashboard.article_pro' %}active-nav{% endif %}" id="مقاله حرفه‌ایLink" href="{{ url_for('dashboard.article_pro') }}">
+                <i class="fas fa-file-alt me-2"></i>مقاله حرفه‌ای
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if request.endpoint == 'dashboard.article_blog' %}active-nav{% endif %}" id="بلاگLink" href="{{ url_for('dashboard.article_blog') }}">
+                <i class="fas fa-blog me-2"></i>بلاگ
+              </a>
+            </li>
+          </ul>
+        </div>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link {% if request.endpoint == 'dashboard.idea_brainstorming' %}active-nav{% endif %}" id="پردازش ایدهLink" href="{{ url_for('dashboard.idea_brainstorming') }}">
+        پردازش ایده
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link {% if request.endpoint == 'dashboard.article_blog_content' %}active-nav{% endif %}" href="{{ url_for('dashboard.index') }}">
-        تقویم تولید محتوا
+      <a class="nav-link {% if request.endpoint == 'dashboard.product_describe' %}active-nav{% endif %}" id="توصیف محصولLink" href="{{ url_for('dashboard.product_describe') }}">
+        توصیف محصول
       </a>
     </li>
-    {{ nav_item('#collapseArticle', 'مقاله', '', [
-    { 'url': '/dashboard/article', 'name': 'مقاله عمومی', 'icon': 'fas fa-file-alt' },
-    { 'url': '/dashboard/article/professional', 'name': 'مقاله حرفه‌ای', 'icon': 'fas fa-file-alt' },
-    { 'url': '/dashboard/article/blog', 'name': 'بلاگ', 'icon': 'fas fa-blog' }
-    ]) }}
-    {{ nav_item('/dashboard/idea/brainstorming', 'پردازش ایده') }}
-    {{ nav_item('/dashboard/product/product-description', 'توصیف محصول') }}
-    {{ nav_item('#collapseSocial', 'شبکه‌های اجتماعی', '', [
-    { 'url': '/dashboard/social/linkedin', 'name': 'لینکدین', 'icon': 'fab fa-linkedin' },
-    { 'url': '/dashboard/social/x', 'name': 'شبکه ایکس', 'icon': 'fab fa-twitter' },
-    { 'url': '/dashboard/social/instagram', 'name': 'اینستاگرام', 'icon': 'fab fa-instagram' }
-    ]) }}
-    {{ nav_item('#collapseTranslate', 'ترجمه', '', [
-    { 'url': '/dashboard/translate/from-persian', 'name': 'از فارسی', 'icon': 'fas fa-language' },
-    { 'url': '/dashboard/translate/to-persian', 'name': 'به فارسی', 'icon': 'fas fa-language' }
-    ]) }}
-  </ul>
+  
+    <!-- شبکه‌های اجتماعی Dropdown -->
+    <li class="nav-item">
+      <a class="nav-link d-flex justify-content-between align-items-center"
+         id="شبکه‌های اجتماعیLink"
+         href="#شبکه‌های اجتماعیCollapse"
+         data-bs-toggle="collapse"
+         role="button"
+         aria-controls="شبکه‌های اجتماعیCollapse"
+         aria-expanded="{{ 'true' if 'social' in request.path else 'false' }}">
+        <span>شبکه‌های اجتماعی</span>
+        <i class="fas fa-chevron-down"></i>
+      </a>
+      <div class="collapse {{ 'show' if 'social' in request.path else '' }}" id="شبکه‌های اجتماعیCollapse">
+        <ul class="nav flex-column ms-3">
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active-nav{% endif %}" id="لینکدینLink" href="{{ url_for('dashboard.index') }}">
+              <i class="fab fa-linkedin me-2"></i>لینکدین
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active-nav{% endif %}" id="شبکه ایکسLink" href="{{ url_for('dashboard.index') }}">
+              <i class="fab fa-twitter me-2"></i>شبکه ایکس
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active-nav{% endif %}" id="اینستاگرامLink" href="{{ url_for('dashboard.index') }}">
+              <i class="fab fa-instagram me-2"></i>اینستاگرام
+            </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+  
+    <!-- ترجمه Dropdown -->
+    <li class="nav-item">
+      <a class="nav-link d-flex justify-content-between align-items-center"
+         id="ترجمهLink"
+         href="#ترجمهCollapse"
+         data-bs-toggle="collapse"
+         role="button"
+         aria-controls="ترجمهCollapse"
+         aria-expanded="{{ 'true' if 'translate' in request.path else 'false' }}">
+        <span>ترجمه</span>
+        <i class="fas fa-chevron-down"></i>
+      </a>
+      <div class="collapse {{ 'show' if 'translate' in request.path else '' }}" id="ترجمهCollapse">
+        <ul class="nav flex-column ms-3">
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'dashboard.translate_from_persian' %}active-nav{% endif %}" id="از فارسیLink" href="{{ url_for('dashboard.translate_from_persian') }}">
+              <i class="fas fa-language me-2"></i>از فارسی
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian' %}active-nav{% endif %}" id="به فارسیLink" href="{{ url_for('dashboard.translate_to_persian') }}">
+              <i class="fas fa-language me-2"></i>به فارسی
+            </a>
+          </li>
+        </ul>
+      </div>
+    </li>
+</ul>

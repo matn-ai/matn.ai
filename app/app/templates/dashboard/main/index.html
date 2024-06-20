@@ -1,5 +1,6 @@
 
-
+{% extends "dashboard/dashboard.html" %}
+{% block dashboard %}
 <div class="col-12 col-lg-10 p-0">
     <div id="dashboard-content" style="min-height: 65vh;">
       {% if contents %}
@@ -54,3 +55,4 @@
       {% endif %}
     </div>
   </div>
+{% endblock %}

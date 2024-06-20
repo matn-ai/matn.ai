@@ -10,10 +10,23 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_pagedown import PageDown
 from flask_sqlalchemy import SQLAlchemy
+from pymongo import MongoClient
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 
+client = MongoClient('mongodb://localhost:27017/')  # Adjust the URI as needed
+mdb = client['app']
+contents_collection = mdb['contents']
+
+# Ensure the collection is created (if not exists)
+if 'contents' not in mdb.list_collection_names():
+    contents_collection = mdb.create_collection('contents')
+    
+@login_manager.user_loader
+def load_user(user_id):
+    from .models import User
+    return User.query.get(user_id)
 
 from celery import Celery, Task
 
@@ -52,7 +65,7 @@ app.config.from_mapping(
     ),
 )
 
-app.config.from_prefixed_env()
+# app.config.from_prefixed_env()
 celery_app = celery_init_app(app)
 
 
@@ -90,6 +103,7 @@ app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
 from .api import api as api_blueprint
 app.register_blueprint(api_blueprint, url_prefix='/api/v1')
+
 
 # from . import views
 

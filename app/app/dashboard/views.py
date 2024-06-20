@@ -17,7 +17,7 @@ def index():
     next_url = url_for('dashboard.index', page=user_contents.next_num, q=search_query, sort=sort_order) if user_contents.has_next else None
     prev_url = url_for('dashboard.index', page=user_contents.prev_num, q=search_query, sort=sort_order) if user_contents.has_prev else None
 
-    return render_template('dashboard/dashboard.html', contents=user_contents.items, next_url=next_url, prev_url=prev_url, search_query=search_query, sort_order=sort_order)
+    return render_template('dashboard/main/index.html', contents=user_contents.items, next_url=next_url, prev_url=prev_url, search_query=search_query, sort_order=sort_order)
 
 @dashboard.route('/dashboard/article', methods=['GET', 'POST'])
 @login_required
@@ -52,7 +52,7 @@ def article_pro():
 def article_blog():
     form = GenerateArticleBlog()
     if form.validate_on_submit():
-        form_data = request.form.to_dict()
+        form_data = request.form
         content = create_content(user_input=form_data, author=current_user)
         
         job = generate_blog_simple.delay(content.id, form_data)

@@ -1,1 +1,1 @@
-BEHNEVIS
+celery -A app.tasks worker

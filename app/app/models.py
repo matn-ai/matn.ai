@@ -6,9 +6,9 @@ from sqlalchemy.dialects.mysql import LONGTEXT
 from flask import current_app, url_for
 from flask_login import UserMixin, AnonymousUserMixin
 from app.exceptions import ValidationError
-from . import db, login_manager
+from . import db, mdb, login_manager, contents_collection
 from markdown import markdown
-import bleach
+from bson import ObjectId
 
 
 class Permission:
@@ -219,15 +219,12 @@ class AnonymousUser(AnonymousUserMixin):
 login_manager.anonymous_user = AnonymousUser
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
 
 class Content(db.Model):
     __tablename__ = 'contents'
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(LONGTEXT)
+    # body = db.Column(LONGTEXT)
+    mongo_id = db.Column(db.String(24))
     user_input = db.Column(db.Text)
     system_title = db.Column(db.Text)
     outlines = db.Column(db.Text)
@@ -236,19 +233,13 @@ class Content(db.Model):
     flow_id = db.Column(db.Integer, db.ForeignKey('flows.id'))
     job = db.relationship('Job', backref='content', uselist=False)
 
-    # @staticmethod
-    # def on_changed_body(target, value, oldvalue, initiator):
-    #     allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
-    #                     'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-    #                     'h1', 'h2', 'h3', 'p']
-    #     target.body = bleach.linkify(bleach.clean(
-    #         markdown(value, output_format='html'),
-    #         tags=allowed_tags, strip=True))
+    def body(self):
+        return self.get_body_from_mongo()
 
     def to_json(self):
         json_content = {
             'url': url_for('api.get_content', id=self.id),
-            'body': self.body,
+            'body': self.get_body_from_mongo(),
             'outlines': self.outlines,
             'timestamp': self.timestamp,
             'author_url': url_for('api.get_user', id=self.author_id),
@@ -256,6 +247,12 @@ class Content(db.Model):
             'flow_url': url_for('api.get_flow', id=self.flow_id)
         }
         return json_content
+
+    def get_body_from_mongo(self):
+        if self.mongo_id:
+            document = contents_collection.find_one({'_id': ObjectId(self.mongo_id)})
+            return document['body'] if document else None
+        return None
 
     @staticmethod
     def from_json(json_content):

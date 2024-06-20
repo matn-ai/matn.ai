@@ -8,7 +8,9 @@
  -->
                 <h4 class="flex-fill">
                     تولید مقاله حرفه‌ای</h4>
-            </div>            <form id="submission_form" class="form-group mb-4 mt-2" action="{{url_for('dashboard.article_pro')}}" method="post">
+            </div>
+            <form id="submission_form" class="form-group mb-4 mt-2" action="{{url_for('dashboard.article_pro')}}"
+                method="post">
                 {{ form.hidden_tag() }}
                 <div class="form-group mb-4 mt-2">
                     <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
@@ -20,10 +22,10 @@
                 </div>
                 <div id="urls">
                     {% for subform in form.urls %}
-                        <div class="url-field">
-                            <label for="url" class="mb-2">{{ subform.url.label }}</label>
-                            {{ subform.url(class_="form-control mb-2") }}
-                        </div>
+                    <div class="url-field">
+                        <label for="url" class="mb-2">{{ subform.url.label }}</label>
+                        {{ subform.url(class_="form-control mb-2") }}
+                    </div>
                     {% endfor %}
                 </div>
                 <div class="form-group mb-4 mt-2">
@@ -47,9 +49,11 @@
     <div class="col-8">
         <!-- Content for article goes here -->
         <div class="rounded card-shadow position-relative p-1">
-            <div id="loading-content" class="text-center mr-auto mx-auto" style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+            <div id="loading-content" class="text-center mr-auto mx-auto"
+                style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
                 <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
-                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}" background="transparent" speed="1" loop autoplay></lottie-player>
+                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
+                        background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
             </div>
             <div id="text-editor-area">
@@ -59,15 +63,12 @@
     </div>
 </div>
 
-<!-- Load jQuery first -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Load CKEditor -->
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 <script src="{{ url_for('static', filename='js/ckeditor.js') }}"></script>
-<!-- Load Tagify -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.0.0/tagify.min.js"></script>
+<script src="{{ url_for('static', filename='js/tagify.min.js') }}"></script>
 
 <script>
-$(document).ready(function() {
+
     let editor;
 
     ClassicEditor
@@ -86,7 +87,7 @@ $(document).ready(function() {
     var input = document.getElementById('tags-input');
     new Tagify(input);
 
-    $('#submission_form').submit(function(e) {
+    $('#submission_form').submit(function (e) {
         e.preventDefault();
 
         // Show the loading content
@@ -100,13 +101,13 @@ $(document).ready(function() {
             type: "POST",
             url: "{{url_for('dashboard.article_pro')}}",
             data: formData,
-            success: function(data) {
+            success: function (data) {
                 // Handle the successful response
                 const jobId = data.job_id;
                 const contentId = data.content_id;
                 checkJobStatus(jobId, contentId);
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 // Handle the error response
                 $('#loading-content').hide();
                 console.error(error);
@@ -130,22 +131,21 @@ $(document).ready(function() {
             editor.setData(data.content);
         });
     }
-
-    $('#add-url').on('click', function() {
-        var newField = `
+    $(document).ready(function () {
+        $('#add-url').on('click', function () {
+            var newField = `
             <div class="url-field">
-                <label for="url" class="mb-2">{{ form.urls.append_entry().url.label }}</label>
                 {{ form.urls.append_entry().url(class_="form-control mb-2") }}
             </div>`;
-        $('#urls').append(newField);
-    });
+            $('#urls').append(newField);
+        });
 
-    $('#remove-url').on('click', function() {
-        var container = $('#urls');
-        if (container.children('.url-field').length > 1) {
-            container.children('.url-field').last().remove();
-        }
+        $('#remove-url').on('click', function () {
+            var container = $('#urls');
+            if (container.children('.url-field').length > 1) {
+                container.children('.url-field').last().remove();
+            }
+        });
     });
-});
 </script>
 {% endblock %}

@@ -11,7 +11,7 @@ from openai import OpenAI
 from os import getenv
 from . import app as flask_app
 from . import celery_app as celery
-from . import db
+from . import db, contents_collection
 from .models import Content, Job
 
 # from . import celery_app as celery_app
@@ -105,7 +105,7 @@ def generate_title(user_title, lang, llm_type=""):
     #     user_prompt += f"{i}. {template}\n"
 
 
-    user_prompt = f"Please generate a catchy and informative title for a blog post about {user_title}. \
+    user_prompt = f"generate a catchy and informative title for a blog post about {user_title}. \
         The title should be engaging and appealing to general and should reflect a professional tone."
     user_prompt += f"The content language is {lang}\n"
     assistant_promot = f"you write SEO-optimized title for articles. You have correct grammer. Only return the title.\n"
@@ -155,13 +155,21 @@ def generate_sections(headline_text, outlines, keywords, lang, llm_type):
     prompt += f"Ensure that the writing is free from stereotypes.\n"
     prompt += f"Use correct grammar and maintain a professional tone suitable for the blog's target audience.\n"
     prompt += f"The content language is {lang}\n"
-    print(keywords)
-    # if keywords:
-        # if isinstance(keywords, str):
-        #     keywords = json.loads(keywords)
-    #     keywords_string = ", ".join(item["value"] for item in keywords)
-    #     prompt += f"Use the following keywords where relevant: {keywords_string}.\n"
 
+    if keywords:
+        # Extract the single string from the list
+        json_string = keywords[0]  # No need to strip here, just replace single quotes
+        json_string = json_string.replace("'", '"')  # Replace single quotes with double quotes
+
+        # Load the JSON string into a Python object
+        try:
+            data = json.loads(json_string)
+            keywords_string = ", ".join(item["value"] for item in data)
+            prompt += f"Use the following keywords where relevant: {keywords_string}.\n"
+            # print(prompt)  # For debugging or further use
+        except json.JSONDecodeError as e:
+            print(f"Invalid JSON string: {e}")
+            
     assistant_prompt = f"Your language is {lang}. You are an SEO-optimized blog post writer. Ensure correct grammar. Return the result in HTML with <p> tags. Do not include the headline title again.\n"
 
 
@@ -223,10 +231,19 @@ def generate_blog_simple(content_id, user_input):
             <br/>
             {inside}
         """
+
+        # Save the body to MongoDB
+        body_document = {
+            "body": body
+        }
+        mongo_result = contents_collection.insert_one(body_document)
+        mongo_id = str(mongo_result.inserted_id)
+        
         # Fetch the Content record
         content = Content.query.get(content_id)
         if content:
-            content.body = body
+            # content.body = body
+            content.mongo_id = mongo_id
             content.system_title = title
             content.outlines = outlines
             db.session.add(content)

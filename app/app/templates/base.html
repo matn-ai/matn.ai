@@ -7,8 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/fa.all.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.rtl.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script src="{{ url_for('static', filename='js/htmx.min.js') }}"></script>
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tagify.css') }}">
 </head>
 <body>
     
@@ -17,7 +16,6 @@
     </header>
 
     <main>
-    {% block content %}
         <!-- Container for Toast Messages -->
         <div aria-live="polite" aria-atomic="true" class="position-relative">
             <!-- Position it -->
@@ -36,19 +34,22 @@
             </div>
         </div>
     
-        {% block page_content %}{% endblock %}
-    {% endblock %}
+        {% block content %}
+        {% endblock %}
     </main>
 
     <footer>
         {% include 'partials/_footer.html' %}
     </footer>
-</body>
-<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+
+
 <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/all.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/lottie-player.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+
+
 <script>
     // Initialize Bootstrap Toasts
     document.addEventListener('DOMContentLoaded', function() {
@@ -59,4 +60,7 @@
         });
     });
 </script>
+</body>
+
+
 </html>
