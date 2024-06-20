@@ -31,11 +31,14 @@ services:
     restart: always
     ports:
       - 8081:8081
+    env_file:
+      - .env
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: 123qwer
-      ME_CONFIG_MONGODB_URL: mongodb://admin:123qwer@mongo:27017/
-      ME_CONFIG_BASICAUTH: false
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_EXPRESS_ADMIN}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_EXPRESS_PASSWORD}
+      - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_POST}/
+      - ME_CONFIG_BASICAUTH=false
+
 
   redis:
     image: redis:alpine
@@ -46,10 +49,12 @@ services:
     image: mysql:8.0
     volumes:
       - mysql-data:/var/lib/mysql
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: 123qwer
-      MYSQL_DATABASE: app
-      MYSQL_PASSWORD: 123qwer
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     ports:
       - "3306:3306"
 
