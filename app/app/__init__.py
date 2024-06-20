@@ -14,8 +14,9 @@ from pymongo import MongoClient
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
+mongodb_uri = "mongodb://%s:%s@mongo:27017/" % ("admin", "123qwer")
 
-client = MongoClient('mongodb://localhost:27017/')  # Adjust the URI as needed
+client = MongoClient(mongodb_uri)  # Adjust the URI as needed
 mdb = client['app']
 contents_collection = mdb['contents']
 
