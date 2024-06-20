@@ -47,6 +47,7 @@ packaging==24.1
 prison==0.2.1
 Pygments==2.18.0
 PyJWT==2.8.0
+pymongo==4.7.3
 PyMySQL==1.1.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
