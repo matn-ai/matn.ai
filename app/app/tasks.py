@@ -14,12 +14,9 @@ from . import celery_app as celery
 from . import db, contents_collection
 from .models import Content, Job
 
-# from . import celery_app as celery_app
 
-# Initialize the OpenAI client
-# client = OpenAI(api_key="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")
 client = OpenAI(
-    base_url="https://api.tosiehgar.ir/v1/", api_key=getenv("OPENROUTER_API_KEY")
+    base_url=getenv("OPENROUTER_API"), api_key=getenv("OPENROUTER_API_KEY")
 )
 
 

@@ -1,7 +1,8 @@
 import logging
 import click
-
+from os import getenv
 from flask import Flask
+
 # from flask_appbuilder import AppBuilder, SQLA
 from flask_mail import Mail
 from flask_moment import Moment
@@ -13,23 +14,33 @@ from flask_sqlalchemy import SQLAlchemy
 from pymongo import MongoClient
 
 login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
-mongodb_uri = "mongodb://%s:%s@mongo:27017/" % ("admin", "123qwer")
+login_manager.login_view = "auth.login"
 
-client = MongoClient(mongodb_uri)  # Adjust the URI as needed
-mdb = client['app']
-contents_collection = mdb['contents']
+mongodb_uri = "mongodb://%s:%s@%s:%s/" % (
+    getenv("MONGO_USER"),
+    getenv("MONGO_PASSWORD"),
+    getenv("MONGO_HOST"),
+    getenv("MONGO_PORT"),
+)
+
+client = MongoClient(mongodb_uri)
+mdb = client[getenv("MONGO_DB")]
+contents_collection = mdb["contents"]
 
 # Ensure the collection is created (if not exists)
-if 'contents' not in mdb.list_collection_names():
-    contents_collection = mdb.create_collection('contents')
-    
+if "contents" not in mdb.list_collection_names():
+    contents_collection = mdb.create_collection("contents")
+
+
 @login_manager.user_loader
 def load_user(user_id):
     from .models import User
+
     return User.query.get(user_id)
 
+
 from celery import Celery, Task
+
 
 def celery_init_app(app: Flask) -> Celery:
     class FlaskTask(Task):
@@ -42,6 +53,7 @@ def celery_init_app(app: Flask) -> Celery:
     celery_app.set_default()
     app.extensions["celery"] = celery_app
     return celery_app
+
 
 """
  Logging configuration
@@ -60,13 +72,13 @@ app.config.from_object("config")
 
 app.config.from_mapping(
     CELERY=dict(
-        broker_url="redis://localhost",
-        result_backend="redis://localhost",
+        broker_url=getenv("CELERY_BROKER"),
+        result_backend=getenv("CELERY_RESULT_BACKEND"),
         task_ignore_result=True,
     ),
 )
 
-# app.config.from_prefixed_env()
+
 celery_app = celery_init_app(app)
 
 
@@ -79,47 +91,36 @@ bootstrap.init_app(app)
 moment.init_app(app)
 pagedown.init_app(app)
 mail.init_app(app)
-"""
-from sqlalchemy.engine import Engine
-from sqlalchemy import event
-
-#Only include this for SQLLite constraints
-@event.listens_for(Engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    # Will force sqllite contraint foreign keys
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
-"""
 
 
 from .main import main as main_blueprint
+
 app.register_blueprint(main_blueprint)
 
 from .dashboard import dashboard as dashboard_blueprint
+
 app.register_blueprint(dashboard_blueprint)
 
 from .auth import auth as auth_blueprint
-app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
+app.register_blueprint(auth_blueprint, url_prefix="/auth")
 
 from .api import api as api_blueprint
-app.register_blueprint(api_blueprint, url_prefix='/api/v1')
+
+app.register_blueprint(api_blueprint, url_prefix="/api/v1")
 
 
-# from . import views
-
-# Create Flask CLI command
-@app.cli.command('create-admin')
-@click.argument('username')
-@click.argument('email')
-@click.argument('password')
+@app.cli.command("create-admin")
+@click.argument("username")
+@click.argument("email")
+@click.argument("password")
 def create_admin(username, email, password):
     """Create an admin user."""
     with app.app_context():
         from .models import Role, User
-        
+
         user = User(username=username, email=email, confirmed=True)
         user.password = password
         db.session.add(user)
         db.session.commit()
-        click.echo(f'Admin user {username} created successfully.')
+        click.echo(f"Admin user {username} created successfully.")

@@ -1,0 +1,362 @@
+.
+├── app
+│   ├── app
+│   │   ├── api
+│   │   │   ├── authentication.py
+│   │   │   ├── contents.py
+│   │   │   ├── decorators.py
+│   │   │   ├── errors.py
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   └── users.py
+│   │   ├── auth
+│   │   │   ├── forms.py
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   └── views.py
+│   │   ├── dashboard
+│   │   │   ├── errors.py
+│   │   │   ├── forms.py
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   ├── repository.py
+│   │   │   └── views.py
+│   │   ├── decorators.py
+│   │   ├── email.py
+│   │   ├── exceptions.py
+│   │   ├── fake.py
+│   │   ├── __init__.py
+│   │   ├── main
+│   │   │   ├── errors.py
+│   │   │   ├── forms.py
+│   │   │   ├── __init__.py
+│   │   │   ├── __pycache__
+│   │   │   └── views.py
+│   │   ├── models.py
+│   │   ├── __pycache__
+│   │   ├── static
+│   │   │   ├── css
+│   │   │   │   ├── bootstrap.rtl.css
+│   │   │   │   ├── editor.css
+│   │   │   │   ├── fa.all.min.css
+│   │   │   │   ├── styles.css
+│   │   │   │   └── tagify.css
+│   │   │   ├── favicon.ico
+│   │   │   ├── fonts
+│   │   │   │   ├── ttf
+│   │   │   │   │   ├── Vazirmatn-Black.ttf
+│   │   │   │   │   ├── Vazirmatn-Bold.ttf
+│   │   │   │   │   ├── Vazirmatn-ExtraBold.ttf
+│   │   │   │   │   ├── Vazirmatn-ExtraLight.ttf
+│   │   │   │   │   ├── Vazirmatn-Light.ttf
+│   │   │   │   │   ├── Vazirmatn-Medium.ttf
+│   │   │   │   │   ├── Vazirmatn-Regular.ttf
+│   │   │   │   │   ├── Vazirmatn-SemiBold.ttf
+│   │   │   │   │   └── Vazirmatn-Thin.ttf
+│   │   │   │   ├── variable
+│   │   │   │   │   └── Vazirmatn[wght].ttf
+│   │   │   │   └── webfonts
+│   │   │   │       ├── Vazirmatn-Black.woff2
+│   │   │   │       ├── Vazirmatn-Bold.woff2
+│   │   │   │       ├── Vazirmatn-ExtraBold.woff2
+│   │   │   │       ├── Vazirmatn-ExtraLight.woff2
+│   │   │   │       ├── Vazirmatn-Light.woff2
+│   │   │   │       ├── Vazirmatn-Medium.woff2
+│   │   │   │       ├── Vazirmatn-Regular.woff2
+│   │   │   │       ├── Vazirmatn-SemiBold.woff2
+│   │   │   │       ├── Vazirmatn-Thin.woff2
+│   │   │   │       └── Vazirmatn[wght].woff2
+│   │   │   ├── images
+│   │   │   │   ├── 1.png
+│   │   │   │   ├── 2.png
+│   │   │   │   ├── 3.png
+│   │   │   │   ├── 4.png
+│   │   │   │   ├── 5.png
+│   │   │   │   ├── 6.png
+│   │   │   │   ├── content-writing-64x64.png
+│   │   │   │   ├── novahub-logo.png
+│   │   │   │   └── nova-logo.png
+│   │   │   ├── js
+│   │   │   │   ├── all.min.js
+│   │   │   │   ├── bootstrap.bundle.js
+│   │   │   │   ├── bootstrap.bundle.js.map
+│   │   │   │   ├── bootstrap.bundle.min.js
+│   │   │   │   ├── bootstrap.bundle.min.js.map
+│   │   │   │   ├── bootstrap.esm.js
+│   │   │   │   ├── bootstrap.esm.js.map
+│   │   │   │   ├── bootstrap.esm.min.js
+│   │   │   │   ├── bootstrap.esm.min.js.map
+│   │   │   │   ├── bootstrap.js
+│   │   │   │   ├── bootstrap.js.map
+│   │   │   │   ├── bootstrap.min.js
+│   │   │   │   ├── bootstrap.min.js.map
+│   │   │   │   ├── ckeditor.js
+│   │   │   │   ├── editorjs@latest.js
+│   │   │   │   ├── header@latest.js
+│   │   │   │   ├── htmx.min.js
+│   │   │   │   ├── jquery.js
+│   │   │   │   ├── list@latest.js
+│   │   │   │   ├── lottie-player.js
+│   │   │   │   ├── popper.min.js
+│   │   │   │   └── tagify.min.js
+│   │   │   ├── media
+│   │   │   │   ├── content-create.json
+│   │   │   │   ├── door.json
+│   │   │   │   └── rocket.json
+│   │   │   ├── styles.css
+│   │   │   └── tinymce
+│   │   │       ├── icons
+│   │   │       │   └── default
+│   │   │       │       └── icons.min.js
+│   │   │       ├── langs
+│   │   │       │   └── README.md
+│   │   │       ├── license.md
+│   │   │       ├── models
+│   │   │       │   └── dom
+│   │   │       │       └── model.min.js
+│   │   │       ├── plugins
+│   │   │       │   ├── accordion
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── advlist
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── anchor
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── autolink
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── autoresize
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── autosave
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── charmap
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── code
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── codesample
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── directionality
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── emoticons
+│   │   │       │   │   ├── js
+│   │   │       │   │   │   ├── emojiimages.js
+│   │   │       │   │   │   ├── emojiimages.min.js
+│   │   │       │   │   │   ├── emojis.js
+│   │   │       │   │   │   └── emojis.min.js
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── fullscreen
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── help
+│   │   │       │   │   ├── js
+│   │   │       │   │   │   └── i18n
+│   │   │       │   │   │       └── keynav
+│   │   │       │   │   │           ├── ar.js
+│   │   │       │   │   │           ├── bg_BG.js
+│   │   │       │   │   │           ├── ca.js
+│   │   │       │   │   │           ├── cs.js
+│   │   │       │   │   │           ├── da.js
+│   │   │       │   │   │           ├── de.js
+│   │   │       │   │   │           ├── el.js
+│   │   │       │   │   │           ├── en.js
+│   │   │       │   │   │           ├── es.js
+│   │   │       │   │   │           ├── eu.js
+│   │   │       │   │   │           ├── fa.js
+│   │   │       │   │   │           ├── fi.js
+│   │   │       │   │   │           ├── fr_FR.js
+│   │   │       │   │   │           ├── he_IL.js
+│   │   │       │   │   │           ├── hi.js
+│   │   │       │   │   │           ├── hr.js
+│   │   │       │   │   │           ├── hu_HU.js
+│   │   │       │   │   │           ├── id.js
+│   │   │       │   │   │           ├── it.js
+│   │   │       │   │   │           ├── ja.js
+│   │   │       │   │   │           ├── kk.js
+│   │   │       │   │   │           ├── ko_KR.js
+│   │   │       │   │   │           ├── ms.js
+│   │   │       │   │   │           ├── nb_NO.js
+│   │   │       │   │   │           ├── nl.js
+│   │   │       │   │   │           ├── pl.js
+│   │   │       │   │   │           ├── pt_BR.js
+│   │   │       │   │   │           ├── pt_PT.js
+│   │   │       │   │   │           ├── ro.js
+│   │   │       │   │   │           ├── ru.js
+│   │   │       │   │   │           ├── sk.js
+│   │   │       │   │   │           ├── sl_SI.js
+│   │   │       │   │   │           ├── sv_SE.js
+│   │   │       │   │   │           ├── th_TH.js
+│   │   │       │   │   │           ├── tr.js
+│   │   │       │   │   │           ├── uk.js
+│   │   │       │   │   │           ├── vi.js
+│   │   │       │   │   │           ├── zh_CN.js
+│   │   │       │   │   │           └── zh_TW.js
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── image
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── importcss
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── insertdatetime
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── link
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── lists
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── media
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── nonbreaking
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── pagebreak
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── preview
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── quickbars
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── save
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── searchreplace
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── table
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── visualblocks
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   ├── visualchars
+│   │   │       │   │   └── plugin.min.js
+│   │   │       │   └── wordcount
+│   │   │       │       └── plugin.min.js
+│   │   │       ├── skins
+│   │   │       │   ├── content
+│   │   │       │   │   ├── dark
+│   │   │       │   │   │   ├── content.js
+│   │   │       │   │   │   └── content.min.css
+│   │   │       │   │   ├── default
+│   │   │       │   │   │   ├── content.js
+│   │   │       │   │   │   └── content.min.css
+│   │   │       │   │   ├── document
+│   │   │       │   │   │   ├── content.js
+│   │   │       │   │   │   └── content.min.css
+│   │   │       │   │   ├── tinymce-5
+│   │   │       │   │   │   ├── content.js
+│   │   │       │   │   │   └── content.min.css
+│   │   │       │   │   ├── tinymce-5-dark
+│   │   │       │   │   │   ├── content.js
+│   │   │       │   │   │   └── content.min.css
+│   │   │       │   │   └── writer
+│   │   │       │   │       ├── content.js
+│   │   │       │   │       └── content.min.css
+│   │   │       │   └── ui
+│   │   │       │       ├── oxide
+│   │   │       │       │   ├── content.inline.js
+│   │   │       │       │   ├── content.inline.min.css
+│   │   │       │       │   ├── content.js
+│   │   │       │       │   ├── content.min.css
+│   │   │       │       │   ├── skin.js
+│   │   │       │       │   ├── skin.min.css
+│   │   │       │       │   ├── skin.shadowdom.js
+│   │   │       │       │   └── skin.shadowdom.min.css
+│   │   │       │       ├── oxide-dark
+│   │   │       │       │   ├── content.inline.js
+│   │   │       │       │   ├── content.inline.min.css
+│   │   │       │       │   ├── content.js
+│   │   │       │       │   ├── content.min.css
+│   │   │       │       │   ├── skin.js
+│   │   │       │       │   ├── skin.min.css
+│   │   │       │       │   ├── skin.shadowdom.js
+│   │   │       │       │   └── skin.shadowdom.min.css
+│   │   │       │       ├── tinymce-5
+│   │   │       │       │   ├── content.inline.js
+│   │   │       │       │   ├── content.inline.min.css
+│   │   │       │       │   ├── content.js
+│   │   │       │       │   ├── content.min.css
+│   │   │       │       │   ├── skin.js
+│   │   │       │       │   ├── skin.min.css
+│   │   │       │       │   ├── skin.shadowdom.js
+│   │   │       │       │   └── skin.shadowdom.min.css
+│   │   │       │       └── tinymce-5-dark
+│   │   │       │           ├── content.inline.js
+│   │   │       │           ├── content.inline.min.css
+│   │   │       │           ├── content.js
+│   │   │       │           ├── content.min.css
+│   │   │       │           ├── skin.js
+│   │   │       │           ├── skin.min.css
+│   │   │       │           ├── skin.shadowdom.js
+│   │   │       │           └── skin.shadowdom.min.css
+│   │   │       ├── themes
+│   │   │       │   └── silver
+│   │   │       │       └── theme.min.js
+│   │   │       ├── tinymce.d.ts
+│   │   │       └── tinymce.min.js
+│   │   ├── tasks.py
+│   │   ├── templates
+│   │   │   ├── 403.html
+│   │   │   ├── 404.html
+│   │   │   ├── 500.html
+│   │   │   ├── auth
+│   │   │   │   ├── change_email.html
+│   │   │   │   ├── change_password.html
+│   │   │   │   ├── email
+│   │   │   │   │   ├── change_email.html
+│   │   │   │   │   ├── change_email.txt
+│   │   │   │   │   ├── confirm.html
+│   │   │   │   │   ├── confirm.txt
+│   │   │   │   │   ├── reset_password.html
+│   │   │   │   │   └── reset_password.txt
+│   │   │   │   ├── login.html
+│   │   │   │   ├── register.html
+│   │   │   │   ├── reset_password.html
+│   │   │   │   └── unconfirmed.html
+│   │   │   ├── base.html
+│   │   │   ├── content.html
+│   │   │   ├── _contents.html
+│   │   │   ├── dashboard
+│   │   │   │   ├── article
+│   │   │   │   │   ├── article_blog.html
+│   │   │   │   │   ├── article.html
+│   │   │   │   │   └── article_pro.html
+│   │   │   │   ├── base.html
+│   │   │   │   ├── dashboard.html
+│   │   │   │   ├── index.html
+│   │   │   │   ├── main
+│   │   │   │   │   └── index.html
+│   │   │   │   ├── nav.html
+│   │   │   │   ├── partials
+│   │   │   │   │   └── scripts.html
+│   │   │   │   ├── product
+│   │   │   │   │   └── product_describe.html
+│   │   │   │   └── translate
+│   │   │   │       ├── translate_from_persian.html
+│   │   │   │       └── translate_to_persian.html
+│   │   │   ├── edit_post.html
+│   │   │   ├── edit_profile.html
+│   │   │   ├── index.html
+│   │   │   ├── _macros.html
+│   │   │   ├── mail
+│   │   │   │   ├── new_user.html
+│   │   │   │   └── new_user.txt
+│   │   │   ├── partials
+│   │   │   │   ├── _footer.html
+│   │   │   │   └── _header.html
+│   │   │   └── user.html
+│   │   └── translations
+│   │       └── pt
+│   │           └── LC_MESSAGES
+│   │               ├── messages.mo
+│   │               └── messages.po
+│   ├── config.py
+│   ├── migrations
+│   │   ├── alembic.ini
+│   │   ├── env.py
+│   │   ├── __pycache__
+│   │   ├── README
+│   │   ├── script.py.mako
+│   │   └── versions
+│   │       ├── 112be7cdca0c_.py
+│   │       ├── 2c324fc3a342_.py
+│   │       ├── 525e01940370_.py
+│   │       ├── daa6d71565e1_.py
+│   │       ├── f541e06dff2f_.py
+│   │       └── __pycache__
+│   ├── __pycache__
+│   ├── README.rst
+│   └── run.py
+├── project-struct.txt
+├── __pycache__
+└── requirements.txt
+
+95 directories, 264 files
