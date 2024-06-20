@@ -2,7 +2,7 @@ from datetime import datetime
 import hashlib
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
-
+from sqlalchemy.dialects.mysql import LONGTEXT
 from flask import current_app, url_for
 from flask_login import UserMixin, AnonymousUserMixin
 from app.exceptions import ValidationError
@@ -227,29 +227,29 @@ def load_user(user_id):
 class Content(db.Model):
     __tablename__ = 'contents'
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.Text)
+    body = db.Column(LONGTEXT)
     user_input = db.Column(db.Text)
     system_title = db.Column(db.Text)
-    body_html = db.Column(db.Text)
+    outlines = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     flow_id = db.Column(db.Integer, db.ForeignKey('flows.id'))
     job = db.relationship('Job', backref='content', uselist=False)
 
-    @staticmethod
-    def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
-                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                        'h1', 'h2', 'h3', 'p']
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html'),
-            tags=allowed_tags, strip=True))
+    # @staticmethod
+    # def on_changed_body(target, value, oldvalue, initiator):
+    #     allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+    #                     'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+    #                     'h1', 'h2', 'h3', 'p']
+    #     target.body = bleach.linkify(bleach.clean(
+    #         markdown(value, output_format='html'),
+    #         tags=allowed_tags, strip=True))
 
     def to_json(self):
         json_content = {
             'url': url_for('api.get_content', id=self.id),
             'body': self.body,
-            'body_html': self.body_html,
+            'outlines': self.outlines,
             'timestamp': self.timestamp,
             'author_url': url_for('api.get_user', id=self.author_id),
             'job_url': url_for('api.get_content_job', id=self.id),
@@ -265,7 +265,7 @@ class Content(db.Model):
         return Content(body=body)
 
 
-db.event.listen(Content.body, 'set', Content.on_changed_body)
+# db.event.listen(Content.body, 'set', Content.on_changed_body)
 
 
 class Flow(db.Model):

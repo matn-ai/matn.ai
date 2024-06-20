@@ -9,15 +9,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="{{ url_for('static', filename='js/htmx.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tagify.css') }}">
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/3.23.1/tagify.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/3.23.1/tagify.min.js"></script>
     <!-- <script src="{{ url_for('static', filename='js/editorjs@latest.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/header@latest.js') }}"></script> !-->
-    <script src="{{ url_for('static', filename='js/tagify.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/header@latest.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/list@latest.js') }}"></script> -->
 </head>
 <body>
     
     <header>
-        {% include 'partials/_header.html' %}
+        {% include 'dashboard/partials/_header.html' %}
     </header>
 
     <main>

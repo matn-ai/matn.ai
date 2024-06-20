@@ -1,67 +1,21 @@
 {% extends "dashboard/base.html" %}
 {% from "_macros.html" import nav_item %}
 
-
 {% block content %}
-
 <section class="dashboard">
   <div class="container">
     <div class="row">
       <!-- nav -->
-      <div class="col-12 col-lg-2">
+      <div class="col-lg-2">
         <div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start">
-          <ul class="nav flex-column w-100">
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('dashboard.index') }}">
-                داشبورد 
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('dashboard.index') }}">
-                تقویم تولید محتوا
-              </a>
-            </li>
-            {{ nav_item('#collapseArticle', 'مقاله', '', [
-            { 'url': '/dashboard/article', 'name': 'مقاله عمومی', 'icon': 'fas fa-file-alt' },
-            { 'url': '/dashboard/article/professional', 'name': 'مقاله تخصصی', 'icon': 'fas fa-file-alt' },
-            { 'url': '/dashboard/article/blog', 'name': 'بلاگ', 'icon': 'fas fa-blog' }
-            ]) }}
-            {{ nav_item('/dashboard/idea/brainstorming', 'پردازش ایده') }}
-            {{ nav_item('/dashboard/product/product-description', 'توصیف محصول') }}
-            {{ nav_item('#collapseSocial', 'شبکه‌های اجتماعی', '', [
-            { 'url': '/dashboard/social/linkedin', 'name': 'لینکدین', 'icon': 'fab fa-linkedin' },
-            { 'url': '/dashboard/social/x', 'name': 'شبکه ایکس', 'icon': 'fab fa-twitter' },
-            { 'url': '/dashboard/social/instagram', 'name': 'اینستاگرام', 'icon': 'fab fa-instagram' }
-            ]) }}
-            {{ nav_item('#collapseTranslate', 'ترجمه', '', [
-            { 'url': '/dashboard/translate/from-persian', 'name': 'از فارسی', 'icon': 'fas fa-language' },
-            { 'url': '/dashboard/translate/to-persian', 'name': 'به فارسی', 'icon': 'fas fa-language' }
-            ]) }}
-          </ul>
+          {% include "dashboard/nav.html" %}
         </div>
       </div>
 
-      <!-- content -->
-      <div class="col-12 col-lg-10 p-0">
-        <div id="dashboard-content" style="min-height: 65vh;">
-          {% if dashboard %}
-
-          {% block dashboard %}
-          {% endblock %}
-
-          {% else %}
-          <!-- content -->
-
-          {% include "dashboard/main/index.html" %}
-
-          <!-- content -->
-          {% endif %}
-        </div>
+      <div class="col-lg-10">
+        <!-- content -->
+        {% block dashboard %}{% endblock %}
       </div>
-
-      <!-- content -->
-
-
     </div>
   </div>
 </section>

@@ -1113,3 +1113,9 @@
   #loading-content{
 	width: 300px;
   }
+
+  /* This selector targets the editable element (excluding comments). */
+.ck-editor__editable_inline:not(.ck-comment__input *) {
+    height: 75vh;
+    overflow-y: auto;
+}

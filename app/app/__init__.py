@@ -1,4 +1,5 @@
 import logging
+import click
 
 from flask import Flask
 # from flask_appbuilder import AppBuilder, SQLA
@@ -91,3 +92,19 @@ from .api import api as api_blueprint
 app.register_blueprint(api_blueprint, url_prefix='/api/v1')
 
 # from . import views
+
+# Create Flask CLI command
+@app.cli.command('create-admin')
+@click.argument('username')
+@click.argument('email')
+@click.argument('password')
+def create_admin(username, email, password):
+    """Create an admin user."""
+    with app.app_context():
+        from .models import Role, User
+        
+        user = User(username=username, email=email, confirmed=True)
+        user.password = password
+        db.session.add(user)
+        db.session.commit()
+        click.echo(f'Admin user {username} created successfully.')

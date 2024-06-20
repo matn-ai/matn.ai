@@ -1,4 +1,151 @@
-
+{% extends "dashboard/dashboard.html" %}
 {% block dashboard %}
-artile pro
+<div class="row">
+    <div class="col-4">
+        <div class="bg-white rounded p-4 card-shadow">
+            <div class="mb-4 w-100 text-center">
+                <!-- <img src="/static/images/content-writing-64x64.png" width="48" />
+ -->
+                <h4 class="flex-fill">
+                    تولید مقاله حرفه‌ای</h4>
+            </div>            <form id="submission_form" class="form-group mb-4 mt-2" action="{{url_for('dashboard.article_pro')}}" method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group mb-4 mt-2">
+                    <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
+                    {{ form.user_topic(size=32, class_="form-control") }}
+                </div>
+                <div class="form-group mb-4 mt-2 pb-4">
+                    <label for="lang" class="mb-2">{{ form.lang.label }}</label>
+                    {{ form.lang(class_="form-control") }}
+                </div>
+                <div id="urls">
+                    {% for subform in form.urls %}
+                        <div class="url-field">
+                            <label for="url" class="mb-2">{{ subform.url.label }}</label>
+                            {{ subform.url(class_="form-control mb-2") }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="form-group mb-4 mt-2">
+                    <button type="button" class="btn btn-link" id="add-url">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                    <button type="button" id="remove-url" class="btn btn-link">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+                <div class="form-group mb-4 mt-2 pb-4">
+                    <label for="tags" class="mb-2">{{ form.tags.label }}</label>
+                    {{ form.tags(size=40, id="tags-input", class="form-control") }}
+                </div>
+                <div class="form-group text-right mt-4">
+                    {{ form.submit(class_="btn btn-primary text-white w-50") }}
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-8">
+        <!-- Content for article goes here -->
+        <div class="rounded card-shadow position-relative p-1">
+            <div id="loading-content" class="text-center mr-auto mx-auto" style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+                <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
+                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}" background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+            </div>
+            <div id="text-editor-area">
+                <textarea id="text-editor"></textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load jQuery first -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Load CKEditor -->
+<script src="{{ url_for('static', filename='js/ckeditor.js') }}"></script>
+<!-- Load Tagify -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.0.0/tagify.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    let editor;
+
+    ClassicEditor
+        .create(document.querySelector('#text-editor'), {
+            language: "fa",
+            height: 500
+        })
+        .then(newEditor => {
+            editor = newEditor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    // Initialize Tagify
+    var input = document.getElementById('tags-input');
+    new Tagify(input);
+
+    $('#submission_form').submit(function(e) {
+        e.preventDefault();
+
+        // Show the loading content
+        $('#loading-content').show();
+
+        // Serialize the form data
+        var formData = $(this).serialize();
+
+        // Submit the form using AJAX
+        $.ajax({
+            type: "POST",
+            url: "{{url_for('dashboard.article_pro')}}",
+            data: formData,
+            success: function(data) {
+                // Handle the successful response
+                const jobId = data.job_id;
+                const contentId = data.content_id;
+                checkJobStatus(jobId, contentId);
+            },
+            error: function(xhr, status, error) {
+                // Handle the error response
+                $('#loading-content').hide();
+                console.error(error);
+            }
+        });
+    });
+
+    function checkJobStatus(jobId, contentId) {
+        $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
+            if (data.status === 'SUCCESS') {
+                fetchContent(contentId);
+            } else {
+                setTimeout(() => checkJobStatus(jobId, contentId), 2000);
+            }
+        });
+    }
+
+    function fetchContent(contentId) {
+        $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
+            $('#loading-content').hide();
+            editor.setData(data.content);
+        });
+    }
+
+    $('#add-url').on('click', function() {
+        var newField = `
+            <div class="url-field">
+                <label for="url" class="mb-2">{{ form.urls.append_entry().url.label }}</label>
+                {{ form.urls.append_entry().url(class_="form-control mb-2") }}
+            </div>`;
+        $('#urls').append(newField);
+    });
+
+    $('#remove-url').on('click', function() {
+        var container = $('#urls');
+        if (container.children('.url-field').length > 1) {
+            container.children('.url-field').last().remove();
+        }
+    });
+});
+</script>
 {% endblock %}

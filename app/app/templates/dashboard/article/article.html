@@ -1,56 +1,112 @@
+{% extends "dashboard/dashboard.html" %}
 {% block dashboard %}
-
-<div class="container">
-    <div class="mx-auto p-4 bg-white rounded shadow" style="max-width: 728px;">
-        <form class="w-100">
-            <!-- عنوان مقاله -->
-            <div class="mb-3">
-                <label for="title" class="form-label">عنوان مقاله</label>
-                <input type="text" class="form-control" id="title" placeholder="عنوان مقاله را وارد نمایید">
+<div class="row">
+    <div class="col-4">
+        <div class="bg-white rounded p-4 card-shadow">
+            <div class="mb-4 w-100 text-center">
+                <!-- <img src="/static/images/content-writing-64x64.png" width="48" />
+ -->
+                <h4 class="flex-fill">
+                    تولید مقاله عمومی</h4>
             </div>
-
-            <!-- لینک ورودی -->
-            <div class="mb-3">
-                <label for="inputLink" class="form-label">لینک ورودی</label>
-                <input type="text" class="form-control" id="inputLink" placeholder="لطفا لینک را وارد نمایید">
-                <button class="btn btn-primary mt-2">+</button>
-            </div>
-
-            <!-- عبارت کلیدی -->
-            <div class="mb-3">
-                <label for="keywordPhrase" class="form-label">عبارت کلیدی</label>
-                <input type="text" class="form-control" id="keywordPhrase" placeholder="یک عبارت کلیدی وارد کنید">
-            </div>
-
-            <!-- کلمات کلیدی -->
-            <div class="mb-3">
-                <label for="keywords" class="form-label">کلمات کلیدی</label>
-                <input type="text" class="form-control" id="keywords" placeholder="عبارات کلیدی وارد نشده است">
-            </div>
-
-            <!-- انتخاب زبان -->
-            <div class="mb-3">
-                <label class="form-label">انتخاب زبان</label>
-                <div>
-                    <input type="radio" class="form-check-input" id="persian" name="language" value="فارسی">
-                    <label class="form-check-label" for="persian">فارسی</label>
-                    <input type="radio" class="form-check-input ms-2" id="english" name="language" value="انگلیسی">
-                    <label class="form-check-label" for="english">انگلیسی</label>
+            <form id="submission_form" class="form-group mb-4 mt-2" action="{{url_for('dashboard.article_blog')}}" method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group mb-4 mt-2">
+                    <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
+                    {{ form.user_topic(size=32, class_="form-control") }}
+                </div>
+                <div class="form-group mb-4 mt-2 pb-4">
+                    <label for="lang" class="mb-2">{{ form.lang.label }}</label>
+                    {{ form.lang(class_="form-control") }}
+                </div>
+                <div class="form-group mb-4 mt-2 pb-4">
+                    <label for="tags" class="mb-2">{{ form.tags.label }}</label>
+                    {{ form.tags(size=40, id="tags-input", class="form-control") }}
+                </div>
+                <div class="form-group text-right mt-4">
+                    {{ form.submit(class_="btn btn-primary text-white w-50") }}
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-8">
+        <div class="rounded card-shadow position-relative p-1">
+            <div id="loading-content" class="text-center mr-auto mx-auto" style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+                <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
+                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
             </div>
-
-            <!-- زمان حدودی -->
-            <div class="mb-3">
-                <label class="form-label">زمان حدودی:</label>
-                <p>۴ الی ۶ دقیقه</p>
+            <div id="text-editor-area">
+                <textarea id="text-editor"></textarea>
             </div>
-
-            <!-- دکمه تولید مقدمه و سرتیتر -->
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary">تولید مقدمه و سرتیتر</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    let editor;
+
+    ClassicEditor
+        .create(document.querySelector('#text-editor'), {
+            language: "fa",
+            height: 500
+        })
+        .then(newEditor => {
+            editor = newEditor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    // Initialize Tagify
+    var input = document.getElementById('tags-input');
+    new Tagify(input);
+
+    $('#submission_form').submit(function(e) {
+        e.preventDefault();
+
+        // Show the loading content
+        $('#loading-content').show();
+
+        // Serialize the form data
+        var formData = $(this).serialize();
+
+        // Submit the form using AJAX
+        $.ajax({
+            type: "POST",
+            url: "{{url_for('dashboard.article_blog')}}",
+            data: formData,
+            success: function(data) {
+                // Handle the successful response
+                const jobId = data.job_id;
+                const contentId = data.content_id;
+                checkJobStatus(jobId, contentId);
+            },
+            error: function(xhr, status, error) {
+                // Handle the error response
+                console.error(error);
+            }
+        });
+    });
+
+    function checkJobStatus(jobId, contentId) {
+        $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
+            if (data.status === 'SUCCESS') {
+                fetchContent(contentId);
+            } else {
+                setTimeout(() => checkJobStatus(jobId, contentId), 2000);
+            }
+        });
+    }
+
+    function fetchContent(contentId) {
+        $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
+            $('#loading-content').hide();
+            editor.setData(data.content);
+        });
+    }
+</script>
 {% endblock %}

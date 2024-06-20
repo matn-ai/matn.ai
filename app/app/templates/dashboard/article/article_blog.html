@@ -1,12 +1,15 @@
+{% extends "dashboard/dashboard.html" %}
 {% block dashboard %}
 <div class="row">
     <div class="col-4">
         <div class="bg-white rounded p-4 card-shadow">
-            <div class="p-4 pt-0">
-                <h4>حالت ساده</h4>
+            <div class="mb-4 w-100 text-center">
+                <!-- <img src="/static/images/content-writing-64x64.png" width="48" />
+ -->
+                <h4 class="flex-fill">
+                    تولید پست بلاگ</h4>
             </div>
-            <form id="submission_form" class="form-group mb-4 mt-2" hx-post="{{url_for('dashboard.article_blog')}}"
-                hx-target="#text-editor" hx-swap="innerHTML">
+            <form id="submission_form" class="form-group mb-4 mt-2" action="{{url_for('dashboard.article_blog')}}" method="post">
                 {{ form.hidden_tag() }}
                 <div class="form-group mb-4 mt-2">
                     <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
@@ -27,75 +30,83 @@
         </div>
     </div>
     <div class="col-8">
-        
-
-        <div class="rounded card-shadow">
-
-            <div id="loading-content" style="display: none; height: 500px;" class="text-center mr-auto mx-auto">
-                <lottie-player   src="{{ url_for('static', filename='media/content-create.json') }}" background="transparent"  speed="1"   loop autoplay></lottie-player>
+        <div class="rounded card-shadow position-relative p-1">
+            <div id="loading-content" class="text-center mr-auto mx-auto" style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+                <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
+                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}" background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
             </div>
-
             <div id="text-editor-area">
                 <textarea id="text-editor"></textarea>
-
             </div>
         </div>
     </div>
 </div>
 
-<!-- Include TinyMCE Scripts -->
-<script src="https://cdn.tiny.cloud/1/mcpuwvw769rgh14psm3l20vlt83rf7wegybfpi9vzo5z0ld9/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="{{ url_for('static', filename='js/ckeditor.js') }}"></script>
+
+
 <script>
-    tinymce.init({
-        selector: '#text-editor',
-        height: 500,
-        menubar: false,
-        plugins: [
-            'directionality'
-        ],
-        directionality: 'rtl',
-        toolbar: 'ltr rtl | undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
-        content_css: '/static/css/editor.css',
-        importcss_append: true
-    });
-    //tinymce.activeEditor.execCommand('mceDirectionRTL');
-    
+    let editor;
+
+    ClassicEditor
+        .create(document.querySelector('#text-editor'), {
+            language: "fa",
+            height: 500
+        })
+        .then(newEditor => {
+            editor = newEditor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    // Initialize Tagify
     var input = document.getElementById('tags-input');
     new Tagify(input);
 
+    $('#submission_form').submit(function(e) {
+        e.preventDefault();
 
-    // Polling function to check job status
+        // Show the loading content
+        $('#loading-content').show();
+
+        // Serialize the form data
+        var formData = $(this).serialize();
+
+        // Submit the form using AJAX
+        $.ajax({
+            type: "POST",
+            url: "{{url_for('dashboard.article_blog')}}",
+            data: formData,
+            success: function(data) {
+                // Handle the successful response
+                const jobId = data.job_id;
+                const contentId = data.content_id;
+                checkJobStatus(jobId, contentId);
+            },
+            error: function(xhr, status, error) {
+                // Handle the error response
+                console.error(error);
+            }
+        });
+    });
+
     function checkJobStatus(jobId, contentId) {
         $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
             if (data.status === 'SUCCESS') {
-                // Fetch the generated content if job is successful
                 fetchContent(contentId);
             } else {
-                // Retry after 2 seconds if job is still pending
                 setTimeout(() => checkJobStatus(jobId, contentId), 2000);
             }
         });
     }
 
-    // Function to retrieve the generated content
     function fetchContent(contentId) {
-
         $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
-            $('#text-editor-area').show()
-            $('#loading-content').hide()    
-            tinymce.get('text-editor').setContent(data.content);
+            $('#loading-content').hide();
+            editor.setData(data.content);
         });
     }
-
-    $(document).on('htmx:afterOnLoad', function (evt) {
-        // Extract job ID and content ID from hidden inputs
-        const jobId = $('#job-id').val();
-        const contentId = $('#content-id').val();
-        $('#text-editor-area').hide()
-        $('#loading-content').show()
-
-        // Start polling the job status
-        checkJobStatus(jobId, contentId);
-    });
 </script>
 {% endblock %}

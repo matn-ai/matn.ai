@@ -34,6 +34,21 @@
                 <ul class="navbar-nav flex-row mb-2 mb-lg-0 ms-lg-3" id="left-side">
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
+                    <button class="btn btn-outline-primary me-2">
+                        <div class="row">
+                          <div class="col-5">موجودی :</div>
+                          <div class="col-4">
+                            <span class="fw-bold">
+                                ۳،۰۰۰،۰۰۰
+                            </span>
+                          </div>
+                          <div class="col-2">
+                            <span class="badge bg-light text-dark">توکن</span>
+                          </div>
+                        </div>
+                      </button>
+                    </li>
+                    <li class="nav-item">
                         <a class="btn btn-outline-primary" href="{{ url_for('dashboard.index') }}">
                             داشبورد
                         </a>

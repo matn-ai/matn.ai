@@ -72,6 +72,7 @@ def register():
 @login_required
 def confirm(token):
     if current_user.confirmed:
+        flash('Your account confirmed')
         return redirect(url_for('main.index'))
     if current_user.confirm(token):
         db.session.commit()

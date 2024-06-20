@@ -1,0 +1,27 @@
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-webcomponent@2/dist/tinymce-webcomponent.min.js"></script>
+<script src="{{ url_for('static', filename='tinymce/tinymce.min.js') }}"></script>
+<!-- Include TinyMCE Scripts -->
+<script src="https://cdn.tiny.cloud/1/mcpuwvw769rgh14psm3l20vlt83rf7wegybfpi9vzo5z0ld9/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    $(document).ready(function () {
+        initializeEditor();
+    });
+
+    function initializeEditor() {
+        tinymce.init({
+            selector: '#text-editor',
+            height: 500,
+            menubar: false,
+            plugins: ['directionality'],
+            directionality: 'rtl',
+            toolbar: 'ltr rtl | undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+            content_css: '/static/css/editor.css',
+            importcss_append: true
+        });
+
+    }
+
+</script>
