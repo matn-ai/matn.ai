@@ -27,9 +27,9 @@ client = MongoClient(mongodb_uri)
 mdb = client[getenv("MONGO_DB")]
 contents_collection = mdb["contents"]
 
-# Ensure the collection is created (if not exists)
-if "contents" not in mdb.list_collection_names():
-    contents_collection = mdb.create_collection("contents")
+# # Ensure the collection is created (if not exists)
+# if "contents" not in mdb.list_collection_names():
+#     contents_collection = mdb.create_collection("contents")
 
 
 @login_manager.user_loader
