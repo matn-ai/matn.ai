@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv(override=True)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -31,4 +31,4 @@ APP_MAIL_SUBJECT_PREFIX = '[هوش مصنوعی به‌نویس]'
 APP_MAIL_SENDER = os.environ.get('MAIL_SENDER')
 APP_ADMIN = os.environ.get('APP_ADMIN')
 MAIL_TOKEN_EXPIER_AGE = 3600
-DEBUG=True
+DEBUG=os.environ.get('DEBUG') or False
