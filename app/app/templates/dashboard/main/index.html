@@ -4,23 +4,7 @@
 <div class="col-12 col-lg-10 p-0">
     <div id="dashboard-content" style="min-height: 65vh;">
       {% if contents %}
-      <form method="GET" action="{{ url_for('dashboard.index') }}">
-        <div class="form-row align-items-center mb-4">
-          <div class="col-auto">
-            <input type="text" name="q" class="form-control mb-2" placeholder="Search..."
-              value="{{ search_query }}">
-          </div>
-          <div class="col-auto">
-            <select name="sort" class="form-control mb-2">
-              <option value="desc" {% if sort_order=='desc' %}selected{% endif %}>Newest First</option>
-              <option value="asc" {% if sort_order=='asc' %}selected{% endif %}>Oldest First</option>
-            </select>
-          </div>
-          <div class="col-auto">
-            <button type="submit" class="btn btn-primary mb-2">Search</button>
-          </div>
-        </div>
-      </form>
+        <!-- {% include "dashboard/main/search.html" %} -->
       <div class="row">
         {% for content in contents %}
         <div class="col-6">

@@ -24,7 +24,7 @@ client = OpenAI(
 
 
 # Initialize Redis client
-redis_client = StrictRedis(host="localhost", port=6379, db=0)
+redis_client = StrictRedis(host=getenv("REDIS_SERVER"), port=getenv("REDIS_PORT"), db=getenv("REDIS_DB"))
 
 
 # Functions for OpenAI interactions
@@ -120,18 +120,20 @@ def generate_title(user_title, lang, llm_type=""):
 
 def generate_outlines(user_title, lang, llm_type):
 
-    # user_prompt = f"Outline a comprehensive  blog article for this title `{user_title}`, Consider all requirements; \n"
-    # user_prompt += f"Only return the title.\n\n"
-    # user_prompt += f"The content language is {lang}\n"
-    # user_prompt += f"Use numbering for list\n"
-    # user_prompt += f"At least should be 3 outlines\n"
-
-    user_prompt = f"Create a comprehensive outline for a blog post about {user_title}. \
-        The outline should include a title, a clear introduction with a hook and overview, \
-        several main points with subpoints for each section, and a strong conclusion that summarizes the post and provides actionable advice or insights. \
-        Ensure the outline flows logically and is designed to engage and inform readers."
+    user_prompt = f"Outline a comprehensive  blog article for this title `{user_title}`, Consider all requirements; \n"
+    user_prompt += f"Ensure the outline flows logically and is designed to engage and inform readers\n"
+    user_prompt += f"Only return the title.\n\n"
     user_prompt += f"The content language is {lang}\n"
     user_prompt += f"Use numbering for list\n"
+    user_prompt += f"At least should be 3 outlines\n"
+    user_prompt += f"Have a conclusion part which provides actionable advice or insights."
+
+    # user_prompt = f"Create a comprehensive outline for a blog post about {user_title}. \
+    #     The outline should include a title, a clear introduction with a hook and overview, \
+    #     several main points with subpoints for each section, and a strong conclusion that summarizes the post and provides actionable advice or insights. \
+    #     Ensure the outline flows logically and is designed to engage and inform readers."
+    # user_prompt += f"The content language is {lang}\n"
+    # user_prompt += f"Use numbering for list\n"
 
     assistant_promot = f"you write SEO-optimized blog post writer. \n You have correct grammer. \n Only return the outlines and in html (h2 and h3) .\n"
 

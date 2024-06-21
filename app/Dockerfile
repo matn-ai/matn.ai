@@ -22,4 +22,6 @@ EXPOSE 8000
 ENV FLASK_ENV=development
 
 # Run the app
-CMD ["flask", "run", "--host=0.0.0.0"]
+# CMD ["flask", "run", "--host=0.0.0.0"]
+
+ENTRYPOINT ["/app/entrypoint.sh"]
