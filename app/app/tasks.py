@@ -33,8 +33,6 @@ def chat(llm_type, messages):
         model=llm_type, messages=messages, temperature=0.8
     )
     result = response.choices[0].message.content
-    
-    # response.usage {total_token, token_}
     return result
 
 
@@ -159,17 +157,15 @@ def generate_sections(headline_text, outlines, keywords, lang, llm_type):
     prompt += f"The content language is {lang}\n"
 
     if keywords:
-        print(keywords)
-        data = json.loads(keywords)
-        keywords_string = ", ".join(item["value"] for item in data)
-        prompt += f"Use the following keywords where relevant {str(keywords)}\n"
+        prompt += f"Use the following keywords where relevant: {str(keywords)}\n"
             # # Extract the single string from the list
         # json_string = keywords[0]  # No need to strip here, just replace single quotes
         # json_string = json_string.replace("'", '"')  # Replace single quotes with double quotes
 
         # Load the JSON string into a Python object
         # try:
-
+        #     data = json.loads(json_string)
+        #     keywords_string = ", ".join(item["value"] for item in data)
             # print(prompt)  # For debugging or further use
         # except json.JSONDecodeError as e:
         #     print(f"Invalid JSON string: {e}")
@@ -191,8 +187,7 @@ def generate_blog_simple(content_id, user_input):
     title = user_input["user_topic"]
     keywords = [tag.strip() for tag in user_input["tags"].split(",")]
     lang = 'فارسی' if user_input["lang"] else 'English'
-    # llm = "gpt-4o"
-    llm = 'claude-3-opus'
+    llm = "gpt-4o"
     # llm = "gpt-3.5-turbo"
 
     with flask_app.app_context():
