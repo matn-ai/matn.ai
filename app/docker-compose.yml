@@ -4,7 +4,6 @@ services:
   web:
     build: .
     entrypoint: scripts/webapp_ep.sh
-    # command: flask run --host=0.0.0.0 --port=80
     volumes:
       - .:/app
     ports:
@@ -15,6 +14,13 @@ services:
       - redis
       - mongo
       - mysql
+    networks:
+      - backend
+    # Restrict capabilities and set security options
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
 
   worker:
     build: .
@@ -27,6 +33,12 @@ services:
       - redis
       - mongo
       - mysql
+    networks:
+      - backend
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
 
   mongo:
     image: mongo
@@ -38,6 +50,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     volumes:
       - mongo-data:/data/db
+    networks:
+      - backend
 
   mongo-express:
     image: mongo-express
@@ -49,14 +63,17 @@ services:
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_EXPRESS_ADMIN}
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_EXPRESS_PASSWORD}
-      - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_POST}/
+      - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017
       - ME_CONFIG_BASICAUTH=false
-
+    networks:
+      - backend
 
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
+    networks:
+      - backend
 
   mysql:
     image: mysql:8.0
@@ -70,7 +87,13 @@ services:
       - MYSQL_PASSWORD=${DB_PASSWORD}
     ports:
       - "3306:3306"
+    networks:
+      - backend
 
 volumes:
   mongo-data:
   mysql-data:
+
+networks:
+  backend:
+    driver: bridge

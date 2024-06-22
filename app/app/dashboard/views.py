@@ -4,6 +4,7 @@ from app.dashboard.forms import GenerateArticleBlog, GenerateArticle, GenerateAr
 from app.dashboard import dashboard
 from ..tasks import generate_blog_simple
 from .repository import get_user_contents, create_content, create_job_record, get_job_by_id, get_content_by_id
+import json
 
 @dashboard.route('/dashboard', methods=['GET'])
 @login_required
@@ -18,6 +19,19 @@ def index():
     prev_url = url_for('dashboard.index', page=user_contents.prev_num, q=search_query, sort=sort_order) if user_contents.has_prev else None
 
     return render_template('dashboard/main/index.html', contents=user_contents.items, next_url=next_url, prev_url=prev_url, search_query=search_query, sort_order=sort_order)
+
+
+
+@dashboard.route('/dashboard/article/view/<id>', methods=['GET'])
+@login_required
+def article_view(id):
+    content = get_content_by_id(id)
+    if not content:
+        return abort(404)
+
+    
+    return render_template('dashboard/article/article_view.html', content=content)
+
 
 @dashboard.route('/dashboard/article', methods=['GET', 'POST'])
 @login_required
@@ -52,7 +66,7 @@ def article_pro():
 def article_blog():
     form = GenerateArticleBlog()
     if form.validate_on_submit():
-        form_data = request.form
+        form_data = request.form.to_dict()
         content = create_content(user_input=form_data, author=current_user)
         
         job = generate_blog_simple.delay(content.id, form_data)

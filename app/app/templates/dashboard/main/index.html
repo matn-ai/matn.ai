@@ -1,42 +1,89 @@
-
 {% extends "dashboard/dashboard.html" %}
 {% block dashboard %}
-<div class="col-12 col-lg-10 p-0">
-    <div id="dashboard-content" style="min-height: 65vh;">
-      {% if contents %}
-        <!-- {% include "dashboard/main/search.html" %} -->
-      <div class="row">
-        {% for content in contents %}
-        <div class="col-6">
-          <div class="content-item border rounded p-3 mb-3">
-            <h5>{{ content.system_title | safe }}</h5>
-            <p class="mb-0 text-muted"><small>Created on: {{ content.timestamp.strftime('%Y-%m-%d %H:%M:%S')
-                }}</small></p>
-          </div>
-        </div>
-        {% else %}
-        <div class="col-6">
-            no content
-        </div>
-            {% endfor %}
-    </div>
-      <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-          {% if prev_url %}
-          <li class="page-item">
-            <a class="page-link" href="{{ prev_url }}">Previous</a>
-          </li>
-          {% endif %}
-          {% if next_url %}
-          <li class="page-item">
-            <a class="page-link" href="{{ next_url }}">Next</a>
-          </li>
-          {% endif %}
-        </ul>
-      </nav>
-      {% else %}
-      <p>No content found.</p>
+
+{% if contents %}
+<div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start p-4" style="min-height: 65vh;">
+  <!-- {% include "dashboard/main/search.html" %} -->
+  <table class="table">
+    <!-- <caption>List of users</caption> -->
+    <thead class="table-parimary">
+      <tr>
+        <td class="text-center p-4">
+          عنوان
+        </td>
+        <td class="text-center p-4">
+          کلمات
+        </td>
+        <td class="text-center p-4">
+          نوع محتوا
+        </td>
+        <td class="text-center p-4">
+          تاریخ
+        </td>
+      </tr>
+
+    </thead>
+    <tbody class="table-group-divider">
+
+      {% for content in contents %}
+      <tr onclick="openContent({{content.id}})">
+        <td class="text-center p-4">
+          {{ content.system_title | safe }}
+        </td>
+        <td class="text-center p-4">
+          {{ content.word_count }}
+
+        </td>
+        <td class="text-center p-4">
+          {{ content.content_type | show_content_type }}
+
+        </td>
+        <td class="text-center p-4">
+          {{ content.timestamp | gregorian_to_jalali }}
+
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+  </table>
+
+
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      {% if prev_url %}
+      <li class="page-item">
+        <a class="page-link" href="{{ prev_url }}">Previous</a>
+      </li>
       {% endif %}
+      {% if next_url %}
+      <li class="page-item">
+        <a class="page-link" href="{{ next_url }}">Next</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
+
+<div>
+
+</div>
+{% else %}
+<div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start p-4">
+  <div id="dashboard-content" class="w-100 d-flex flex-column justify-content-center" style="min-height: 65vh;">
+
+    <div class="d-flex justify-content-center align-items-center flex-grow-1" style="min-height: 65vh;">
+      <span class="p-4 rounded bg-light text-dark text-center align-bottom border-1" style="width: 300px;">
+        هنوز محتوایی تولید نکرده‌اید
+      </span>
     </div>
   </div>
+</div>
+{% endif %}
+
+<script>
+  function openContent(contentId) {
+    window.location.href = "{{ url_for('dashboard.article_view', id='') }}" + contentId;
+  }
+</script>
 {% endblock %}

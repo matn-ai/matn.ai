@@ -232,7 +232,9 @@ class Content(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     flow_id = db.Column(db.Integer, db.ForeignKey('flows.id'))
     job = db.relationship('Job', backref='content', uselist=False)
-
+    content_type = db.Column(db.Integer, nullable=True)
+    word_count = db.Column(db.Integer, nullable=True)
+    
     def body(self):
         return self.get_body_from_mongo()
 

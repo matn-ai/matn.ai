@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, SubmitField, FieldList, FormField
+from wtforms import StringField, SelectField, SubmitField, FieldList, FormField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo, URL
 from wtforms import ValidationError
 from ..models import User
@@ -11,10 +11,11 @@ class URLFieldForm(FlaskForm):
 
 
 class GenerateArticleBlog(FlaskForm):
-    user_topic = StringField('عنوان', validators=[DataRequired(), Length(1, 500)])
+    user_topic = TextAreaField('عنوان', validators=[DataRequired(), Length(1, 500)])
     tags = StringField('کلمات کلیدی', validators=[DataRequired()])
     lang = SelectField('زبان', choices=[('fa', 'فارسی'), ('en', 'انگلیسی')])
     submit = SubmitField('تولید مقاله')
+    
 
 
 class GenerateArticle(FlaskForm):

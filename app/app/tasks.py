@@ -1,10 +1,4 @@
 import json
-import random
-import time
-import uuid
-from flask import Flask
-from celery import shared_task
-from sqlalchemy.orm import sessionmaker
 from bs4 import BeautifulSoup
 from redis import StrictRedis
 from openai import OpenAI
@@ -14,10 +8,8 @@ from . import celery_app as celery
 from . import db, contents_collection
 from .models import Content, Job
 
-# from . import celery_app as celery_app
 
-# Initialize the OpenAI client
-# client = OpenAI(api_key="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")
+
 client = OpenAI(
     base_url="https://api.tosiehgar.ir/v1/", api_key=getenv("OPENROUTER_API_KEY")
 )
@@ -120,20 +112,20 @@ def generate_title(user_title, lang, llm_type=""):
 
 def generate_outlines(user_title, lang, llm_type):
 
-    user_prompt = f"Outline a comprehensive  blog article for this title `{user_title}`, Consider all requirements; \n"
-    user_prompt += f"Ensure the outline flows logically and is designed to engage and inform readers\n"
-    user_prompt += f"Only return the title.\n\n"
-    user_prompt += f"The content language is {lang}\n"
-    user_prompt += f"Use numbering for list\n"
-    user_prompt += f"At least should be 3 outlines\n"
-    user_prompt += f"Have a conclusion part which provides actionable advice or insights."
-
-    # user_prompt = f"Create a comprehensive outline for a blog post about {user_title}. \
-    #     The outline should include a title, a clear introduction with a hook and overview, \
-    #     several main points with subpoints for each section, and a strong conclusion that summarizes the post and provides actionable advice or insights. \
-    #     Ensure the outline flows logically and is designed to engage and inform readers."
+    # user_prompt = f"Outline a comprehensive  blog article for this title `{user_title}`, Consider all requirements; \n"
+    # user_prompt += f"Ensure the outline flows logically and is designed to engage and inform readers\n"
+    # user_prompt += f"Only return the title.\n\n"
     # user_prompt += f"The content language is {lang}\n"
     # user_prompt += f"Use numbering for list\n"
+    # user_prompt += f"At least should be 3 outlines\n"
+    # user_prompt += f"Have a conclusion part which provides actionable advice or insights."
+
+    user_prompt = f"Create a comprehensive outline for a blog post about {user_title}. \
+        The outline should include a title, a clear introduction with a hook and overview, \
+        several main points with subpoints for each section, and a strong conclusion that summarizes the post and provides actionable advice or insights. \
+        Ensure the outline flows logically and is designed to engage and inform readers."
+    user_prompt += f"The content language is {lang}\n"
+    user_prompt += f"Use numbering for list\n"
 
     assistant_promot = f"you write SEO-optimized blog post writer. \n You have correct grammer. \n Only return the outlines and in html (h2 and h3) .\n"
 
@@ -144,44 +136,35 @@ def generate_outlines(user_title, lang, llm_type):
     outlines = chat(llm_type, message)
     return outlines
 
-
 def generate_sections(headline_text, outlines, keywords, lang, llm_type):
-
-    prompt = f"Write detailed paragraphs for the section titled '{headline_text}' of a blog post. The content should be well-researched, engaging, and informative.\n"
-    prompt += f"You are writing part of an article with outlines: \n {outlines} \n"
-    prompt += f"Avoid starting sentences with words like 'Moreover', 'Furthermore', 'Additionally', and similar.\n"
-    prompt += f"Do not include an introduction or conclusion section.\n"
-    prompt += f"Focus exclusively on expanding and explaining '{headline_text}'.\n"
-    prompt += f"Avoid using closing phrases like 'In conclusion', 'Finally', 'Overall', etc.\n"
-    prompt += f"The response should be formatted in HTML using <p> tags for each paragraph.\n"
-    prompt += f"Ensure that the writing is free from stereotypes.\n"
-    prompt += f"Use correct grammar and maintain a professional tone suitable for the blog's target audience.\n"
-    prompt += f"The content language is {lang}\n"
+    prompt = (
+        f"Write detailed paragraphs for the section titled '{headline_text}' of a blog post. "
+        f"The content should be well-researched, engaging, and informative. "
+        f"You are writing part of an article with outlines: {outlines}\n"
+        f"Do not include an introduction or conclusion, ending, section. "
+        f"Focus exclusively on expanding and explaining '{headline_text}'. "
+        f"The response should be formatted in HTML using <p> tags for each paragraph. "
+        f"Ensure that the writing is free from stereotypes. "
+        f"Use correct grammar and maintain a professional tone suitable for the blog's target audience. "
+        f"The content language is {lang}. "
+    )
 
     if keywords:
-        prompt += f"Use the following keywords where relevant: {str(keywords)}\n"
-            # # Extract the single string from the list
-        # json_string = keywords[0]  # No need to strip here, just replace single quotes
-        # json_string = json_string.replace("'", '"')  # Replace single quotes with double quotes
+        prompt += f"Use the following keywords where relevant: {', '.join(keywords)}\n"
 
-        # Load the JSON string into a Python object
-        # try:
-        #     data = json.loads(json_string)
-        #     keywords_string = ", ".join(item["value"] for item in data)
-            # print(prompt)  # For debugging or further use
-        # except json.JSONDecodeError as e:
-        #     print(f"Invalid JSON string: {e}")
-            
-    assistant_prompt = f"Your language is {lang}. You are an SEO-optimized blog post writer. Ensure correct grammar. Return the result in HTML with <p> tags. Do not include the headline title again.\n"
-
+    assistant_prompt = (
+        f"Your language is {lang}. You are an SEO-optimized blog post writer. "
+        f"Ensure correct grammar. Return the result in HTML with <p> tags. "
+        f"Do not include the headline title again.\n"
+    )
 
     message = [
         {"role": "assistant", "content": assistant_prompt},
         {"role": "user", "content": prompt},
     ]
+
     text = chat(llm_type, message)
     return text
-
 
 
 @celery.task
@@ -244,7 +227,8 @@ def generate_blog_simple(content_id, user_input):
         # Fetch the Content record
         content = Content.query.get(content_id)
         if content:
-            # content.body = body
+            content.word_count = len(body.split())
+            content.content_type = 0
             content.mongo_id = mongo_id
             content.system_title = title
             content.outlines = outlines

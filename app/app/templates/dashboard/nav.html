@@ -6,33 +6,33 @@
             داشبورد
         </a>
     </li>
-    <li class="nav-item">
+    <!-- <li class="nav-item">
         <a class="nav-link {% if request.endpoint == 'dashboard.article_blog_content' %}active-nav{% endif %}" href="{{ url_for('dashboard.index') }}">
             تقویم تولید محتوا
         </a>
-    </li>
+    </li> -->
     
     <!-- مقالات Dropdown -->
     <li class="nav-item">
         <a class="nav-link d-flex justify-content-between align-items-center"
-           id="مقالهLink"
-           href="#مقالهCollapse"
+           id="contentLink"
+           href="#contentCollapse"
            data-bs-toggle="collapse"
            role="button"
-           aria-controls="مقالهCollapse"
+           aria-controls="contentCollapse"
            aria-expanded="{{ 'true' if 'article' in request.path else 'false' }}">
           <span>مقاله</span>
           <i class="fas fa-chevron-down"></i>
         </a>
-        <div class="collapse {{ 'show' if 'article' in request.path else '' }}" id="مقالهCollapse">
+        <div class="collapse {{ 'show' if 'article' in request.path else '' }}" id="contentCollapse">
           <ul class="nav flex-column ms-3">
             <li class="nav-item">
-              <a class="nav-link {% if request.endpoint == 'dashboard.article' %}active-nav{% endif %}" id="مقاله عمومیLink" href="{{ url_for('dashboard.article') }}">
+              <a class="nav-link {% if request.endpoint == 'dashboard.article' %}active-nav{% endif %}" id="content عمومیLink" href="{{ url_for('dashboard.article') }}">
                 <i class="fas fa-file-alt me-2"></i>مقاله عمومی
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if request.endpoint == 'dashboard.article_pro' %}active-nav{% endif %}" id="مقاله حرفه‌ایLink" href="{{ url_for('dashboard.article_pro') }}">
+              <a class="nav-link {% if request.endpoint == 'dashboard.article_pro' %}active-nav{% endif %}" id="content حرفه‌ایLink" href="{{ url_for('dashboard.article_pro') }}">
                 <i class="fas fa-file-alt me-2"></i>مقاله حرفه‌ای
               </a>
             </li>
@@ -45,7 +45,7 @@
         </div>
     </li>
 
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <a class="nav-link {% if request.endpoint == 'dashboard.idea_brainstorming' %}active-nav{% endif %}" id="پردازش ایدهLink" href="{{ url_for('dashboard.idea_brainstorming') }}">
         پردازش ایده
       </a>
@@ -54,10 +54,10 @@
       <a class="nav-link {% if request.endpoint == 'dashboard.product_describe' %}active-nav{% endif %}" id="توصیف محصولLink" href="{{ url_for('dashboard.product_describe') }}">
         توصیف محصول
       </a>
-    </li>
+    </li> -->
   
     <!-- شبکه‌های اجتماعی Dropdown -->
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <a class="nav-link d-flex justify-content-between align-items-center"
          id="شبکه‌های اجتماعیLink"
          href="#شبکه‌های اجتماعیCollapse"
@@ -88,7 +88,7 @@
         </ul>
       </div>
     </li>
-  
+   -->
     <!-- ترجمه Dropdown -->
     <li class="nav-item">
       <a class="nav-link d-flex justify-content-between align-items-center"

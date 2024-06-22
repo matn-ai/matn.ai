@@ -16,15 +16,28 @@ from pymongo import MongoClient
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 
-mongodb_uri = "mongodb://%s:%s@%s:%s/" % (
-    getenv("MONGO_USER"),
-    getenv("MONGO_PASSWORD"),
-    getenv("MONGO_HOST"),
-    getenv("MONGO_PORT"),
+mongodb_uri = "mongodb://%s:%s/" % (
+    getenv("MONGO_HOST") if getenv("MONGO_HOST") else 'localhost' ,
+    getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
 )
 
+
+# mongodb_uri = "mongodb://%s:%s@%s:%s/" % (
+#     getenv("MONGO_USER"),
+#     getenv("MONGO_PASSWORD"),
+#     getenv("MONGO_HOST"),
+#     getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
+# )
+
+if getenv("DEBUG"):
+    mongodb_uri = "mongodb://%s:%s/" % (
+        getenv("MONGO_HOST") if getenv("MONGO_HOST") else 'localhost' ,
+        getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
+    )
+
+
 client = MongoClient(mongodb_uri)
-mdb = client[getenv("MONGO_DB")]
+mdb = client[getenv("MONGO_DB") if getenv("MONGO_DB") else 'app']
 contents_collection = mdb["contents"]
 
 # # Ensure the collection is created (if not exists)
@@ -108,6 +121,10 @@ app.register_blueprint(auth_blueprint, url_prefix="/auth")
 from .api import api as api_blueprint
 
 app.register_blueprint(api_blueprint, url_prefix="/api/v1")
+
+from .decorators import show_content_type, gregorian_to_jalali
+app.jinja_env.filters['show_content_type'] = show_content_type
+app.jinja_env.filters['gregorian_to_jalali'] = gregorian_to_jalali
 
 
 @app.cli.command("create-admin")
