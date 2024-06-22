@@ -22,18 +22,18 @@ mongodb_uri = "mongodb://%s:%s/" % (
 )
 
 
-# mongodb_uri = "mongodb://%s:%s@%s:%s/" % (
-#     getenv("MONGO_USER"),
-#     getenv("MONGO_PASSWORD"),
-#     getenv("MONGO_HOST"),
-#     getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
-# )
+mongodb_uri = "mongodb://%s:%s@%s:%s/" % (
+    getenv("MONGO_USER"),
+    getenv("MONGO_PASSWORD"),
+    getenv("MONGO_HOST"),
+    getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
+)
 
-if getenv("DEBUG"):
-    mongodb_uri = "mongodb://%s:%s/" % (
-        getenv("MONGO_HOST") if getenv("MONGO_HOST") else 'localhost' ,
-        getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
-    )
+# if getenv("DEBUG"):
+#     mongodb_uri = "mongodb://%s:%s/" % (
+#         getenv("MONGO_HOST") if getenv("MONGO_HOST") else 'localhost' ,
+#         getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
+#     )
 
 
 client = MongoClient(mongodb_uri)

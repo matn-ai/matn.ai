@@ -24,4 +24,4 @@ ENV FLASK_ENV=development
 # Run the app
 # CMD ["flask", "run", "--host=0.0.0.0"]
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/app/scripts/webapp_ep.sh"]

@@ -24,7 +24,7 @@ services:
 
   worker:
     build: .
-    command: celery -A app.tasks worker --loglevel=info
+    entrypoint: scripts/celery_ep.sh
     volumes:
       - .:/app
     env_file:
