@@ -12,30 +12,37 @@ def index():
     search_query = request.args.get('q', '')
     sort_order = request.args.get('sort', 'desc')
     page = request.args.get('page', 1, type=int)
-    per_page = 5
+    per_page = 15
 
     user_contents = get_user_contents(current_user, search_query, sort_order, page, per_page)
     next_url = url_for('dashboard.index', page=user_contents.next_num, q=search_query, sort=sort_order) if user_contents.has_next else None
     prev_url = url_for('dashboard.index', page=user_contents.prev_num, q=search_query, sort=sort_order) if user_contents.has_prev else None
 
-    return render_template('dashboard/main/index.html', contents=user_contents.items, next_url=next_url, prev_url=prev_url, search_query=search_query, sort_order=sort_order)
+    # Ensure the contents include the job_id attribute
+    contents = []
+    for content in user_contents.items:
+        # job_id = content.job.id
+        if content.job:
+            # job_record = get_job_by_id(content.job.id)
+            contents.append({
+                'id': content.id,
+                'system_title': content.system_title,
+                'word_count': content.word_count,
+                'content_type': content.content_type,
+                'timestamp': content.timestamp,
+                'job_id': content.job.job_id
+            })
+
+    return render_template('dashboard/main/index.html', contents=contents, next_url=next_url, prev_url=prev_url, search_query=search_query, sort_order=sort_order)
 
 
-
-@dashboard.route('/dashboard/article/view/<id>', methods=['GET'])
-@login_required
-def article_view(id):
-    content = get_content_by_id(id)
-    if not content:
-        return abort(404)
-
-    
-    return render_template('dashboard/article/article_view.html', content=content)
+### BLOG
 
 
 @dashboard.route('/dashboard/article', methods=['GET', 'POST'])
+@dashboard.route('/dashboard/article/<id>', methods=['GET', 'POST'])
 @login_required
-def article():
+def article(id=None):
     form = GenerateArticle()
     if form.validate_on_submit():
         form_data = request.form.to_dict()
@@ -45,11 +52,24 @@ def article():
         create_job_record(job_id=job.id, content=content)
 
         return jsonify(job_id=job.id, content_id=content.id)
+
+    if request.method == 'GET' and id:
+        print(id)
+        content = get_content_by_id(id)
+        if not content:
+            return abort(404)
+        inputs = json.loads(content.user_input)
+        form.user_topic.data = inputs["user_topic"]
+        form.lang.data = inputs["lang"]
+        form.tags.data = inputs["tags"]
+        form.body.data = content.body
+        
     return render_template('dashboard/article/article.html', form=form)
 
 @dashboard.route('/dashboard/article/professional', methods=['GET', 'POST'])
+@dashboard.route('/dashboard/article/professional/<id>', methods=['GET', 'POST'])
 @login_required
-def article_pro():
+def article_pro(id=None):
     form = GenerateArticlePro()
     if form.validate_on_submit():
         form_data = request.form.to_dict()
@@ -58,12 +78,26 @@ def article_pro():
         job = generate_blog_simple.delay(content.id, form_data)
         create_job_record(job_id=job.id, content=content)
 
-        return jsonify(job_id=job.id, content_id=content.id) 
+        return jsonify(job_id=job.id, content_id=content.id)
+
+    if request.method == 'GET' and id:
+        print(id)
+        content = get_content_by_id(id)
+        if not content:
+            return abort(404)
+        inputs = json.loads(content.user_input)
+        form.user_topic.data = inputs["user_topic"]
+        form.lang.data = inputs["lang"]
+        form.tags.data = inputs["tags"]
+        form.body.data = content.body
+        
     return render_template('dashboard/article/article_pro.html', form=form)
 
 @dashboard.route('/dashboard/article/blog', methods=['GET', 'POST'])
+@dashboard.route('/dashboard/article/blog/<id>', methods=['GET', 'POST'])
 @login_required
-def article_blog():
+def article_blog(id=None):
+    
     form = GenerateArticleBlog()
     if form.validate_on_submit():
         form_data = request.form.to_dict()
@@ -73,7 +107,18 @@ def article_blog():
         create_job_record(job_id=job.id, content=content)
 
         return jsonify(job_id=job.id, content_id=content.id)
-        
+
+    if request.method == 'GET' and id:
+        print(id)
+        content = get_content_by_id(id)
+        if not content:
+            return abort(404)
+        inputs = json.loads(content.user_input)
+        form.user_topic.data = inputs["user_topic"]
+        form.lang.data = inputs["lang"]
+        form.tags.data = inputs["tags"]
+        form.body.data = content.body
+
     return render_template('dashboard/article/article_blog.html', form=form)
 
 @dashboard.route('/dashboard/article/blog/status/<job_id>', methods=['GET'])
@@ -90,6 +135,13 @@ def article_blog_content(content_id):
     content = get_content_by_id(content_id)
     return jsonify({'content': content.body})
 
+
+
+
+### PRODUCT
+
+
+
 @dashboard.route('/dashboard/product/product-description', methods=['GET', 'POST'])
 @login_required
 def product_describe():
@@ -99,6 +151,13 @@ def product_describe():
 @login_required
 def idea_brainstorming():
     return render_template('dashboard/idea_brainstorming.html')
+
+
+
+### TRANSLATE
+
+
+
 
 @dashboard.route('/dashboard/translate/to-persian', methods=['GET', 'POST'])
 @login_required

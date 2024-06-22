@@ -4,27 +4,30 @@
     <div class="col-4">
         <div class="bg-white rounded p-4 card-shadow">
             <div class="mb-4 w-100 text-center">
-                <!-- <img src="/static/images/content-writing-64x64.png" width="48" />
- -->
-                <h4 class="flex-fill">
-                    تولید مقاله حرفه‌ای</h4>
+                <h4 class="flex-fill pb-4">تولید مقاله حرفه‌ای</h4>
             </div>
-            <form id="submission_form" class="form-group mb-4 mt-2" action="{{url_for('dashboard.article_pro')}}"
-                method="post">
+            <form id="submission_form" class="form-group mb-4 mt-4" action="{{ url_for('dashboard.article_pro') }}" method="post">
                 {{ form.hidden_tag() }}
                 <div class="form-group mb-4 mt-2">
                     <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
-                    {{ form.user_topic(size=32, class_="form-control") }}
+                    {{ form.user_topic(size=500, class_="form-control", style="max-height: 100px;" ) }}
+                    <div class="form-text">
+                        عنوان یا شرح موضوع مقاله را وارد کنید.
+                    </div>
                 </div>
-                <div class="form-group mb-4 mt-2 pb-4">
-                    <label for="lang" class="mb-2">{{ form.lang.label }}</label>
-                    {{ form.lang(class_="form-control") }}
+
+                <div class="mb-4 mt-2 pb-4">
+                    <div class="input-group">
+                      <span class="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
+                      {{ form.lang(class_="form-control", aria_describedby="basic-addon3 lang-addon") }}
+                    </div>
                 </div>
                 <div id="urls">
                     {% for subform in form.urls %}
-                    <div class="url-field">
+                    <div class="url-field position-relative">
                         <label for="url" class="mb-2">{{ subform.url.label }}</label>
-                        {{ subform.url(class_="form-control mb-2") }}
+                        {{ subform.url(class_="form-control mb-2 url-input") }}
+                        <span class="valid-icon" style="position: absolute; right: 10px; top: 38px;"></span>
                     </div>
                     {% endfor %}
                 </div>
@@ -35,19 +38,24 @@
                     <button type="button" id="remove-url" class="btn btn-link">
                         <i class="fa fa-minus"></i>
                     </button>
+                    <div class="form-text">
+                        لینک‌های ورودی به عنوان منبع رو تولید محتوا استفاده می‌شوند.
+                    </div>
                 </div>
                 <div class="form-group mb-4 mt-2 pb-4">
                     <label for="tags" class="mb-2">{{ form.tags.label }}</label>
                     {{ form.tags(size=40, id="tags-input", class="form-control") }}
+                    <div class="form-text">
+                        پس از وارد کردن هر کلمه Enter بزنید.
+                    </div>
                 </div>
-                <div class="form-group text-right mt-4">
+                <div class="form-group text-center mt-4">
                     {{ form.submit(class_="btn btn-primary text-white w-50") }}
                 </div>
             </form>
         </div>
     </div>
     <div class="col-8">
-        <!-- Content for article goes here -->
         <div class="rounded card-shadow position-relative p-1">
             <div id="loading-content" class="text-center mr-auto mx-auto"
                 style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
@@ -57,7 +65,7 @@
                 </div>
             </div>
             <div id="text-editor-area">
-                <textarea id="text-editor"></textarea>
+                {{ form.body(id="text-editor", class="form-control") }}
             </div>
         </div>
     </div>
@@ -99,7 +107,7 @@
         // Submit the form using AJAX
         $.ajax({
             type: "POST",
-            url: "{{url_for('dashboard.article_pro')}}",
+            url: "{{ url_for('dashboard.article_pro') }}",
             data: formData,
             success: function (data) {
                 // Handle the successful response
@@ -131,17 +139,43 @@
             editor.setData(data.content);
         });
     }
+
+    function validateURL(url) {
+        const pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+            '((([a-z\\d](([a-z\\d-]*[a-z\\d])?)\\.)+[a-z]{2,}|' + // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+            '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+        return !!pattern.test(url);
+    }
+
     $(document).ready(function () {
+        $('#urls').on('input', '.url-input', function () {
+            const $input = $(this);
+            const urlValue = $input.val();
+            const $icon = $input.siblings('.valid-icon');
+            
+            if (validateURL(urlValue)) {
+                $input.css('border', '2px solid green');
+                $icon.html('<i class="fa fa-check text-success"></i>');
+            } else {
+                $input.css('border', '');
+                $icon.html('');
+            }
+        });
+
         $('#add-url').on('click', function () {
-            var newField = `
-            <div class="url-field">
-                {{ form.urls.append_entry().url(class_="form-control mb-2") }}
+            const newField = `
+            <div class="url-field position-relative">
+                {{ form.urls.append_entry().url(class_="form-control mb-2 url-input") }}
+                <span class="valid-icon" style="position: absolute; right: 10px; top: 38px;"></span>
             </div>`;
             $('#urls').append(newField);
         });
 
         $('#remove-url').on('click', function () {
-            var container = $('#urls');
+            const container = $('#urls');
             if (container.children('.url-field').length > 1) {
                 container.children('.url-field').last().remove();
             }

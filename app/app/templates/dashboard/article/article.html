@@ -4,25 +4,33 @@
     <div class="col-4">
         <div class="bg-white rounded p-4 card-shadow">
             <div class="mb-4 w-100 text-center">
-                <h4 class="flex-fill">
+                <h4 class="flex-fill pb-4">
                     تولید مقاله عمومی</h4>
             </div>
-            <form id="submission_form" class="form-group mb-4 mt-2" action="{{url_for('dashboard.article_blog')}}"
+            <form id="submission_form" class="form-group mb-4 mt-4" action="{{url_for('dashboard.article_blog')}}"
                 method="post">
                 {{ form.hidden_tag() }}
                 <div class="form-group mb-4 mt-2">
                     <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
-                    {{ form.user_topic(size=32, class_="form-control") }}
+                    {{ form.user_topic(size=500, class_="form-control", style="max-height: 100px;" ) }}
+                    <div class="form-text">
+                        عنوان یا شرح موضوع مقاله را وارد کنید.
+                    </div>
                 </div>
-                <div class="form-group mb-4 mt-2 pb-4">
-                    <label for="lang" class="mb-2">{{ form.lang.label }}</label>
-                    {{ form.lang(class_="form-control") }}
+                <div class="mb-4 mt-2 pb-4">
+                    <div class="input-group">
+                      <span class="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
+                      {{ form.lang(class_="form-control", aria_describedby="basic-addon3 lang-addon") }}
+                    </div>
                 </div>
                 <div class="form-group mb-4 mt-2 pb-4">
                     <label for="tags" class="mb-2">{{ form.tags.label }}</label>
                     {{ form.tags(size=40, id="tags-input", class="form-control") }}
+                    <div class="form-text">
+                        پس از وارد کردن هر کلمه Enter بزنید.
+                    </div>
                 </div>
-                <div class="form-group text-right mt-4">
+                <div class="form-group text-center mt-4">
                     {{ form.submit(class_="btn btn-primary text-white w-50") }}
                 </div>
             </form>
@@ -38,8 +46,9 @@
                 </div>
             </div>
             <div id="text-editor-area">
-                <textarea id="text-editor"></textarea>
+                {{ form.body(id="text-editor", class="form-control") }}
             </div>
+
         </div>
     </div>
 </div>

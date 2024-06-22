@@ -176,8 +176,6 @@ def generate_blog_simple(content_id, user_input):
     # llm = "gpt-3.5-turbo"
 
     with flask_app.app_context():
-        # Simulate a long-running task
-        # time.sleep(60)  # Placeholder for the actual processing
 
         title = generate_title(title, lang, llm)
         # print(title)
@@ -189,7 +187,6 @@ def generate_blog_simple(content_id, user_input):
 
         outlines = "\n".join("\n".join(map(str, item)) for item in headlines_elements)
 
-        # print(outlines)
 
         inside = f""
         toc = []
@@ -207,8 +204,6 @@ def generate_blog_simple(content_id, user_input):
             <h1>
                 {str(title)}
             </h1>            
-            <br/>
-            <hr/>
             <br/>
             {str(toc)}
             <br/>
@@ -228,7 +223,6 @@ def generate_blog_simple(content_id, user_input):
         content = Content.query.get(content_id)
         if content:
             content.word_count = len(body.split())
-            content.content_type = 0
             content.mongo_id = mongo_id
             content.system_title = title
             content.outlines = outlines
