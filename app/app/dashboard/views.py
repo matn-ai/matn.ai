@@ -39,7 +39,6 @@ def index():
 
 ### BLOG
 
-
 @dashboard.route('/dashboard/article', methods=['GET', 'POST'])
 @dashboard.route('/dashboard/article/<id>', methods=['GET', 'POST'])
 @login_required
