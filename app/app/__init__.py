@@ -134,10 +134,13 @@ app.jinja_env.filters['gregorian_to_jalali'] = gregorian_to_jalali
 def create_admin(username, email, password):
     """Create an admin user."""
     with app.app_context():
-        from .models import Role, User
+        try:
+            from .models import Role, User
 
-        user = User(username=username, email=email, confirmed=True)
-        user.password = password
-        db.session.add(user)
-        db.session.commit()
-        click.echo(f"Admin user {username} created successfully.")
+            user = User(username=username, email=email, confirmed=True)
+            user.password = password
+            db.session.add(user)
+            db.session.commit()
+            click.echo(f"Admin user {username} created successfully.")
+        except:
+            click.echo("Skipped")
