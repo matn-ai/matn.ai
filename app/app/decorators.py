@@ -22,7 +22,8 @@ def admin_required(f):
 
 
 def show_content_type(content_type: int) -> str:
-    return content_type_map[content_type]
+    if content_type:
+        return content_type_map[content_type]
 
 def gregorian_to_jalali(date):
     j_date = jdatetime.date.fromgregorian(date=date)
