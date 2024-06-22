@@ -12,7 +12,7 @@ def index():
     search_query = request.args.get('q', '')
     sort_order = request.args.get('sort', 'desc')
     page = request.args.get('page', 1, type=int)
-    per_page = 15
+    per_page = 8
 
     user_contents = get_user_contents(current_user, search_query, sort_order, page, per_page)
     next_url = url_for('dashboard.index', page=user_contents.next_num, q=search_query, sort=sort_order) if user_contents.has_next else None
@@ -30,6 +30,7 @@ def index():
                 'word_count': content.word_count,
                 'content_type': content.content_type,
                 'timestamp': content.timestamp,
+                'job_status': content.job.job_status,
                 'job_id': content.job.job_id
             })
 
@@ -37,7 +38,6 @@ def index():
 
 
 ### BLOG
-
 
 @dashboard.route('/dashboard/article', methods=['GET', 'POST'])
 @dashboard.route('/dashboard/article/<id>', methods=['GET', 'POST'])
@@ -128,6 +128,14 @@ def article_blog_status(job_id):
     if job:
         return jsonify({'status': job.job_status})
     return abort(404)
+
+@dashboard.route('/dashboard/article/blog/list/<content_id>', methods=['GET'])
+@login_required
+def article_blog_content_list(content_id):
+    content = get_content_by_id(content_id)
+    return jsonify({'title': content.system_title, "count": content.word_count})
+
+
 
 @dashboard.route('/dashboard/article/blog/content/<content_id>', methods=['GET'])
 @login_required

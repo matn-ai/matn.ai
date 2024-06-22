@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <div class="form-group text-center mt-4">
-                    {{ form.submit(class="btn btn-primary text-white w-50") }}
+                    {{ form.submit(class="btn btn-primary text-white w-50", id="submit-form") }}
                 </div>
             </form>
         </div>
@@ -82,7 +82,7 @@
 
         // Show the loading content
         $('#loading-content').show();
-
+        $('#submit-form').addClass('disable')
         // Serialize the form data
         var formData = $(this).serialize();
 
