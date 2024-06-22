@@ -25,6 +25,7 @@ def chat(llm_type, messages):
         model=llm_type, messages=messages, temperature=0.8
     )
     result = response.choices[0].message.content
+    print(response.usage)
     return result
 
 
