@@ -17,7 +17,15 @@
                         عنوان یا شرح موضوع پست بلاگ را وارد کنید.
                     </div>
                 </div>
-
+                <div class="mb-4 text-center">
+                    <div class="btn-group" role="group" aria-label="Article length toggle">
+                        <input type="radio" class="btn-check" name="article_length" id="long_article" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="long_article">مقاله بلند</label>
+                        <input type="radio" class="btn-check" name="article_length" id="short_article" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="short_article">مقاله کوتاه</label>
+                    </div>
+                </div>
+                <input type="hidden" name="article_length" id="article_length_input" value="long">
                 <div class="mb-4 mt-2 pb-4">
                     <div class="input-group">
                       <span class="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
@@ -118,6 +126,13 @@
         $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
             $('#loading-content').hide();
             editor.setData(data.content);
+        });
+        $('input[name="article_length"]').change(function() {
+            if (this.id === 'long_article') {
+                $('#article_length_input').val('long');
+            } else {
+                $('#article_length_input').val('short');
+            }
         });
     }
 </script>
