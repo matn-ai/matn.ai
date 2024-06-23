@@ -28,7 +28,7 @@
 </style>
 <div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start p-4" style="min-height: 65vh;">
 
-  <div style="min-height: 65vh;">
+  <div style="min-height: 65vh;" class="w-100">
     <table class="table table-hover" id="listing-table">
       <thead class="">
         <tr>
@@ -139,14 +139,14 @@
 
   $(document).ready(function () {
     function checkJobStatus(jobId, contentId) {
-      console.log(`Checking job status for jobId: ${jobId}, contentId: ${contentId}`);
+      // console.log(`Checking job status for jobId: ${jobId}, contentId: ${contentId}`);
       $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
-        console.log(`Job status for jobId ${jobId}:`, data);
+        //console.log(`Job status for jobId ${jobId}:`, data);
 
         if (data.status === 'SUCCESS') {
           $(`.status-${contentId}`).hide();
           $.get(`/dashboard/article/blog/list/${contentId}`, function (data) {
-            console.log(data)
+            // console.log(data)
             $(`#content-title-${contentId}`).html(data.title);
             $(`#content-wc-${contentId}`).html(data.count);
           });
@@ -155,7 +155,7 @@
           setTimeout(() => checkJobStatus(jobId, contentId), 2000);
         }
       }).fail(function (xhr, status, error) {
-        console.error(`Error checking job status for jobId ${jobId}:`, error);
+        // console.error(`Error checking job status for jobId ${jobId}:`, error);
       });
     }
 
