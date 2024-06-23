@@ -122,8 +122,10 @@ class User(UserMixin, db.Model):
         return True
 
     def generate_reset_token(self, expiration=3600):
-        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'reset': self.id}).decode('utf-8')
+        s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+        return s.dumps({'confirm': self.id})
+        # s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'], expiration)
+        # return s.dumps({'reset': self.id}).decode('utf-8')
 
     @staticmethod
     def reset_password(token, new_password):

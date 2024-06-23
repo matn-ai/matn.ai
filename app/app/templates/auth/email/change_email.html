@@ -1,7 +1,12 @@
+<div style="width: 80%; margin: 0 auto; direction: rtl; text-align: right; padding: 20px; border-radius: 20px;">
+
 <p>کاربر عزیز {{ user.username }},</p>
 <p>برای تأیید نشانی ایمیل جدیدتان <a href="{{ url_for('auth.change_email', token=token, _external=True) }}">اینجا کلیک کنید</a>.</p>
-<p>همچنین می‌توانید لینک زیر را در نوار نشانی مرورگر خود کپی و پیست کنید:</p>
+<br/><p>همچنین می‌توانید لینک زیر را در نوار نشانی مرورگر خود کپی و پیست کنید:</p>
 <p>{{ url_for('auth.change_email', token=token, _external=True) }}</p>
-<p>با احترام،</p>
+<br/><p>با احترام،</p>
 <p>تیم به‌نویس</p>
 <p><small>توجه: به پیام‌های ارسالی به این نشانی ایمیل پاسخ داده نمی‌شود.</small></p>
+
+<br/>
+</div>

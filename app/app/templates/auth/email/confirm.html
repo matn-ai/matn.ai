@@ -1,8 +1,14 @@
-<p>کاربر عزیز {{ user.username }},</p>
-<p>به <b>به‌نویس</b> خوش آمدید!</p>
-<p>برای تأیید حساب کاربری خود لطفاً <a href="{{ url_for('auth.confirm', token=token, _external=True) }}">اینجا کلیک کنید</a>.</p>
-<p>همچنین می‌توانید لینک زیر را در نوار نشانی مرورگر خود کپی و پیست کنید:</p>
-<p>{{ url_for('auth.confirm', token=token, _external=True) }}</p>
-<p>با احترام،</p>
-<p>تیم به‌نویس</p>
-<p><small>توجه: به پیام‌های ارسالی به این نشانی ایمیل پاسخ داده نمی‌شود.</small></p>
+<div style="width: 80%; margin: 0 auto; direction: rtl; text-align: right; padding: 20px; border-radius: 20px;">
+    <p>کاربر عزیز {{ user.username }},</p>
+    <p>به <b>به‌نویس</b> خوش آمدید!</p>
+    <br/>
+    <p>برای تأیید حساب کاربری خود لطفاً <a href="{{ url_for('auth.confirm', token=token, _external=True) }}">اینجا کلیک کنید</a>.</p>
+    <p>همچنین می‌توانید لینک زیر را در نوار نشانی مرورگر خود کپی و پیست کنید:</p>
+    <br/>
+    <p>{{ url_for('auth.confirm', token=token, _external=True) }}</p>
+    <br/>
+    <p>با احترام،</p>
+    <p>تیم به‌نویس</p>
+    <br/>
+    <p><small>توجه: به پیام‌های ارسالی به این نشانی ایمیل پاسخ داده نمی‌شود.</small></p>
+</div>

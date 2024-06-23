@@ -169,7 +169,178 @@ def generate_sections(headline_text, outlines, keywords, lang, llm_type):
 
 
 @celery.task
+def generate_content(content_id, content_type, user_input):
+    if content_type == 0: #blog post
+        generate_blog_simple(content_id, user_input)
+    if content_type == 1:
+        generate_general_article(content_id, user_input)
+    if content_type == 2:
+        generate_pro_article(content_id, user_input)
+
+@celery.task
 def generate_blog_simple(content_id, user_input):
+    title = user_input["user_topic"]
+    keywords = [tag.strip() for tag in user_input["tags"].split(",")]
+    lang = 'فارسی' if user_input["lang"] else 'English'
+    llm = "gpt-4o"
+    # llm = "gpt-3.5-turbo"
+
+    with flask_app.app_context():
+
+        title = generate_title(title, lang, llm)
+        # print(title)
+        generated_outlines = generate_outlines(title, lang, llm)
+        # print(outlines)
+
+        soup = BeautifulSoup(generated_outlines, "html.parser")
+        headlines_elements = soup.find_all(["h2", "h3", "h4", "h5", "h6"])
+
+        outlines = "\n".join("\n".join(map(str, item)) for item in headlines_elements)
+
+
+        inside = f""
+        toc = []
+        for headline_element in headlines_elements:
+            headline_text = headline_element.get_text()
+            toc.append(str(headline_element))
+            inside += f"<br/>"
+            inside += f"{str(headline_element)}"
+            inside += (
+                f"{generate_sections(headline_text,outlines, keywords, lang, llm)}"
+            )
+
+        toc = "".join(toc)
+        body = f"""
+            <h1>
+                {str(title)}
+            </h1>            
+            <br/>
+            {str(toc)}
+            <br/>
+            <hr/>
+            <br/>
+            {inside}
+        """
+
+        # Save the body to MongoDB
+        body_document = {
+            "body": body
+        }
+        mongo_result = contents_collection.insert_one(body_document)
+        mongo_id = str(mongo_result.inserted_id)
+        
+        # Fetch the Content record
+        content = Content.query.get(content_id)
+        if content:
+            content.word_count = len(body.split())
+            content.mongo_id = mongo_id
+            content.system_title = title
+            content.outlines = outlines
+            db.session.add(content)
+            db.session.commit()
+
+            # Update the job status
+            job = Job.query.filter_by(job_id=generate_blog_simple.request.id).first()
+            if job:
+                job.job_status = "SUCCESS"
+                db.session.add(job)
+                db.session.commit()
+
+            return content.id
+        else:
+            # Handle case where the content was not found
+            job = Job.query.filter_by(job_id=generate_blog_simple.request.id).first()
+            if job:
+                job.job_status = "FAILURE"
+                db.session.add(job)
+                db.session.commit()
+
+            return None
+
+
+@celery.task
+def generate_general_article(content_id, user_input):
+    title = user_input["user_topic"]
+    keywords = [tag.strip() for tag in user_input["tags"].split(",")]
+    lang = 'فارسی' if user_input["lang"] else 'English'
+    llm = "gpt-4o"
+    # llm = "gpt-3.5-turbo"
+
+    with flask_app.app_context():
+
+        title = generate_title(title, lang, llm)
+        # print(title)
+        generated_outlines = generate_outlines(title, lang, llm)
+        # print(outlines)
+
+        soup = BeautifulSoup(generated_outlines, "html.parser")
+        headlines_elements = soup.find_all(["h2", "h3", "h4", "h5", "h6"])
+
+        outlines = "\n".join("\n".join(map(str, item)) for item in headlines_elements)
+
+
+        inside = f""
+        toc = []
+        for headline_element in headlines_elements:
+            headline_text = headline_element.get_text()
+            toc.append(str(headline_element))
+            inside += f"<br/>"
+            inside += f"{str(headline_element)}"
+            inside += (
+                f"{generate_sections(headline_text,outlines, keywords, lang, llm)}"
+            )
+
+        toc = "".join(toc)
+        body = f"""
+            <h1>
+                {str(title)}
+            </h1>            
+            <br/>
+            {str(toc)}
+            <br/>
+            <hr/>
+            <br/>
+            {inside}
+        """
+
+        # Save the body to MongoDB
+        body_document = {
+            "body": body
+        }
+        mongo_result = contents_collection.insert_one(body_document)
+        mongo_id = str(mongo_result.inserted_id)
+        
+        # Fetch the Content record
+        content = Content.query.get(content_id)
+        if content:
+            content.word_count = len(body.split())
+            content.mongo_id = mongo_id
+            content.system_title = title
+            content.outlines = outlines
+            db.session.add(content)
+            db.session.commit()
+
+            # Update the job status
+            job = Job.query.filter_by(job_id=generate_blog_simple.request.id).first()
+            if job:
+                job.job_status = "SUCCESS"
+                db.session.add(job)
+                db.session.commit()
+
+            return content.id
+        else:
+            # Handle case where the content was not found
+            job = Job.query.filter_by(job_id=generate_blog_simple.request.id).first()
+            if job:
+                job.job_status = "FAILURE"
+                db.session.add(job)
+                db.session.commit()
+
+            return None
+
+
+@celery.task
+def generate_pro_article(content_id, user_input):
     title = user_input["user_topic"]
     keywords = [tag.strip() for tag in user_input["tags"].split(",")]
     lang = 'فارسی' if user_input["lang"] else 'English'
