@@ -131,10 +131,11 @@ class User(UserMixin, db.Model):
     def reset_password(token, new_password):
         s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
         try:
-            data = s.loads(token.encode('utf-8'))
+            # data = s.loads(token.encode('utf-8'))
+            data = s.loads(token.encode('utf-8'), max_age=current_app.config['MAIL_TOKEN_EXPIER_AGE'])
         except:
             return False
-        user = User.query.get(data.get('reset'))
+        user = User.query.get(data.get('confirm'))
         if user is None:
             return False
         user.password = new_password
