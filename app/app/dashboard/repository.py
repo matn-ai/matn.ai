@@ -69,7 +69,11 @@ def create_job_record(job_id, content):
     db.session.commit()
     return job_record
 
-def get_job_by_id(job_id):
+def get_job_by_id(id):
+    return Job.query.filter_by(id=id).first()
+
+
+def get_job_by_cid(job_id):
     return Job.query.filter_by(job_id=job_id).first()
 
 def get_content_by_id(content_id):

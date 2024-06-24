@@ -1119,3 +1119,23 @@
     height: 75vh;
     overflow-y: auto;
 }
+
+
+.loading-placeholder {
+    display: inline-block;
+    height: 20px;
+    width: 100%;
+    background: linear-gradient(90deg, #e2e2e2 25%, #f4f4f4 50%, #f0f0f0 75%);
+    background-size: 400% 100%;
+    animation: loading 1.4s ease infinite;
+  }
+
+  @keyframes loading {
+    0% {
+      background-position: 100% 0;
+    }
+
+    100% {
+      background-position: -100% 0;
+    }
+  }

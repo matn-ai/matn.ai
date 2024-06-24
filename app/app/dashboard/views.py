@@ -2,8 +2,8 @@ from flask import render_template, jsonify, abort, request, url_for
 from flask_login import login_required, current_user
 from app.dashboard.forms import GenerateArticleBlog, GenerateArticle, GenerateArticlePro
 from app.dashboard import dashboard
-from ..tasks import generate_blog_simple
-from .repository import get_user_contents, create_content, create_job_record, get_job_by_id, get_content_by_id
+from ..tasks import generate_blog_simple, generate_pro_article, generate_general_article
+from .repository import get_user_contents, create_content, create_job_record, get_job_by_cid, get_content_by_id, get_job_by_id
 import json
 
 @dashboard.route('/dashboard', methods=['GET'])
@@ -23,7 +23,7 @@ def index():
     for content in user_contents.items:
         # job_id = content.job.id
         if content.job:
-            # job_record = get_job_by_id(content.job.id)
+            # job_record = get_job_by_cid(content.job.id)
             contents.append({
                 'id': content.id,
                 'system_title': content.system_title,
@@ -44,17 +44,17 @@ def index():
 @login_required
 def article(id=None):
     form = GenerateArticle()
+    content = "false"
     if form.validate_on_submit():
         form_data = request.form.to_dict()
         content = create_content(user_input=form_data, author=current_user)
         
-        job = generate_blog_simple.delay(content.id, form_data)
+        job = generate_general_article.delay(content.id, form_data)
         create_job_record(job_id=job.id, content=content)
 
         return jsonify(job_id=job.id, content_id=content.id)
 
     if request.method == 'GET' and id:
-        print(id)
         content = get_content_by_id(id)
         if not content:
             return abort(404)
@@ -64,7 +64,7 @@ def article(id=None):
         form.tags.data = inputs["tags"]
         form.body.data = content.body
         
-    return render_template('dashboard/article/article.html', form=form)
+    return render_template('dashboard/article/article.html', form=form, content=content)
 
 @dashboard.route('/dashboard/article/professional', methods=['GET', 'POST'])
 @dashboard.route('/dashboard/article/professional/<id>', methods=['GET', 'POST'])
@@ -75,7 +75,7 @@ def article_pro(id=None):
         form_data = request.form.to_dict()
         content = create_content(user_input=form_data, author=current_user)
         
-        job = generate_blog_simple.delay(content.id, form_data)
+        job = generate_pro_article.delay(content.id, form_data)
         create_job_record(job_id=job.id, content=content)
 
         return jsonify(job_id=job.id, content_id=content.id)
@@ -99,6 +99,7 @@ def article_pro(id=None):
 def article_blog(id=None):
     
     form = GenerateArticleBlog()
+    content = None
     if form.validate_on_submit():
         form_data = request.form.to_dict()
         content = create_content(user_input=form_data, author=current_user)
@@ -109,7 +110,7 @@ def article_blog(id=None):
         return jsonify(job_id=job.id, content_id=content.id)
 
     if request.method == 'GET' and id:
-        print(id)
+        # print(id)
         content = get_content_by_id(id)
         if not content:
             return abort(404)
@@ -117,16 +118,21 @@ def article_blog(id=None):
         form.user_topic.data = inputs["user_topic"]
         form.lang.data = inputs["lang"]
         form.tags.data = inputs["tags"]
+        form.content_type.data = inputs["content_type"]
         form.body.data = content.body
 
-    return render_template('dashboard/article/article_blog.html', form=form)
+    return render_template('dashboard/article/article_blog.html', form=form, content=content)
 
-@dashboard.route('/dashboard/article/blog/status/<job_id>', methods=['GET'])
+@dashboard.route('/dashboard/article/blog/status/id/<job_id>', methods=['GET'])
+@dashboard.route('/dashboard/article/blog/status/cid/<job_id>', methods=['GET'])
 @login_required
 def article_blog_status(job_id):
-    job = get_job_by_id(job_id)
-    if job:
-        return jsonify({'status': job.job_status})
+    job_cid = get_job_by_cid(job_id)
+    job_id = get_job_by_id(job_id)
+    if job_cid:
+        return jsonify({'status': job_cid.job_status})
+    elif job_id:
+        return jsonify({'status': job_id.job_status})        
     return abort(404)
 
 @dashboard.route('/dashboard/article/blog/list/<content_id>', methods=['GET'])
