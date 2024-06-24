@@ -7,24 +7,7 @@
     cursor: pointer;
   }
 
-  .loading-placeholder {
-    display: inline-block;
-    height: 20px;
-    width: 100%;
-    background: linear-gradient(90deg, #e2e2e2 25%, #f4f4f4 50%, #f0f0f0 75%);
-    background-size: 400% 100%;
-    animation: loading 1.4s ease infinite;
-  }
 
-  @keyframes loading {
-    0% {
-      background-position: 100% 0;
-    }
-
-    100% {
-      background-position: -100% 0;
-    }
-  }
 </style>
 <div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start p-4" style="min-height: 65vh;">
 
@@ -32,7 +15,7 @@
     <table class="table table-hover" id="listing-table">
       <thead class="">
         <tr>
-          <td class="text-center p-4">عنوان</td>
+          <td class="text-center p-4" style="min-width: 250px;">عنوان</td>
           <td class="text-center p-4">کلمات</td>
           <td class="text-center p-4">نوع محتوا</td>
           <td class="text-center p-4">تاریخ</td>

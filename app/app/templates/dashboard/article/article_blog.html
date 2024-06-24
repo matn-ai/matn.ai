@@ -4,41 +4,40 @@
     <div class="col-4">
         <div class="bg-white rounded p-4 card-shadow">
             <div class="mb-4 w-100 text-center">
-                <h4 class="flex-fill pb-4">
-                    تولید پست بلاگ</h4>
+                <h4 class="flex-fill pb-4">تولید پست بلاگ</h4>
             </div>
-            <form id="submission_form" class="form-group mb-4 mt-4" action="{{url_for('dashboard.article_blog')}}"
+            <form id="submission_form" class="form-group mb-4 mt-4" action="{{ url_for('dashboard.article_blog') }}"
                 method="post">
                 {{ form.hidden_tag() }}
                 <div class="form-group mb-4 mt-2">
                     <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
                     {{ form.user_topic(size=500, class_="form-control", style="max-height: 100px;" ) }}
-                    <div class="form-text">
-                        عنوان یا شرح موضوع پست بلاگ را وارد کنید.
-                    </div>
+                    <div class="form-text">عنوان یا شرح موضوع پست بلاگ را وارد کنید.</div>
                 </div>
-                <div class="mb-4 text-center">
+                <div class="mb-4 text-center pt-4 pb-4">
                     <div class="btn-group" role="group" aria-label="Article length toggle">
-                        <input type="radio" class="btn-check" name="article_length" id="long_article" autocomplete="off" checked>
-                        <label class="btn btn-outline-primary" for="long_article">مقاله بلند</label>
-                        <input type="radio" class="btn-check" name="article_length" id="short_article" autocomplete="off">
-                        <label class="btn btn-outline-primary" for="short_article">مقاله کوتاه</label>
+                        <input type="radio" class="btn-check" name="article_length" id="long_article"
+                            autocomplete="off">
+                        <label class="btn btn-outline-primary" for="long_article" data-toggle="tooltip"
+                            title="پست بلند: +۳۰۰۰ کلمه">پست بلند</label>
+                        <input type="radio" class="btn-check" name="article_length" id="short_article"
+                            autocomplete="off" checked>
+                        <label class="btn btn-outline-primary" for="short_article" data-toggle="tooltip"
+                            title="پست کوتاه: ۲۱۰۰ تا ۲۴۰۰ کلمه">پست کوتاه</label>
                     </div>
                 </div>
-                <input type="hidden" name="article_length" id="article_length_input" value="long">
+                {{ form.article_length(id="article_length_input") }}
                 <div class="mb-4 mt-2 pb-4">
                     <div class="input-group">
-                      <span class="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
-                      {{ form.lang(class_="form-control", aria_describedby="basic-addon3 lang-addon") }}
+                        <span class="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
+                        {{ form.lang(class_="form-control", aria_describedby="basic-addon3 lang-addon") }}
                     </div>
                 </div>
-                  
+
                 <div class="form-group mb-4 mt-2 pb-4">
                     <label for="tags" class="mb-2">{{ form.tags.label }}</label>
                     {{ form.tags(size=40, id="tags-input", class="form-control") }}
-                    <div class="form-text">
-                        پس از وارد کردن هر کلمه Enter بزنید.
-                    </div>
+                    <div class="form-text">پس از وارد کردن هر کلمه Enter بزنید.</div>
                 </div>
                 <div class="form-group text-center mt-4">
                     {{ form.submit(class="btn btn-primary text-white w-50", id="submit-form") }}
@@ -83,7 +82,28 @@
 
     // Initialize Tagify
     var input = document.getElementById('tags-input');
-    new Tagify(input);
+    tagify = new Tagify(input);
+
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+
+        $('input[name="article_length"]').change(function () {
+            const tooltipText = this.id === 'long_article'
+                ? 'پست بلند: +۳۰۰۰ کلمه'
+                : 'پست کوتاه: ۲۱۰۰ تا ۲۴۰۰ کلمه';
+            $('[for="' + this.id + '"]').attr('title', tooltipText).tooltip('dispose').tooltip();
+            $('#article_length_input').val(this.id === 'long_article' ? 'long' : 'short');
+        });
+
+        {% if content %}
+            $('#loading-content').show();
+            $('#submission_form').find('input, textarea, button, select').prop('disabled', true);
+            tagify.setReadonly(true);
+            checkJobStatus('{{ content.job.job_id }}','{{ content.id }}')
+        {% endif %}
+
+    });
 
     $('#submission_form').submit(function (e) {
         e.preventDefault();
@@ -91,13 +111,14 @@
         // Show the loading content
         $('#loading-content').show();
         $('#submit-form').addClass('disable')
+        tagify.setReadonly(true);
         // Serialize the form data
         var formData = $(this).serialize();
-
+        $(this).find('input, textarea, button, select').prop('disabled', true);
         // Submit the form using AJAX
         $.ajax({
             type: "POST",
-            url: "{{url_for('dashboard.article_blog')}}",
+            url: "{{ url_for('dashboard.article_blog') }}",
             data: formData,
             success: function (data) {
                 // Handle the successful response
@@ -113,7 +134,7 @@
     });
 
     function checkJobStatus(jobId, contentId) {
-        $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
+        $.get(`/dashboard/article/blog/status/cid/${jobId}`, function (data) {
             if (data.status === 'SUCCESS') {
                 fetchContent(contentId);
             } else {
@@ -126,13 +147,8 @@
         $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
             $('#loading-content').hide();
             editor.setData(data.content);
-        });
-        $('input[name="article_length"]').change(function() {
-            if (this.id === 'long_article') {
-                $('#article_length_input').val('long');
-            } else {
-                $('#article_length_input').val('short');
-            }
+            tagify.setReadonly(false);
+            $('#submission_form').find('input, textarea, button, select').prop('disabled', false);
         });
     }
 </script>
