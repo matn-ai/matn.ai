@@ -6,34 +6,28 @@
             <div class="mb-4 w-100 text-center">
                 <h4 class="flex-fill pb-4">تولید پست بلاگ</h4>
             </div>
-            <form id="submission_form" class="form-group mb-4 mt-4" action="{{ url_for('dashboard.article_blog') }}"
-                method="post">
+            <form id="submission_form" class="form-group mb-4 mt-2" action="{{ url_for('dashboard.article_blog') }}" method="post">
                 {{ form.hidden_tag() }}
-                <div class="form-group mb-4 mt-2">
+                <div class="form-group mb-2 mt-2">
                     <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
                     {{ form.user_topic(size=500, class_="form-control", style="max-height: 100px;" ) }}
                     <div class="form-text">عنوان یا شرح موضوع پست بلاگ را وارد کنید.</div>
                 </div>
                 <div class="mb-4 text-center pt-4 pb-4">
                     <div class="btn-group" role="group" aria-label="Article length toggle">
-                        <input type="radio" class="btn-check" name="article_length" id="long_article"
-                            autocomplete="off">
-                        <label class="btn btn-outline-primary" for="long_article" data-toggle="tooltip"
-                            title="پست بلند: +۳۰۰۰ کلمه">پست بلند</label>
-                        <input type="radio" class="btn-check" name="article_length" id="short_article"
-                            autocomplete="off" checked>
-                        <label class="btn btn-outline-primary" for="short_article" data-toggle="tooltip"
-                            title="پست کوتاه: ۲۱۰۰ تا ۲۴۰۰ کلمه">پست کوتاه</label>
+                        {% for subfield in form.article_length %}
+                            <input type="radio" class="btn-check" id="{{ subfield.id }}" name="{{ subfield.name }}" value="{{ subfield.data }}"
+                                {% if subfield.checked %} checked {% endif %}>
+                            <label class="btn btn-outline-primary" for="{{ subfield.id }}" data-toggle="tooltip" title="{{ subfield.label.text }}">{{ subfield.label.text }}</label>
+                        {% endfor %}
                     </div>
                 </div>
-                {{ form.article_length(id="article_length_input") }}
                 <div class="mb-4 mt-2 pb-4">
                     <div class="input-group">
                         <span class="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
                         {{ form.lang(class_="form-control", aria_describedby="basic-addon3 lang-addon") }}
                     </div>
                 </div>
-
                 <div class="form-group mb-4 mt-2 pb-4">
                     <label for="tags" class="mb-2">{{ form.tags.label }}</label>
                     {{ form.tags(size=40, id="tags-input", class="form-control") }}
@@ -42,16 +36,19 @@
                 <div class="form-group text-center mt-4">
                     {{ form.submit(class="btn btn-primary text-white w-50", id="submit-form") }}
                 </div>
+                <div class="form-group mt-4 pt-4">
+                    <div class="w-100 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 text-center">
+                        <i class="fa fa-clock"></i> زمان تقریبی: ۵ دقیقه
+                    </div>
+                </div>
             </form>
         </div>
     </div>
     <div class="col-8">
         <div class="rounded card-shadow position-relative p-1">
-            <div id="loading-content" class="text-center mr-auto mx-auto"
-                style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+            <div id="loading-content" class="text-center mr-auto mx-auto" style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
                 <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
-                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
-                        background="transparent" speed="1" loop autoplay></lottie-player>
+                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}" background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
             </div>
             <div id="text-editor-area">
@@ -84,7 +81,6 @@
     var input = document.getElementById('tags-input');
     tagify = new Tagify(input);
 
-
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
 
@@ -93,7 +89,6 @@
                 ? 'پست بلند: +۳۰۰۰ کلمه'
                 : 'پست کوتاه: ۲۱۰۰ تا ۲۴۰۰ کلمه';
             $('[for="' + this.id + '"]').attr('title', tooltipText).tooltip('dispose').tooltip();
-            $('#article_length_input').val(this.id === 'long_article' ? 'long' : 'short');
         });
 
         {% if content %}
@@ -101,8 +96,8 @@
             $('#submission_form').find('input, textarea, button, select').prop('disabled', true);
             tagify.setReadonly(true);
             checkJobStatus('{{ content.job.job_id }}','{{ content.id }}')
+            
         {% endif %}
-
     });
 
     $('#submission_form').submit(function (e) {
@@ -112,22 +107,22 @@
         $('#loading-content').show();
         $('#submit-form').addClass('disable')
         tagify.setReadonly(true);
+
         // Serialize the form data
         var formData = $(this).serialize();
         $(this).find('input, textarea, button, select').prop('disabled', true);
+
         // Submit the form using AJAX
         $.ajax({
             type: "POST",
             url: "{{ url_for('dashboard.article_blog') }}",
             data: formData,
             success: function (data) {
-                // Handle the successful response
                 const jobId = data.job_id;
                 const contentId = data.content_id;
                 checkJobStatus(jobId, contentId);
             },
             error: function (xhr, status, error) {
-                // Handle the error response
                 console.error(error);
             }
         });

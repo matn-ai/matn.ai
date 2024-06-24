@@ -19,7 +19,6 @@ API_KEY = os.getenv("OPENROUTER_API_KEY")
 openai_client = OpenAI(base_url="https://api.tosiehgar.ir/v1/", api_key=API_KEY)
 redis_client = StrictRedis(host=REDIS_SERVER, port=REDIS_PORT, db=REDIS_DB)
 
-
 def chat(llm_type, messages):
     response = openai_client.chat.completions.create(
         model=llm_type, messages=messages, temperature=0.8
@@ -62,7 +61,7 @@ def generate_title_blog_post(user_title, lang, article_length, llm_type):
     if article_length == "short":
         user_prompt += (
             "Task: Generate a blog post title\n"
-            "Instructions: Create an engaging and optimized title for the given blog post. "
+            "Instructions: Create an engaging and optimized title fo blog post related to {user_title}. "
             "Ensure the title is compelling, accurately reflects the content, and incorporates "
             "relevant keywords to attract the target audience. The title should be concise, "
             "attention-grabbing, and encourage readers to click and read the post.\n"
@@ -71,10 +70,9 @@ def generate_title_blog_post(user_title, lang, article_length, llm_type):
     else:
         user_prompt += (
             f"Task: Generate a blog post title\n"
-            "Instructions: Create a compelling and informative title for a blog post. Ensure the title "
-            "is engaging, accurately reflects the content of the post, and incorporates relevant keywords. "
+            "Instructions: Create a compelling and informative title for a blog post related to {user_title}." 
+            "Ensure the title is engaging, accurately reflects the content of the post, and incorporates relevant keywords. "
             "The title should be appealing to the target audience and encourage them to read the post.\n"
-            f"The post is around 2500 words in length about {user_title}."
         )
 
     assistant_prompt = (
@@ -220,7 +218,8 @@ def generate_blog_post_body(title, outlines, keywords, lang, length, llm_type):
             headline_text, outlines_text, keywords, lang, length, llm_type
         )
 
-    return f"<h1>{title}</h1><br/>{toc}<br/><hr/><br/>{inside}"
+    return f"<h1>{title}</h1><br/>{inside}"
+    # return f"<h1>{title}</h1><br/>{toc}<br/><hr/><br/>{inside}"
 
 
 def generate_article_body(title, outlines, keywords, lang, llm_type):
@@ -327,3 +326,6 @@ def generate_pro_article(content_id, user_input):
     update_job_status(generate_pro_article.request.id, task_status)
 
     return content_id
+
+
+# from .image_tasks import *    

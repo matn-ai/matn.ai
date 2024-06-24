@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from app.dashboard.forms import GenerateArticleBlog, GenerateArticle, GenerateArticlePro
 from app.dashboard import dashboard
 from ..tasks import generate_blog_simple, generate_pro_article, generate_general_article
-from .repository import get_user_contents, create_content, create_job_record, get_job_by_cid, get_content_by_id, get_job_by_id
+from .repository import get_user_contents, create_content, create_job_record, get_job_by_cid, get_content_by_id, get_job_by_id, get_content_info
 import json
 
 @dashboard.route('/dashboard', methods=['GET'])
@@ -27,6 +27,7 @@ def index():
             contents.append({
                 'id': content.id,
                 'system_title': content.system_title,
+                'user_topic': content.get_input('user_topic'),
                 'word_count': content.word_count,
                 'content_type': content.content_type,
                 'timestamp': content.timestamp,
@@ -118,10 +119,20 @@ def article_blog(id=None):
         form.user_topic.data = inputs["user_topic"]
         form.lang.data = inputs["lang"]
         form.tags.data = inputs["tags"]
+        form.article_length.data = inputs["article_length"]
         form.content_type.data = inputs["content_type"]
         form.body.data = content.body
 
     return render_template('dashboard/article/article_blog.html', form=form, content=content)
+
+
+@dashboard.route('/dashboard/article/info/<content_id>', methods=['GET'])
+@login_required
+def article_info(content_id):
+    info = get_content_info(content_id)
+    if info:
+        return jsonify({'info': info.get_info()})
+    return abort(404)
 
 @dashboard.route('/dashboard/article/blog/status/id/<job_id>', methods=['GET'])
 @dashboard.route('/dashboard/article/blog/status/cid/<job_id>', methods=['GET'])

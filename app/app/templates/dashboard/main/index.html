@@ -6,11 +6,8 @@
   #listing-table tbody td:hover {
     cursor: pointer;
   }
-
-
 </style>
 <div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start p-4" style="min-height: 65vh;">
-
   <div style="min-height: 65vh;" class="w-100">
     <table class="table table-hover" id="listing-table">
       <thead class="">
@@ -40,14 +37,15 @@
               {{ content.word_count }}
               {% else %}
               <span class="loading-placeholder rounded status-{{ content.id }}"></span>
-              {% endif %}  
+              {% endif %}
             </div>
           </td>
           <td class="text-center p-4">{{ content.content_type | show_content_type }}</td>
           <td class="text-center p-4">{{ content.timestamp | gregorian_to_jalali }}</td>
           <td class="text-center p-4">
             <div class="dropdown">
-              <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
               </button>
               <ul class="dropdown-menu">
                 <li>
@@ -57,7 +55,14 @@
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#"><i class="fa-solid fa-trash me-2"></i> حذف</a>
+                  <a class="dropdown-item" href="#" onclick="showInfoModal('{{ content.id }}')">
+                    <i class="fa-solid fa-info-circle me-2"></i> اطلاعات
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#" onclick="showDeleteModal('{{ content.id }}')">
+                    <i class="fa-solid fa-trash me-2"></i> حذف
+                  </a>
                 </li>
               </ul>
             </div>
@@ -101,7 +106,7 @@
 {% endif %}
 
 <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-
+<script src="{{ url_for('static', filename='js/modals.js') }}"></script>
 <script>
   function openContent(contentType, contentId) {
     let url;
@@ -120,25 +125,77 @@
     window.location.href = url;
   }
 
+  function showInfoModal(contentId) {
+    $.ajax({
+      url: `/dashboard/article/info/${contentId}`,
+      type: 'GET',
+      success: function (data) {
+        console.log(data)
+        const inputs = JSON.parse(data.info.inputs);
+        if ( data.info.word_count)
+          data.info.word_count = "درحال تولید"
+        // const article_length = data.info["article_length"]
+        const modalBodyContent = `<ul class="list-group list-group-horizontal w-100"> \ 
+          <li class="list-group-item w-25">موضوع</li> \
+          <li class="list-group-item w-75">${inputs['user_topic']}</li> \      
+        </ul> \
+        <ul class="list-group list-group-horizontal w-100 mt-2"> \ 
+          <li class="list-group-item w-25">نوع محتوا</li> \
+          <li class="list-group-item w-75">${data.info.content_type}</li> \      
+        </ul>
+        <ul class="list-group list-group-horizontal w-100 mt-2"> \ 
+          <li class="list-group-item w-25">وضعیت</li> \
+          <li class="list-group-item w-75">${data.info.job_status}</li> \      
+        </ul>
+        <ul class="list-group list-group-horizontal w-100 mt-2"> \ 
+          <li class="list-group-item w-25">تاریخ تولید</li> \
+          <li class="list-group-item w-75">${data.info.timestamp}</li> \      
+        </ul>
+        <ul class="list-group list-group-horizontal w-100 mt-2"> \ 
+          <li class="list-group-item w-25">تعداد کلمات</li> \
+          <li class="list-group-item w-75">${data.info.word_count}</li> \      
+        </ul>
+        `;
+        console.log(modalBodyContent)
+        const modalFooterContent = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>';
+        createAndOpenModal('infoModal', 'اطلاعات محتوا', modalBodyContent, modalFooterContent);
+      }
+    });
+
+  }
+
+  function showDeleteModal(contentId) {
+    const modalBodyContent = '<p>آیا مطمئن هستید که می‌خواهید این محتوا را حذف کنید؟</p>';
+    const modalFooterContent = `
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+      <button type="button" class="btn btn-danger" onclick="deleteContent('${contentId}')">حذف</button>
+    `;
+    createAndOpenModal('deleteModal', 'حذف محتوا', modalBodyContent, modalFooterContent);
+  }
+
+  function deleteContent(contentId) {
+    $.ajax({
+      url: `/dashboard/article/delete/${contentId}`,
+      type: 'DELETE',
+      success: function (result) {
+        location.reload();
+      }
+    });
+  }
+
   $(document).ready(function () {
     function checkJobStatus(jobId, contentId) {
-      // console.log(`Checking job status for jobId: ${jobId}, contentId: ${contentId}`);
       $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
-        //console.log(`Job status for jobId ${jobId}:`, data);
-
         if (data.status === 'SUCCESS') {
           $(`.status-${contentId}`).hide();
           $.get(`/dashboard/article/blog/list/${contentId}`, function (data) {
-            // console.log(data)
             $(`#content-title-${contentId}`).html(data.title);
             $(`#content-wc-${contentId}`).html(data.count);
           });
         } else {
-          $(`#content-edit-btn-${contentId}`).html(data.word_count);
           setTimeout(() => checkJobStatus(jobId, contentId), 2000);
         }
       }).fail(function (xhr, status, error) {
-        // console.error(`Error checking job status for jobId ${jobId}:`, error);
       });
     }
 

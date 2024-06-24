@@ -1,5 +1,5 @@
 from datetime import datetime
-import hashlib
+import hashlib, json
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy.dialects.mysql import LONGTEXT
@@ -9,7 +9,9 @@ from app.exceptions import ValidationError
 from . import db, mdb, login_manager, contents_collection
 from markdown import markdown
 from bson import ObjectId
-
+from .const import content_type_map
+from .decorators import gregorian_to_jalali
+import jdatetime
 
 class Permission:
     WRITE = 4
@@ -238,8 +240,30 @@ class Content(db.Model):
     content_type = db.Column(db.Integer, nullable=True)
     word_count = db.Column(db.Integer, nullable=True)
     
+    def get_input(self, idx):
+        _inputs = json.loads(self.user_input)
+        return _inputs[idx]
+    
     def body(self):
         return self.get_body_from_mongo()
+
+    def get_info(self):
+        _inputs = json.loads(self.user_input)
+        # print(_inputs)
+        j_date = jdatetime.date.fromgregorian(date=self.timestamp)
+        created_date = j_date.strftime("%Y-%m-%d")
+        render_status = {"SUCCESS": 'تولید شده', 'PENDING': 'در حال تولید'}
+        json_content = {
+            'job_created': self.job.created_at,
+            'job_status': render_status[self.job.job_status],
+            'word_count': self.word_count,
+            'content_type': content_type_map[int(_inputs['content_type'])],
+            'inputs': self.user_input,
+            # 'body': self.get_body_from_mongo(),
+            # 'outlines': self.outlines,
+            'timestamp': created_date,
+        }
+        return json_content
 
     def to_json(self):
         json_content = {

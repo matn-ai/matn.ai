@@ -2,7 +2,7 @@ from functools import wraps
 from flask import abort
 from flask_login import current_user
 from .const import content_type_map
-from .models import Permission
+
 import jdatetime
 
 
@@ -18,7 +18,8 @@ def permission_required(permission):
 
 
 def admin_required(f):
-    return permission_required(Permission.ADMIN)(f)
+    pass
+    # return permission_required(Permission.ADMIN)(f)
 
 
 def show_content_type(content_type: int) -> str:
