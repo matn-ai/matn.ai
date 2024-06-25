@@ -25,7 +25,7 @@
                 </div>
                 <div class="mb-4 mt-2 pb-4">
                     <div class="input-group">
-                        <span class="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
+                        <span claass="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
                         {{ form.lang(class_="form-control", aria_describedby="basic-addon3 lang-addon") }}
                     </div>
                 </div>
@@ -37,15 +37,40 @@
                 <div class="form-group text-center mt-4">
                     {{ form.submit(class="btn btn-primary text-white w-50", id="submit-form") }}
                 </div>
-                <div class="form-group mt-4 pt-4">
-                    <div class="w-100 px-2 py-1 fw-semibold text-primary-emphasis  border border-primary-subtle rounded-2 text-center">
-                        <i class="fa fa-clock"></i> زمان تقریبی: ۵ دقیقه
-                    </div>
-                </div>
             </form>
         </div>
     </div>
     <div class="col-8">
+        <div class="d-flex rounded card-shadow mb-2  text-bg-primary rounded">
+            {%if content %}
+            {%if content.job.job_status == "SUCCESS" %}
+            <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
+            <div class="p-2 flex-fill ">۵ دقیقه</div>
+            <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i>تاریخ تولید</div>
+            <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
+            <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
+            <div class="p-2 flex-fill">{{ content.job.running_duration | convert_seconds_to_min_sec }}</div>
+            {% else %}
+            <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
+            <div class="p-2 flex-fill ">۵ دقیقه</div>
+            <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i> تاریخ تولید</div>
+            <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
+            <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
+            <div class="p-2 flex-fill">{{ content.job.running_duration | convert_seconds_to_min_sec }}</div>
+            {% endif %}
+            {% else %}
+
+            <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
+            <div class="p-2 flex-fill ">۵ دقیقه</div>
+            <div class="p-2 flex-fill article-info" style="display: none;"><i class="fa-solid fa-calendar-day me-2"></i>
+                تاریخ تولید</div>
+            <div class="p-2 flex-fill article-info" id="article-info-date" style="display: none;"></div>
+            <div class="p-2 flex-fill article-info" style="display: none;"><i class="fa-solid fa-stopwatch me-2"></i>مدت
+            </div>
+            <div class="p-2 flex-fill article-info" id="article-info-timer" style="display: none;"></div>
+
+            {% endif %}
+        </div>
         <div class="rounded card-shadow position-relative p-1">
             <div id="loading-content" class="text-center mr-auto mx-auto" style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
                 <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
@@ -121,6 +146,10 @@
             success: function (data) {
                 const jobId = data.job_id;
                 const contentId = data.content_id;
+                const job_date = data.job_date
+                $('.article-info').show();
+                $('#article-info-date').html(job_date);
+                $('#article-info-timer').html('در حال تولید');
                 checkJobStatus(jobId, contentId);
             },
             error: function (xhr, status, error) {
@@ -132,6 +161,7 @@
     function checkJobStatus(jobId, contentId) {
         $.get(`/dashboard/article/blog/status/cid/${jobId}`, function (data) {
             if (data.status === 'SUCCESS') {
+                $('#article-info-timer').html(data.running_duration);
                 fetchContent(contentId);
             } else {
                 setTimeout(() => checkJobStatus(jobId, contentId), 2000);

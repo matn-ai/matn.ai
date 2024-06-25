@@ -5,6 +5,7 @@ from app.dashboard import dashboard
 from ..tasks import generate_blog_simple, generate_pro_article, generate_general_article
 from .repository import get_user_contents, create_content, create_job_record, get_job_by_cid, get_content_by_id, get_job_by_id, get_content_info
 import json
+from ..utils import utils_gre2jalali
 
 @dashboard.route('/dashboard', methods=['GET'])
 @login_required
@@ -53,7 +54,8 @@ def article(id=None):
         job = generate_general_article.delay(content.id, form_data)
         create_job_record(job_id=job.id, content=content)
 
-        return jsonify(job_id=job.id, content_id=content.id)
+        j_date = utils_gre2jalali(content.job.created_at)
+        return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
 
     if request.method == 'GET' and id:
         # print(id)
@@ -110,8 +112,9 @@ def article_blog(id=None):
         
         job = generate_blog_simple.delay(content.id, form_data)
         create_job_record(job_id=job.id, content=content)
+        j_date = utils_gre2jalali(content.job.created_at)
 
-        return jsonify(job_id=job.id, content_id=content.id)
+        return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
 
     if request.method == 'GET' and id:
         # print(id)
@@ -144,9 +147,9 @@ def article_blog_status(job_id):
     job_cid = get_job_by_cid(job_id)
     job_id = get_job_by_id(job_id)
     if job_cid:
-        return jsonify({'status': job_cid.job_status})
+        return jsonify({'status': job_cid.job_status, 'running_duration': job_cid.running_duration})
     elif job_id:
-        return jsonify({'status': job_id.job_status})        
+        return jsonify({'status': job_id.job_status, 'running_duration': job_cid.running_duration})        
     return abort(404)
 
 @dashboard.route('/dashboard/article/blog/list/<content_id>', methods=['GET'])
