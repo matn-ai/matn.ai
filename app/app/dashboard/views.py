@@ -45,7 +45,7 @@ def index():
 @login_required
 def article(id=None):
     form = GenerateArticle()
-    content = "false"
+    content = None
     if form.validate_on_submit():
         form_data = request.form.to_dict()
         content = create_content(user_input=form_data, author=current_user)
@@ -56,6 +56,7 @@ def article(id=None):
         return jsonify(job_id=job.id, content_id=content.id)
 
     if request.method == 'GET' and id:
+        # print(id)
         content = get_content_by_id(id)
         if not content:
             return abort(404)
@@ -63,6 +64,8 @@ def article(id=None):
         form.user_topic.data = inputs["user_topic"]
         form.lang.data = inputs["lang"]
         form.tags.data = inputs["tags"]
+        form.article_length.data = inputs["article_length"]
+        form.content_type.data = inputs["content_type"]
         form.body.data = content.body
         
     return render_template('dashboard/article/article.html', form=form, content=content)

@@ -25,6 +25,7 @@ class GenerateArticle(FlaskForm):
     tags = StringField('کلمات کلیدی', validators=[DataRequired()])
     lang = SelectField('زبان', choices=[('fa', 'فارسی'), ('en', 'انگلیسی')])
     body = TextAreaField('محتوا')
+    article_length = RadioField('Article Length', choices=[('short', 'پست کوتاه'), ('long', 'پست بلند')], default='short')
     content_type = HiddenField(default=ARTICLE_GENERAL)
     submit = SubmitField('تولید مقاله')
 

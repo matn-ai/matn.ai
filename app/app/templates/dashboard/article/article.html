@@ -17,6 +17,15 @@
                         عنوان یا شرح موضوع مقاله را وارد کنید.
                     </div>
                 </div>
+                <div class="mb-4 text-center pt-4 pb-4">
+                    <div class="btn-group" role="group" aria-label="Article length toggle">
+                        {% for subfield in form.article_length %}
+                            <input type="radio" class="btn-check" id="{{ subfield.id }}" name="{{ subfield.name }}" value="{{ subfield.data }}"
+                                {% if subfield.checked %} checked {% endif %}>
+                            <label class="btn btn-outline-primary" for="{{ subfield.id }}" data-toggle="tooltip" title="{{ subfield.label.text }}">{{ subfield.label.text }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
                 <div class="mb-4 mt-2 pb-4">
                     <div class="input-group">
                       <span class="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
@@ -33,11 +42,37 @@
                 <div class="form-group text-center mt-4">
                     {{ form.submit(class_="btn btn-primary text-white w-50") }}
                 </div>
+        
+    
             </form>
         </div>
     </div>
     <div class="col-8">
-        <div class="rounded card-shadow position-relative p-1">
+        <div class="d-flex rounded card-shadow mb-2  text-bg-primary rounded">
+            {%if content %}
+                {%if content.job.job_status == "SUCCESS" %}
+                    <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
+                    <div class="p-2 flex-fill ">۵ دقیقه</div>
+                    <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i>تاریخ تولید</div>
+                    <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
+                    <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
+                    <div class="p-2 flex-fill">{{ content.job.running_duration | convert_seconds_to_min_sec  }}</div>
+                {% else %}
+                    <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
+                    <div class="p-2 flex-fill ">۵ دقیقه</div>
+                    <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i> تاریخ تولید</div>
+                    <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
+                    <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
+                    <div class="p-2 flex-fill">{{ content.job.running_duration  }}</div>
+                {% endif %}
+            {% else %}
+            <div class="p-2 flex-fill">
+                <i class="fa-solid fa-hourglass-start me-2"></i>
+
+                زمان تقریبی تولید مقاله عمومی ۵ دقیقه است</div>
+             {% endif %}
+        </div>
+            <div class="rounded card-shadow position-relative p-1">
             <div id="loading-content" class="text-center mr-auto mx-auto"
                 style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
                 <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
@@ -74,56 +109,72 @@
 
     // Initialize Tagify
     var input = document.getElementById('tags-input');
-    new Tagify(input);
+    tagify = new Tagify(input);
 
-    $(document).ready(function () {
-        $('#submission_form').submit(function (e) {
-            e.preventDefault();
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
 
-            // Show the loading content
-            $('#loading-content').show();
-
-            // Serialize the form data including the CKEditor content
-            var formData = $(this).serializeArray();
-            formData.push({ name: "body", value: editor.getData() });
-
-            // Convert the form data to a format that can be sent via AJAX
-            var serializedData = $.param(formData);
-
-            // Submit the form using AJAX
-            $.ajax({
-                type: "POST",
-                url: "{{ url_for('dashboard.article_blog') }}",
-                data: serializedData,
-                success: function (data) {
-                    // Handle the successful response
-                    const jobId = data.job_id;
-                    const contentId = data.content_id;
-                    checkJobStatus(jobId, contentId);
-                },
-                error: function (xhr, status, error) {
-                    // Handle the error response
-                    console.error(error);
-                }
-            });
+        $('input[name="article_length"]').change(function () {
+            const tooltipText = this.id === 'long_article'
+                ? 'پست بلند: +۳۰۰۰ کلمه'
+                : 'پست کوتاه: ۲۱۰۰ تا ۲۴۰۰ کلمه';
+            $('[for="' + this.id + '"]').attr('title', tooltipText).tooltip('dispose').tooltip();
         });
 
-        function checkJobStatus(jobId, contentId) {
-            $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
-                if (data.status === 'SUCCESS') {
-                    fetchContent(contentId);
-                } else {
-                    setTimeout(() => checkJobStatus(jobId, contentId), 2000);
-                }
-            });
-        }
-
-        function fetchContent(contentId) {
-            $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
-                $('#loading-content').hide();
-                editor.setData(data.content);
-            });
-        }
+        {% if content %}
+            $('#loading-content').show();
+            $('#submission_form').find('input, textarea, button, select').prop('disabled', true);
+            tagify.setReadonly(true);
+            checkJobStatus('{{ content.job.job_id }}','{{ content.id }}')
+            
+        {% endif %}
     });
+
+    $('#submission_form').submit(function (e) {
+        e.preventDefault();
+
+        // Show the loading content
+        $('#loading-content').show();
+        $('#submit-form').addClass('disable')
+        tagify.setReadonly(true);
+
+        // Serialize the form data
+        var formData = $(this).serialize();
+        $(this).find('input, textarea, button, select').prop('disabled', true);
+
+        // Submit the form using AJAX
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('dashboard.article') }}",
+            data: formData,
+            success: function (data) {
+                const jobId = data.job_id;
+                const contentId = data.content_id;
+                checkJobStatus(jobId, contentId);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    });
+
+    function checkJobStatus(jobId, contentId) {
+        $.get(`/dashboard/article/blog/status/cid/${jobId}`, function (data) {
+            if (data.status === 'SUCCESS') {
+                fetchContent(contentId);
+            } else {
+                setTimeout(() => checkJobStatus(jobId, contentId), 2000);
+            }
+        });
+    }
+
+    function fetchContent(contentId) {
+        $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
+            $('#loading-content').hide();
+            editor.setData(data.content);
+            tagify.setReadonly(false);
+            $('#submission_form').find('input, textarea, button, select').prop('disabled', false);
+        });
+    }
 </script>
 {% endblock %}

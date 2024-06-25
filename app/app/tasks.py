@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 from bs4 import BeautifulSoup
 from redis import StrictRedis
@@ -26,16 +27,13 @@ def chat(llm_type, messages):
     result = response.choices[0].message.content
     return result
 
-
 def add_to_memory(role, content, list_key):
     message = {"role": role, "content": content}
     redis_client.rpush(list_key, json.dumps(message))
 
-
 def get_conversation_history(list_key):
     items = redis_client.lrange(list_key, 0, -1)
     return [json.loads(item) for item in items]
-
 
 def generate_title(user_title, lang, llm_type):
     user_prompt = (
@@ -54,14 +52,12 @@ def generate_title(user_title, lang, llm_type):
     ]
     return chat(llm_type, messages)
 
-
 def generate_title_blog_post(user_title, lang, article_length, llm_type):
     user_prompt = f"The content language is {lang}\n"
-
     if article_length == "short":
         user_prompt += (
             "Task: Generate a blog post title\n"
-            "Instructions: Create an engaging and optimized title fo blog post related to {user_title}. "
+            "Instructions: Create an engaging and optimized title for a blog post related to {user_title}. "
             "Ensure the title is compelling, accurately reflects the content, and incorporates "
             "relevant keywords to attract the target audience. The title should be concise, "
             "attention-grabbing, and encourage readers to click and read the post.\n"
@@ -86,10 +82,8 @@ def generate_title_blog_post(user_title, lang, article_length, llm_type):
     ]
     return chat(llm_type, messages)
 
-
 def generate_outlines_blog_post(user_title, lang, article_length, llm_type):
     user_prompt = f"The content language is {lang}\nUse numbering for list\n"
-
     if article_length == "long":
         user_prompt += (
             "Task: Generate an outline for a long blog post\n"
@@ -116,7 +110,6 @@ def generate_outlines_blog_post(user_title, lang, article_length, llm_type):
     ]
     return chat(llm_type, messages)
 
-
 def generate_outlines(user_title, lang, llm_type):
     user_prompt = (
         f"Create a comprehensive outline for a blog post about {user_title}. "
@@ -136,10 +129,7 @@ def generate_outlines(user_title, lang, llm_type):
     ]
     return chat(llm_type, messages)
 
-
-def generate_blog_post_sections(
-    headline_text, outlines, keywords, lang, length, llm_type
-):
+def generate_blog_post_sections(headline_text, outlines, keywords, lang, length, llm_type):
     if length == "short":
         prompt = (
             f"Write few paragraphs for the section titled '{headline_text}' of a blog post. "
@@ -175,7 +165,6 @@ def generate_blog_post_sections(
 
     return chat(llm_type, messages)
 
-
 def generate_sections(headline_text, outlines, keywords, lang, llm_type):
     prompt = (
         f"Write detailed paragraphs for the section titled '{headline_text}' of a blog post. "
@@ -202,7 +191,6 @@ def generate_sections(headline_text, outlines, keywords, lang, llm_type):
 
     return chat(llm_type, messages)
 
-
 def generate_blog_post_body(title, outlines, keywords, lang, length, llm_type):
     soup = BeautifulSoup(outlines, "html.parser")
     headlines_elements = soup.find_all(["h2", "h3", "h4", "h5", "h6"])
@@ -219,8 +207,6 @@ def generate_blog_post_body(title, outlines, keywords, lang, length, llm_type):
         )
 
     return f"<h1>{title}</h1><br/>{inside}"
-    # return f"<h1>{title}</h1><br/>{toc}<br/><hr/><br/>{inside}"
-
 
 def generate_article_body(title, outlines, keywords, lang, llm_type):
     soup = BeautifulSoup(outlines, "html.parser")
@@ -238,7 +224,6 @@ def generate_article_body(title, outlines, keywords, lang, llm_type):
         )
 
     return f"<h1>{title}</h1><br/>{toc}<br/><hr/><br/>{inside}"
-
 
 def save_article_to_db(content_id, body, title, outlines, content_length):
     with flask_app.app_context():
@@ -258,17 +243,19 @@ def save_article_to_db(content_id, body, title, outlines, content_length):
             return content.id
         return None
 
-
-def update_job_status(task_id, status):
+def update_job_status(task_id, status, duration=None):
     job = Job.query.filter_by(job_id=task_id).first()
     if job:
         job.job_status = status
+        if duration:
+            job.running_duration = duration  # Assuming there is a `duration` field in the Job model
         db.session.add(job)
         db.session.commit()
 
-
 @celery.task
 def generate_blog_simple(content_id, user_input):
+    start_time = datetime.now()
+
     title = user_input["user_topic"]
     keywords = user_input["tags"].split(",")
     lang = "فارسی" if user_input["lang"] else "English"
@@ -283,13 +270,17 @@ def generate_blog_simple(content_id, user_input):
     content_id = save_article_to_db(content_id, body, title, outlines, content_length)
 
     task_status = "SUCCESS" if content_id else "FAILURE"
-    update_job_status(generate_blog_simple.request.id, task_status)
+    end_time = datetime.now()
+    duration = end_time - start_time
+    
+    update_job_status(generate_blog_simple.request.id, task_status, duration.seconds)
 
     return content_id
-
 
 @celery.task
 def generate_general_article(content_id, user_input):
+    start_time = datetime.now()
+
     title = user_input["user_topic"]
     keywords = user_input["tags"].split(",")
     lang = "فارسی" if user_input["lang"] else "English"
@@ -303,13 +294,16 @@ def generate_general_article(content_id, user_input):
     content_id = save_article_to_db(content_id, body, title, outlines, content_length)
 
     task_status = "SUCCESS" if content_id else "FAILURE"
-    update_job_status(generate_general_article.request.id, task_status)
+    end_time = datetime.now()
+    duration = end_time - start_time
+    update_job_status(generate_general_article.request.id, task_status, duration.seconds)
 
     return content_id
-
 
 @celery.task
 def generate_pro_article(content_id, user_input):
+    start_time = datetime.now()
+
     title = user_input["user_topic"]
     keywords = user_input["tags"].split(",")
     lang = "فارسی" if user_input["lang"] else "English"
@@ -323,9 +317,8 @@ def generate_pro_article(content_id, user_input):
     content_id = save_article_to_db(content_id, body, title, outlines, content_length)
 
     task_status = "SUCCESS" if content_id else "FAILURE"
-    update_job_status(generate_pro_article.request.id, task_status)
+    end_time = datetime.now()
+    duration = end_time - start_time
+    update_job_status(generate_pro_article.request.id, task_status, duration.seconds)
 
     return content_id
-
-
-# from .image_tasks import *    
