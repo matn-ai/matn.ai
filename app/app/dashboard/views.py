@@ -3,8 +3,9 @@ from flask_login import login_required, current_user
 from app.dashboard.forms import GenerateArticleBlog, GenerateArticle, GenerateArticlePro
 from app.dashboard import dashboard
 from ..tasks import generate_blog_simple, generate_pro_article, generate_general_article
-from .repository import get_user_contents, create_content, create_job_record, get_job_by_cid, get_content_by_id, get_job_by_id
+from .repository import get_user_contents, create_content, create_job_record, get_job_by_cid, get_content_by_id, get_job_by_id, get_content_info
 import json
+from ..utils import utils_gre2jalali
 
 @dashboard.route('/dashboard', methods=['GET'])
 @login_required
@@ -27,6 +28,7 @@ def index():
             contents.append({
                 'id': content.id,
                 'system_title': content.system_title,
+                'user_topic': content.get_input('user_topic'),
                 'word_count': content.word_count,
                 'content_type': content.content_type,
                 'timestamp': content.timestamp,
@@ -44,7 +46,7 @@ def index():
 @login_required
 def article(id=None):
     form = GenerateArticle()
-    content = "false"
+    content = None
     if form.validate_on_submit():
         form_data = request.form.to_dict()
         content = create_content(user_input=form_data, author=current_user)
@@ -52,9 +54,11 @@ def article(id=None):
         job = generate_general_article.delay(content.id, form_data)
         create_job_record(job_id=job.id, content=content)
 
-        return jsonify(job_id=job.id, content_id=content.id)
+        j_date = utils_gre2jalali(content.job.created_at)
+        return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
 
     if request.method == 'GET' and id:
+        # print(id)
         content = get_content_by_id(id)
         if not content:
             return abort(404)
@@ -62,6 +66,8 @@ def article(id=None):
         form.user_topic.data = inputs["user_topic"]
         form.lang.data = inputs["lang"]
         form.tags.data = inputs["tags"]
+        form.article_length.data = inputs["article_length"]
+        form.content_type.data = inputs["content_type"]
         form.body.data = content.body
         
     return render_template('dashboard/article/article.html', form=form, content=content)
@@ -106,8 +112,9 @@ def article_blog(id=None):
         
         job = generate_blog_simple.delay(content.id, form_data)
         create_job_record(job_id=job.id, content=content)
+        j_date = utils_gre2jalali(content.job.created_at)
 
-        return jsonify(job_id=job.id, content_id=content.id)
+        return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
 
     if request.method == 'GET' and id:
         # print(id)
@@ -118,10 +125,20 @@ def article_blog(id=None):
         form.user_topic.data = inputs["user_topic"]
         form.lang.data = inputs["lang"]
         form.tags.data = inputs["tags"]
+        form.article_length.data = inputs["article_length"]
         form.content_type.data = inputs["content_type"]
         form.body.data = content.body
 
     return render_template('dashboard/article/article_blog.html', form=form, content=content)
+
+
+@dashboard.route('/dashboard/article/info/<content_id>', methods=['GET'])
+@login_required
+def article_info(content_id):
+    info = get_content_info(content_id)
+    if info:
+        return jsonify({'info': info.get_info()})
+    return abort(404)
 
 @dashboard.route('/dashboard/article/blog/status/id/<job_id>', methods=['GET'])
 @dashboard.route('/dashboard/article/blog/status/cid/<job_id>', methods=['GET'])
@@ -130,9 +147,9 @@ def article_blog_status(job_id):
     job_cid = get_job_by_cid(job_id)
     job_id = get_job_by_id(job_id)
     if job_cid:
-        return jsonify({'status': job_cid.job_status})
+        return jsonify({'status': job_cid.job_status, 'running_duration': job_cid.running_duration})
     elif job_id:
-        return jsonify({'status': job_id.job_status})        
+        return jsonify({'status': job_id.job_status, 'running_duration': job_cid.running_duration})        
     return abort(404)
 
 @dashboard.route('/dashboard/article/blog/list/<content_id>', methods=['GET'])

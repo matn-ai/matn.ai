@@ -122,9 +122,12 @@ from .api import api as api_blueprint
 
 app.register_blueprint(api_blueprint, url_prefix="/api/v1")
 
-from .decorators import show_content_type, gregorian_to_jalali
+from .decorators import show_content_type, gregorian_to_jalali, gregorian_to_jalali_detail, convert_seconds_to_min_sec
 app.jinja_env.filters['show_content_type'] = show_content_type
 app.jinja_env.filters['gregorian_to_jalali'] = gregorian_to_jalali
+app.jinja_env.filters['gregorian_to_jalali_detail'] = gregorian_to_jalali_detail
+app.jinja_env.filters['convert_seconds_to_min_sec'] = convert_seconds_to_min_sec
+
 
 
 @app.cli.command("create-admin")

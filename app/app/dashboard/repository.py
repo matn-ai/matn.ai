@@ -48,6 +48,7 @@ def update_content(content_id, user_input):
         db.session.rollback()
         raise e
 
+
 def create_content(user_input, author):
     # Extract body from user input
     body = user_input.get('body')
@@ -75,6 +76,12 @@ def get_job_by_id(id):
 
 def get_job_by_cid(job_id):
     return Job.query.filter_by(job_id=job_id).first()
+
+
+
+def get_content_info(content_id):
+    content = Content.query.get_or_404(content_id)
+    return content
 
 def get_content_by_id(content_id):
     content = Content.query.get_or_404(content_id)
