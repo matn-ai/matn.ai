@@ -19,7 +19,9 @@
                         {% for subfield in form.article_length %}
                             <input type="radio" class="btn-check" id="{{ subfield.id }}" name="{{ subfield.name }}" value="{{ subfield.data }}"
                                 {% if subfield.checked %} checked {% endif %}>
-                            <label class="btn btn-outline-primary" for="{{ subfield.id }}" data-toggle="tooltip" title="{{ subfield.label.text }}">{{ subfield.label.text }}</label>
+                            <label class="btn btn-outline-primary" for="{{ subfield.id }}" data-toggle="tooltip" title="{% if subfield.data == 'long' %}۴۰۰۰ تا ۵۰۰۰ کلمه{% else %}تا ۴۰۰۰ کلمه{% endif %}">
+                                {{ subfield.label.text }}
+                            </label>
                         {% endfor %}
                     </div>
                 </div>
@@ -110,12 +112,6 @@
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
 
-        $('input[name="article_length"]').change(function () {
-            const tooltipText = this.id === 'long_article'
-                ? 'پست بلند: +۳۰۰۰ کلمه'
-                : 'پست کوتاه: ۲۱۰۰ تا ۲۴۰۰ کلمه';
-            $('[for="' + this.id + '"]').attr('title', tooltipText).tooltip('dispose').tooltip();
-        });
 
         {% if content %}
             $('#loading-content').show();
