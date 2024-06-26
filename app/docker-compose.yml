@@ -24,7 +24,7 @@ services:
 
   worker:
     build: .
-    restart: always
+    # restart: always
     entrypoint: scripts/celery_ep.sh
     volumes:
       - .:/app
