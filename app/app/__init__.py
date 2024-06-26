@@ -2,7 +2,7 @@ import logging
 import click
 from os import getenv
 from flask import Flask
-
+from dotenv import load_dotenv
 # from flask_appbuilder import AppBuilder, SQLA
 from flask_mail import Mail
 from flask_moment import Moment
@@ -13,13 +13,10 @@ from flask_pagedown import PageDown
 from flask_sqlalchemy import SQLAlchemy
 from pymongo import MongoClient
 
+load_dotenv()
+
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
-
-mongodb_uri = "mongodb://%s:%s/" % (
-    getenv("MONGO_HOST") if getenv("MONGO_HOST") else 'localhost' ,
-    getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
-)
 
 
 mongodb_uri = "mongodb://%s:%s@%s:%s/" % (
@@ -29,7 +26,7 @@ mongodb_uri = "mongodb://%s:%s@%s:%s/" % (
     getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
 )
 
-if getenv("LOCAL"):
+if getenv("USE_LOCAL_MONGO"):
     mongodb_uri = "mongodb://%s:%s/" % (
         getenv("MONGO_HOST") if getenv("MONGO_HOST") else 'localhost' ,
         getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
