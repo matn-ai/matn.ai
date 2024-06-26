@@ -34,14 +34,14 @@
           <td class="text-center p-4">
             <div id="content-wc-{{ content.id }}">
               {% if content.word_count %}
-              {{ content.word_count }}
+              {{ content.word_count | to_persian_num }}
               {% else %}
               <span class="loading-placeholder rounded status-{{ content.id }}"></span>
               {% endif %}
             </div>
           </td>
           <td class="text-center p-4">{{ content.content_type | show_content_type }}</td>
-          <td class="text-center p-4">{{ content.timestamp | gregorian_to_jalali }}</td>
+          <td class="text-center p-4">{{ content.timestamp | gregorian_to_jalali_detail }}</td>
           <td class="text-center p-4">
             <div class="dropdown">
               <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown"
@@ -129,7 +129,7 @@
       success: function (data) {
         console.log(data)
         const inputs = JSON.parse(data.info.inputs);
-        if ( data.info.word_count)
+        if (!data.info.word_count)
           data.info.word_count = "درحال تولید"
         // const article_length = data.info["article_length"]
         const modalBodyContent = `<ul class="list-group list-group-horizontal w-100"> \ 

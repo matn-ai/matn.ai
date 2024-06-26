@@ -34,6 +34,6 @@ def utils_gre2jalali(date):
     # second = to_persian_numerals(f"{jalali_date.second:02}")
 
     # Format Jalali date to desired format
-    persian_date_str = f"{hour}:{minute} - {month} {day} {year}"
+    persian_date_str = f"{hour}:{minute} - {day} {month} {year}"
     
     return persian_date_str

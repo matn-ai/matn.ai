@@ -196,9 +196,9 @@ def generate_blog_post_sections(
     prompt += f"Like: <p> [text here] </p> <p> [text here] </p><p> [text here] </p>\n"
     
     #[{\"value\":\"\u06a9\u0627\u0634\u062a\u0646 \u0628\u0644\u0648\u0628\u0631\u06cc\"},{\"value\":\"\u062f\u0631\u062e\u062a\"},{\"value\":\"\u062a\u0631\"}]
-    print(keywords)
-    print(type(keywords))
-    print("*"*90)
+    # print(keywords)
+    # print(type(keywords))
+    # print("*"*90)
     if keywords:
         for item in keywords:
             item = str(item).replace("["," ")

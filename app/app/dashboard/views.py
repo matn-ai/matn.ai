@@ -155,14 +155,25 @@ def article_info(content_id):
 def article_blog_status(job_id):
     job_cid = get_job_by_cid(job_id)
     job_id = get_job_by_id(job_id)
+    
     if job_cid:
-        return jsonify(
-            {"status": job_cid.job_status, "running_duration": job_cid.running_duration}
-        )
+        if job_cid.job_status == "SUCCESS":
+            return jsonify(
+                {"status": job_cid.job_status, "running_duration": job_cid.running_duration}
+            )
+        else:
+            return jsonify(
+                {"status": job_cid.job_status}
+            )
     elif job_id:
-        return jsonify(
-            {"status": job_id.job_status, "running_duration": job_cid.running_duration}
-        )
+        if job_id.job_status == "SUCCESS":
+            return jsonify(
+                {"status": job_id.job_status, "running_duration": job_id.running_duration}
+            )
+        else:
+            return jsonify(
+                {"status": job_id.job_status}
+            )
     return abort(404)
 
 
