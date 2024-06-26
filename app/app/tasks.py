@@ -1,5 +1,4 @@
-import json
-import os, random
+import os, random, json, time
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -111,6 +110,7 @@ def generate_outlines_blog_post(user_title, lang, article_length, llm_type):
     user_prompt = f"The content language is {lang}\n"
     user_prompt += f"Use numbering for list. \n"
     if article_length == "long":
+        random.seed(int(time.time()))
         rand = random.randint(13, 15)
         user_prompt += (
             f"Generate a detailed outline for a blog post on the following topic: {user_title}.\n"
@@ -118,6 +118,7 @@ def generate_outlines_blog_post(user_title, lang, article_length, llm_type):
             f"Ensure each section flows logically and covers the topic comprehensively.\n"
         )
     else:
+        random.seed(int(time.time()))
         rand = random.randint(9, 13)
         user_prompt += (
             f"Generate a concise outline for a short blog post on the following topic: {user_title}\n"
@@ -190,12 +191,20 @@ def generate_blog_post_sections(
     prompt += f"The content language is {lang}. \n"
     prompt += f"Ensure correct grammar. Return the result in HTML with only <p> tags."
     prompt += f"Avoid writing a paragraph or sentence related to the summary of the text or words like at the end or similar like below:\n"
-    prompt += f"{' and '.join(avoid_list)}\n"
-    prompt += f"\n\Do not include the headline title again.\n"
-    prompt += f"Like: <p> [text here] </p> <p> [text here] </p><p> [text here] </p>"
+    prompt += f"Avoid finish the paragraph with {' and '.join(avoid_list)}\n"
+    prompt += f"\nDo not include the headline title again.\n"
+    prompt += f"Like: <p> [text here] </p> <p> [text here] </p><p> [text here] </p>\n"
     
+    #[{\"value\":\"\u06a9\u0627\u0634\u062a\u0646 \u0628\u0644\u0648\u0628\u0631\u06cc\"},{\"value\":\"\u062f\u0631\u062e\u062a\"},{\"value\":\"\u062a\u0631\"}]
+    print(keywords)
+    print(type(keywords))
+    print("*"*90)
     if keywords:
-        prompt += f"Use the following keywords where relevant: {', '.join(keywords)}\n"
+        for item in keywords:
+            item = str(item).replace("["," ")
+            item = str(item).replace("]"," ")
+            _keywords = json.loads(item.strip())
+            prompt += f"Use the following keyword if relevant: {_keywords['value']}\n"
 
     assistant_prompt = (
         f"Your language is {lang}. You are an SEO-optimized blog post writer. "
@@ -210,6 +219,7 @@ def generate_blog_post_sections(
 
     return chat(llm_type, messages)
 
+['[{"value":"کاشت درخت سیب"}', '{"value":"درخت آلبالو"}]']
 
 def generate_sections(headline_text, outlines, keywords, lang, llm_type):
     prompt = (
