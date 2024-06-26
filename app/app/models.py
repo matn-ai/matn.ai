@@ -10,8 +10,9 @@ from . import db, mdb, login_manager, contents_collection
 from markdown import markdown
 from bson import ObjectId
 from .const import content_type_map
-from .decorators import gregorian_to_jalali
+from .utils import utils_gre2jalali, to_persian_numerals
 import jdatetime
+
 
 class Permission:
     WRITE = 4
@@ -249,14 +250,12 @@ class Content(db.Model):
 
     def get_info(self):
         _inputs = json.loads(self.user_input)
-        # print(_inputs)
-        j_date = jdatetime.date.fromgregorian(date=self.timestamp)
-        created_date = j_date.strftime("%Y-%m-%d")
+        created_date = utils_gre2jalali(self.timestamp)
         render_status = {"SUCCESS": 'تولید شده', 'PENDING': 'در حال تولید'}
         json_content = {
             'job_created': self.job.created_at,
             'job_status': render_status[self.job.job_status],
-            'word_count': self.word_count,
+            'word_count': to_persian_numerals(self.word_count),
             'content_type': content_type_map[int(_inputs['content_type'])],
             'inputs': self.user_input,
             # 'body': self.get_body_from_mongo(),
@@ -337,7 +336,7 @@ class Job(db.Model):
     __tablename__ = 'jobs'
     id = db.Column(db.Integer, primary_key=True)
     job_status = db.Column(db.String(64))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now())
     running_duration = db.Column(db.Integer)
     job_id = db.Column(db.String(64))
     content_id = db.Column(db.Integer, db.ForeignKey('contents.id'))

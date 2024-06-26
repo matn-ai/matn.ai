@@ -28,7 +28,7 @@
                 </div>
                 <div class="mb-4 mt-2 pb-4">
                     <div class="input-group">
-                        <span claass="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
+                        <span class="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
                         {{ form.lang(class_="form-control", aria_describedby="basic-addon3 lang-addon") }}
                     </div>
                 </div>
@@ -44,33 +44,36 @@
         </div>
     </div>
     <div class="col-8">
-        <div class="d-flex rounded card-shadow mb-2  text-bg-light rounded ">
-            {%if content %}
-                {%if content.job.job_status == "SUCCESS" %}
-                    <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
-                    <div class="p-2 flex-fill ">۵ دقیقه</div>
+        <div class="d-flex rounded card-shadow mb-2 text-bg-light rounded">
+            {% if content %}
+                {% if content.job.job_status == "SUCCESS" %}
+                    <div class="p-2"><i class="fa fa-clock me-2"></i> تعداد کلمات</div>
+                    <div class="p-2 flex-fill">{{ content.word_count | to_persian_num }}</div>
                     <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i>تاریخ تولید</div>
                     <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
                     <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
                     <div class="p-2 flex-fill">{{ content.job.running_duration | convert_seconds_to_min_sec }}</div>
                 {% else %}
-                    <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
-                    <div class="p-2 flex-fill ">۵ دقیقه</div>
+                    <div class="p-2"><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
+                    <div class="p-2 flex-fill">۵ دقیقه</div>
                     <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i> تاریخ تولید</div>
                     <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
                     <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
-                    <div class="p-2 flex-fill">{{ content.job.running_duration | convert_seconds_to_min_sec }}</div>
+                    <div class="p-2 flex-fill" id="article-info-timer">
+                       <span id="minutes"></span>:<span id="seconds"></span>
+                    </div>
                 {% endif %}
             {% else %}
-
-                <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
-                <div class="p-2 flex-fill ">۵ دقیقه</div>
+                <div class="p-2"><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
+                <div class="p-2 flex-fill">۵ دقیقه</div>
                 <div class="p-2 flex-fill article-info" style="display: none;"><i class="fa-solid fa-calendar-day me-2"></i>
                     تاریخ تولید</div>
                 <div class="p-2 flex-fill article-info" id="article-info-date" style="display: none;"></div>
                 <div class="p-2 flex-fill article-info" style="display: none;"><i class="fa-solid fa-stopwatch me-2"></i>مدت
                 </div>
-                <div class="p-2 flex-fill article-info" id="article-info-timer" style="display: none;"></div>
+                <div class="p-2 flex-fill article-info" id="article-info-timer" style="display: none;">
+                   <span id="minutes"></span>:<span id="seconds"></span>
+                </div>
             {% endif %}
         </div>
         <div class="rounded card-shadow position-relative p-1">
@@ -109,17 +112,17 @@
 
     // Initialize Tagify
     var input = document.getElementById('tags-input');
-    tagify = new Tagify(input);
+    var tagify = new Tagify(input);
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
 
-
         {% if content %}
-        $('#loading-content').show();
-        $('#submission_form').find('input, textarea, button, select').prop('disabled', true);
-        tagify.setReadonly(true);
-        checkJobStatus('{{ content.job.job_id }}', '{{ content.id }}')
+            $('#loading-content').show();
+            $('#submission_form').find('input, textarea, button, select').prop('disabled', true);
+            tagify.setReadonly(true);
+            checkJobStatus('{{ content.job.job_id }}', '{{ content.id }}');
+            startTimer('{{ content.job.created_at }}')
         {% endif %}
     });
 
@@ -128,7 +131,7 @@
 
         // Show the loading content
         $('#loading-content').show();
-        $('#submit-form').addClass('disable')
+        $('#submit-form').addClass('disable');
         tagify.setReadonly(true);
 
         // Serialize the form data
@@ -143,23 +146,63 @@
             success: function (data) {
                 const jobId = data.job_id;
                 const contentId = data.content_id;
-                const job_date = data.job_date
+                const job_date = data.job_date;
+
                 $('.article-info').show();
                 $('#article-info-date').html(job_date);
-                $('#article-info-timer').html('در حال تولید');
+                $('#article-info-timer').show();
+
+                startTimer();
                 checkJobStatus(jobId, contentId);
             },
             error: function (xhr, status, error) {
-                console.error(error);
+                $('#loading-content').hide();
+                $('#submission_form').find('input, textarea, button, select').prop('disabled', false);
+                tagify.setReadonly(false);
             }
         });
     });
+
+    function startTimer(startDate=null) {
+        if (startDate){
+            var start = new Date(startDate);
+        } else {
+            var start = new Date();
+        }
+        setInterval(function () {
+            var now = new Date();
+            var elapsed = Math.floor((now - start) / 1000);
+            var hours = Math.floor(elapsed / 3600);
+            var minutes = Math.floor((elapsed % 3600) / 60);
+            var seconds = elapsed % 60;
+    
+            function pad(number) {
+                return number < 10 ? '0' + number : number;
+            }
+    
+            function toPersianNumber(number) {
+                var persianMap = {
+                    '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴',
+                    '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹'
+                };
+                return number.toString().split('').map(char => persianMap[char] || char).join('');
+            }
+    
+            $('#hours').text(toPersianNumber(pad(hours)));
+            $('#minutes').text(toPersianNumber(pad(minutes)));
+            $('#seconds').text(toPersianNumber(pad(seconds)));
+        }, 1000);
+    }
 
     function checkJobStatus(jobId, contentId) {
         $.get(`/dashboard/article/blog/status/cid/${jobId}`, function (data) {
             if (data.status === 'SUCCESS') {
                 $('#article-info-timer').html(data.running_duration);
                 fetchContent(contentId);
+            } else if (data.status === 'FAILURE') {
+                $('#loading-content').hide();
+                $('#submission_form').find('input, textarea, button, select').prop('disabled', false);
+                tagify.setReadonly(false);
             } else {
                 setTimeout(() => checkJobStatus(jobId, contentId), 2000);
             }

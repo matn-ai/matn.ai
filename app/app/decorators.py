@@ -30,14 +30,14 @@ def gregorian_to_jalali(date):
     j_date = jdatetime.date.fromgregorian(date=date)
     return j_date.strftime('%Y-%m-%d')
 
+def to_persian_num(num):
+    return to_persian_numerals(num)
 
 
 def gregorian_to_jalali_detail(date):
     return utils_gre2jalali(date)
 
 def convert_seconds_to_min_sec(total_seconds):
-    if not total_seconds:
-        return 'در‌حال تولید'
     minutes = total_seconds // 60
     seconds = total_seconds % 60
 
