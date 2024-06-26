@@ -1139,3 +1139,12 @@
       background-position: -100% 0;
     }
   }
+
+  .ck-editor__editable_inline {
+	border: none !important;
+}
+
+.ck-rounded-corners .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content, .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content.ck-rounded-corners
+{
+	border: none;
+}
