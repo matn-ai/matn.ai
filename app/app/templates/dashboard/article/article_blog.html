@@ -1,4 +1,3 @@
-
 {% extends "dashboard/dashboard.html" %}
 {% block dashboard %}
 <div class="row">
@@ -7,7 +6,8 @@
             <div class="mb-4 w-100 text-center">
                 <h4 class="flex-fill pb-4">تولید پست بلاگ</h4>
             </div>
-            <form id="submission_form" class="form-group mb-4 mt-2" action="{{ url_for('dashboard.article_blog') }}" method="post">
+            <form id="submission_form" class="form-group mb-4 mt-2" action="{{ url_for('dashboard.article_blog') }}"
+                method="post">
                 {{ form.hidden_tag() }}
                 <div class="form-group mb-2 mt-2">
                     <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
@@ -17,11 +17,12 @@
                 <div class="mb-4 text-center pt-4 pb-4">
                     <div class="btn-group" role="group" aria-label="Article length toggle">
                         {% for subfield in form.article_length %}
-                            <input type="radio" class="btn-check" id="{{ subfield.id }}" name="{{ subfield.name }}" value="{{ subfield.data }}"
-                                {% if subfield.checked %} checked {% endif %}>
-                            <label class="btn btn-outline-primary" for="{{ subfield.id }}" data-toggle="tooltip" title="{% if subfield.data == 'long' %}۴۰۰۰ تا ۵۰۰۰ کلمه{% else %}تا ۴۰۰۰ کلمه{% endif %}">
-                                {{ subfield.label.text }}
-                            </label>
+                        <input type="radio" class="btn-check" id="{{ subfield.id }}" name="{{ subfield.name }}"
+                            value="{{ subfield.data }}" {% if subfield.checked %} checked {% endif %}>
+                        <label class="btn btn-outline-primary" for="{{ subfield.id }}" data-toggle="tooltip"
+                            title="{% if subfield.data == 'long' %}۴۰۰۰ تا ۵۰۰۰ کلمه{% else %}تا ۴۰۰۰ کلمه{% endif %}">
+                            {{ subfield.label.text }}
+                        </label>
                         {% endfor %}
                     </div>
                 </div>
@@ -43,40 +44,41 @@
         </div>
     </div>
     <div class="col-8">
-        <div class="d-flex rounded card-shadow mb-2  text-bg-primary rounded">
+        <div class="d-flex rounded card-shadow mb-2  text-bg-light rounded ">
             {%if content %}
-            {%if content.job.job_status == "SUCCESS" %}
-            <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
-            <div class="p-2 flex-fill ">۵ دقیقه</div>
-            <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i>تاریخ تولید</div>
-            <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
-            <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
-            <div class="p-2 flex-fill">{{ content.job.running_duration | convert_seconds_to_min_sec }}</div>
-            {% else %}
-            <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
-            <div class="p-2 flex-fill ">۵ دقیقه</div>
-            <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i> تاریخ تولید</div>
-            <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
-            <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
-            <div class="p-2 flex-fill">{{ content.job.running_duration | convert_seconds_to_min_sec }}</div>
-            {% endif %}
+                {%if content.job.job_status == "SUCCESS" %}
+                    <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
+                    <div class="p-2 flex-fill ">۵ دقیقه</div>
+                    <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i>تاریخ تولید</div>
+                    <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
+                    <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
+                    <div class="p-2 flex-fill">{{ content.job.running_duration | convert_seconds_to_min_sec }}</div>
+                {% else %}
+                    <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
+                    <div class="p-2 flex-fill ">۵ دقیقه</div>
+                    <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i> تاریخ تولید</div>
+                    <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
+                    <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
+                    <div class="p-2 flex-fill">{{ content.job.running_duration | convert_seconds_to_min_sec }}</div>
+                {% endif %}
             {% else %}
 
-            <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
-            <div class="p-2 flex-fill ">۵ دقیقه</div>
-            <div class="p-2 flex-fill article-info" style="display: none;"><i class="fa-solid fa-calendar-day me-2"></i>
-                تاریخ تولید</div>
-            <div class="p-2 flex-fill article-info" id="article-info-date" style="display: none;"></div>
-            <div class="p-2 flex-fill article-info" style="display: none;"><i class="fa-solid fa-stopwatch me-2"></i>مدت
-            </div>
-            <div class="p-2 flex-fill article-info" id="article-info-timer" style="display: none;"></div>
-
+                <div class="p-2 "><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
+                <div class="p-2 flex-fill ">۵ دقیقه</div>
+                <div class="p-2 flex-fill article-info" style="display: none;"><i class="fa-solid fa-calendar-day me-2"></i>
+                    تاریخ تولید</div>
+                <div class="p-2 flex-fill article-info" id="article-info-date" style="display: none;"></div>
+                <div class="p-2 flex-fill article-info" style="display: none;"><i class="fa-solid fa-stopwatch me-2"></i>مدت
+                </div>
+                <div class="p-2 flex-fill article-info" id="article-info-timer" style="display: none;"></div>
             {% endif %}
         </div>
         <div class="rounded card-shadow position-relative p-1">
-            <div id="loading-content" class="text-center mr-auto mx-auto" style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+            <div id="loading-content" class="text-center mr-auto mx-auto"
+                style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
                 <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
-                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}" background="transparent" speed="1" loop autoplay></lottie-player>
+                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
+                        background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
             </div>
             <div id="text-editor-area">
@@ -114,11 +116,10 @@
 
 
         {% if content %}
-            $('#loading-content').show();
-            $('#submission_form').find('input, textarea, button, select').prop('disabled', true);
-            tagify.setReadonly(true);
-            checkJobStatus('{{ content.job.job_id }}','{{ content.id }}')
-            
+        $('#loading-content').show();
+        $('#submission_form').find('input, textarea, button, select').prop('disabled', true);
+        tagify.setReadonly(true);
+        checkJobStatus('{{ content.job.job_id }}', '{{ content.id }}')
         {% endif %}
     });
 

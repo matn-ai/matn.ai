@@ -20,14 +20,6 @@ class GenerateArticleBlog(FlaskForm):
     
 
 
-class GenerateArticle(FlaskForm):
-    user_topic = TextAreaField('عنوان', validators=[DataRequired(), Length(1, 500)])
-    tags = StringField('کلمات کلیدی', validators=[DataRequired()])
-    lang = SelectField('زبان', choices=[('fa', 'فارسی'), ('en', 'انگلیسی')])
-    body = TextAreaField('محتوا')
-    article_length = RadioField('Article Length', choices=[('short', 'پست کوتاه'), ('long', 'پست بلند')], default='short')
-    content_type = HiddenField(default=ARTICLE_GENERAL)
-    submit = SubmitField('تولید مقاله')
 
 
 class GenerateArticlePro(FlaskForm):

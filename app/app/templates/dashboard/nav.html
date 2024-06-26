@@ -26,11 +26,6 @@
         </a>
         <div class="collapse {{ 'show' if 'article' in request.path else '' }}" id="contentCollapse">
           <ul class="nav flex-column ms-3">
-            <!-- <li class="nav-item">
-              <a class="nav-link {% if request.endpoint == 'dashboard.article' %}active-nav{% endif %}" id="content عمومیLink" href="{{ url_for('dashboard.article') }}">
-                <i class="fas fa-file-alt me-2"></i>مقاله عمومی
-              </a>
-            </li> -->
             <li class="nav-item">
               <a class="nav-link {% if request.endpoint == 'dashboard.article_pro' %}active-nav{% endif %}" id="content حرفه‌ایLink" href="{{ url_for('dashboard.article_pro') }}">
                 <i class="fas fa-file-alt me-2"></i>مقاله حرفه‌ای
