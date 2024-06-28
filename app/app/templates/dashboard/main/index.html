@@ -129,8 +129,8 @@
       success: function (data) {
         console.log(data)
         const inputs = JSON.parse(data.info.inputs);
-        if (!data.info.word_count)
-          data.info.word_count = "درحال تولید"
+        if (data.info.word_count == "None")
+          data.info.word_count = "-"
         // const article_length = data.info["article_length"]
         const modalBodyContent = `<ul class="list-group list-group-horizontal w-100"> \ 
           <li class="list-group-item w-25">موضوع</li> \
@@ -153,7 +153,6 @@
           <li class="list-group-item w-75">${data.info.word_count}</li> \      
         </ul>
         `;
-        console.log(modalBodyContent)
         const modalFooterContent = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>';
         createAndOpenModal('infoModal', 'اطلاعات محتوا', modalBodyContent, modalFooterContent);
       }

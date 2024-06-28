@@ -3,8 +3,17 @@ from sqlalchemy import or_
 from .. import db, contents_collection
 from app.models import Content, Job
 from bson import ObjectId
-import json
+import json, requests, os
 
+def search_resources(topic):
+    base_url = os.getenv("WEB_SEARCH_API")
+    print(base_url)
+    search = f"{base_url}?q={topic}&format=json"
+    print(search)
+    response = requests.get(search)
+    result = json.loads(response.text)
+    # print(_resp)
+    return result['results']
 
 def get_user_contents(user, search_query='', sort_order='desc', page=1, per_page=5):
     query = Content.query.filter_by(author_id=user.id)
