@@ -1,11 +1,9 @@
 from flask import render_template, redirect, request, url_for, flash
 from flask_login import login_user, logout_user, login_required, \
     current_user
-from . import auth
+from . import finance
 from .. import db
-from ..models import User
 from .models import Receipt, Bank, Charge
-from ..email import send_email
 from .forms import CreatePayForm
 from flask_login import login_required, current_user
 
@@ -16,7 +14,7 @@ callback_url = 'https://novahub.ir/finance/webhook'
 START_PAYMENT_URL = 'https://gateway.zibal.ir/start/3653515082'
 
 
-@auth.route('/create_pay', methods=['POST'])
+@finance.route('/create_pay', methods=['POST'])
 @login_required
 def create_pay():
     form = CreatePayForm()
@@ -47,7 +45,7 @@ def create_pay():
     return render_template('finance/status_page.html')
 
 
-@auth.route('/webhook', methods=['GET'])
+@finance.route('/webhook', methods=['GET'])
 @login_required
 def webhook():
     track_id = request.args.get('trackId')

@@ -111,6 +111,11 @@ from .dashboard import dashboard as dashboard_blueprint
 
 app.register_blueprint(dashboard_blueprint)
 
+from .finance import finance as finance_blueprint
+
+app.register_blueprint(finance_blueprint)
+
+
 from .auth import auth as auth_blueprint
 
 app.register_blueprint(auth_blueprint, url_prefix="/auth")
