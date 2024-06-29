@@ -1,0 +1,4 @@
+
+
+class LoginForm(FlaskForm):
+    pass
