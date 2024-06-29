@@ -44,36 +44,94 @@
         </div>
     </div>
     <div class="col-8">
-        <div class="d-flex rounded card-shadow mb-2 text-bg-light rounded">
+        <div class="row rounded  mb-2">
             {% if content %}
-                {% if content.job.job_status == "SUCCESS" %}
-                    <div class="p-2"><i class="fa fa-clock me-2"></i> تعداد کلمات</div>
-                    <div class="p-2 flex-fill">{{ content.word_count | to_persian_num }}</div>
-                    <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i>تاریخ تولید</div>
-                    <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
-                    <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
-                    <div class="p-2 flex-fill">{{ content.job.running_duration | convert_seconds_to_min_sec }}</div>
-                {% else %}
-                    <div class="p-2"><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
-                    <div class="p-2 flex-fill">۵ دقیقه</div>
-                    <div class="p-2 flex-fill"><i class="fa-solid fa-calendar-day me-2"></i> تاریخ تولید</div>
-                    <div class="p-2 flex-fill">{{ content.timestamp | gregorian_to_jalali_detail }}</div>
-                    <div class="p-2 flex-fill"><i class="fa-solid fa-stopwatch me-2"></i>مدت</div>
-                    <div class="p-2 flex-fill" id="article-info-timer">
-                       <span id="minutes"></span>:<span id="seconds"></span>
-                    </div>
-                {% endif %}
+            {% if content.job.job_status == "SUCCESS" %}
+
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text card-shadow" id="inputGroup-sizing-default">تعداد کلمات</span>
+                    <input type="text" class="form-control text-center text-primary-emphasis bg-light-subtle card-shadow" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-default" value="{{ content.word_count | to_persian_num }}"
+                        disabled>
+                </div>
+            </div>
+            <div class="col-5">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">تاریخ تولید</span>
+                    <input type="text" class="form-control text-center text-primary-emphasis bg-light-subtle" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-default"
+                        value="{{ content.timestamp | gregorian_to_jalali_detail }}" disabled>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">
+                        مدت
+                    </span>
+                    <input type="text" class="form-control text-center text-primary-emphasis bg-light-subtle" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-default"
+                        value="{{ content.job.running_duration | convert_seconds_to_min_sec }}" disabled>
+                </div>
+            </div>
             {% else %}
-                <div class="p-2"><i class="fa fa-clock me-2"></i> زمان تقریبی</div>
-                <div class="p-2 flex-fill">۵ دقیقه</div>
-                <div class="p-2 flex-fill article-info" style="display: none;"><i class="fa-solid fa-calendar-day me-2"></i>
-                    تاریخ تولید</div>
-                <div class="p-2 flex-fill article-info" id="article-info-date" style="display: none;"></div>
-                <div class="p-2 flex-fill article-info" style="display: none;"><i class="fa-solid fa-stopwatch me-2"></i>مدت
+
+
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">تعداد کلمات</span>
+                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-default" id="word-count" value="-" disabled>
                 </div>
-                <div class="p-2 flex-fill article-info" id="article-info-timer" style="display: none;">
-                   <span id="minutes"></span>:<span id="seconds"></span>
+            </div>
+            <div class="col-5">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">تاریخ تولید</span>
+                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-default"
+                        value="{{ content.timestamp | gregorian_to_jalali_detail }}" disabled>
                 </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">
+                        مدت
+                    </span>
+                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-default" value="" id="article-info-timer" disabled>
+                </div>
+            </div>
+
+            {% endif %}
+            {% else %}
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text " id="inputGroup-sizing-default">زمان تقریبی</span>
+                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-default"  value=" ۳ تا ۶ دقیقه" disabled>
+                </div>
+            </div>
+
+
+            <div class="col-5">
+                <div class="input-group mb-3 info-detail" style="display: none;">
+                    <span class="input-group-text" id="inputGroup-sizing-default">تاریخ تولید</span>
+                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-default" id="article-info-date" 
+                        value="" disabled>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group mb-3 info-detail" style="display: none;">
+                    <span class="input-group-text" id="inputGroup-sizing-default">
+                        مدت
+                    </span>
+                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
+                        aria-describedby="inputGroup-sizing-default" value="" id="article-info-timer" disabled>
+                </div>
+            </div>
+
+
             {% endif %}
         </div>
         <div class="rounded card-shadow position-relative p-1">
@@ -118,11 +176,16 @@
         $('[data-toggle="tooltip"]').tooltip();
 
         {% if content %}
-            $('#loading-content').show();
-            $('#submission_form').find('input, textarea, button, select').prop('disabled', true);
-            tagify.setReadonly(true);
-            checkJobStatus('{{ content.job.job_id }}', '{{ content.id }}');
-            startTimer('{{ content.job.created_at }}')
+
+        $('#submission_form').find('input, textarea, button, select').prop('disabled', true);
+        tagify.setReadonly(true);
+
+        {% if content.job.job_status != "SUCCESS" %}
+        $('#loading-content').show();
+        checkJobStatus('{{ content.job.job_id }}', '{{ content.id }}');
+        startTimer('{{ content.job.created_at }}')
+
+        {% endif %}
         {% endif %}
     });
 
@@ -148,9 +211,11 @@
                 const contentId = data.content_id;
                 const job_date = data.job_date;
 
-                $('.article-info').show();
-                $('#article-info-date').html(job_date);
+
+                $('.info-detail').show();
+                $('#article-info-date').val(job_date);
                 $('#article-info-timer').show();
+
 
                 startTimer();
                 checkJobStatus(jobId, contentId);
@@ -163,8 +228,8 @@
         });
     });
 
-    function startTimer(startDate=null) {
-        if (startDate){
+    function startTimer(startDate = null) {
+        if (startDate) {
             var start = new Date(startDate);
         } else {
             var start = new Date();
@@ -175,11 +240,11 @@
             var hours = Math.floor(elapsed / 3600);
             var minutes = Math.floor((elapsed % 3600) / 60);
             var seconds = elapsed % 60;
-    
+
             function pad(number) {
                 return number < 10 ? '0' + number : number;
             }
-    
+
             function toPersianNumber(number) {
                 var persianMap = {
                     '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴',
@@ -187,10 +252,9 @@
                 };
                 return number.toString().split('').map(char => persianMap[char] || char).join('');
             }
-    
-            $('#hours').text(toPersianNumber(pad(hours)));
-            $('#minutes').text(toPersianNumber(pad(minutes)));
-            $('#seconds').text(toPersianNumber(pad(seconds)));
+
+            var time = `${toPersianNumber(pad(minutes))}:${toPersianNumber(pad(seconds))}`
+            $("#article-info-timer").val(time)
         }, 1000);
     }
 
@@ -214,6 +278,7 @@
             $('#loading-content').hide();
             editor.setData(data.content);
             tagify.setReadonly(false);
+            $('#word-count').val(data.content.word_count)
             $('#submission_form').find('input, textarea, button, select').prop('disabled', false);
         });
     }

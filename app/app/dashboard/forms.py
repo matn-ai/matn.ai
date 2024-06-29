@@ -25,6 +25,7 @@ class GenerateArticleBlog(FlaskForm):
 class GenerateArticlePro(FlaskForm):
     user_topic = TextAreaField('عنوان', validators=[DataRequired(), Length(1, 500)])
     urls = FieldList(FormField(URLFieldForm), min_entries=1, max_entries=10)
+    main_tag = StringField('کلمه کلیدی اصلی', validators=[DataRequired()])
     tags = StringField('کلمات کلیدی', validators=[DataRequired()])
     lang = SelectField('زبان', choices=[('fa', 'فارسی'), ('en', 'انگلیسی')])
     body = TextAreaField('محتوا')

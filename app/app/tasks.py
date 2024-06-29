@@ -30,6 +30,8 @@ OPENROUTER_API = os.getenv("OPENROUTER_API")
 
 # Initialize OpenAI and Redis clients
 openai_client = OpenAI(base_url=OPENROUTER_API, api_key=API_KEY)
+# openai_client = OpenAI(api_key=API_KEY)
+
 redis_client = StrictRedis(host=REDIS_SERVER, port=REDIS_PORT, db=REDIS_DB)
 
 

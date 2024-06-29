@@ -1,185 +1,368 @@
 {% extends "dashboard/dashboard.html" %}
 {% block dashboard %}
-<div class="row">
-    <div class="col-4">
-        <div class="bg-white rounded p-4 card-shadow">
-            <div class="mb-4 w-100 text-center">
-                <h4 class="flex-fill pb-4">تولید مقاله حرفه‌ای</h4>
-            </div>
-            <form id="submission_form" class="form-group mb-4 mt-4" action="{{ url_for('dashboard.article_pro') }}" method="post">
-                {{ form.hidden_tag() }}
-                <div class="form-group mb-4 mt-2">
-                    <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
-                    {{ form.user_topic(size=500, class_="form-control", style="max-height: 100px;" ) }}
-                    <div class="form-text">
-                        عنوان یا شرح موضوع مقاله را وارد کنید.
-                    </div>
-                </div>
+<style>
+    .wizard.vertical .wizard-nav {
+        padding-right: 0px;
+    }
 
-                <div class="mb-4 mt-2 pb-4">
-                    <div class="input-group">
-                      <span class="input-group-text" id="basic-addon3">{{ form.lang.label }}</span>
-                      {{ form.lang(class_="form-control", aria_describedby="basic-addon3 lang-addon") }}
+    .wizard.vertical .wizard-content {
+        min-height: 660px;
+    }
+</style>
+<div class="row">
+    <div class="col-12 mr-auto mx-auto">
+        <div class="d-flex">
+            <div class="p-2 ">
+                <h4 class="">تولید مقاله حرفه‌ای</h4>
+            </div>
+            <div class="p-2 ms-auto">
+                <span
+                    class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">نسخه پرو</label>
                     </div>
-                </div>
-                <div id="urls">
-                    {% for subform in form.urls %}
-                    <div class="url-field position-relative">
-                        <label for="url" class="mb-2">{{ subform.url.label }}</label>
-                        {{ subform.url(class_="form-control mb-2 url-input") }}
-                        <span class="valid-icon" style="position: absolute; right: 10px; top: 38px;"></span>
+                </span>
+            </div>
+            <div class=" p-2">
+                <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">زمان
+                    تقریبی ۴ تا ۶ دقیقه</span>
+            </div>
+        </div>
+        <div class="bg-white rounded p-4 card-shadow">
+            <div class="d-flex justify-content-between mb-4 w-100">
+            </div>
+            <form class="wizard" id="formWizard" class="p-2">
+                <aside class="wizard-content container border p-4 mb-4 rounded">
+                    <div class="wizard-step" data-title="تنظیمات مقاله">
+                        <form id="form_step1" class="form-group mb-4 mt-4" action="{{ url_for('dashboard.article_pro') }}" method="post">
+                            {{ form.hidden_tag() }}
+                            <div class="form-group mb-4 mt-2">
+                                <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
+                                {{ form.user_topic(size=500, class_="form-control", style="max-height: 100px;" ) }}
+                                <div class="form-text">عنوان یا شرح موضوع مقاله را وارد کنید.</div>
+                            </div>
+                            <div class="form-group mb-4 mt-2 pb-4">
+                                <label for="tags" class="mb-2">{{ form.main_tag.label }}</label>
+                                {{ form.main_tag(size=40, id="tags-input", class="form-control") }}
+                                <div class="form-text">پس از وارد کردن هر کلمه Enter بزنید.</div>
+                            </div>
+                            <div class="form-group mb-4 mt-2 pb-4">
+                                <label for="tags" class="mb-2">{{ form.tags.label }}</label>
+                                {{ form.tags(size=40, id="tags-input", class="form-control") }}
+                                <div class="form-text">پس از وارد کردن هر کلمه Enter بزنید.</div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="floatingSelectTone" aria-label="Floating label select example">
+                                            <option selected>لحن متن</option>
+                                            <option value="1">عادی</option>
+                                            <option value="2">حرفه‌ای</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                        <label for="floatingSelectTone">لحن نوشتار متن را انتخاب کنید</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="floatingSelectPronoun" aria-label="Floating label select example">
+                                            <option selected>ضمیر</option>
+                                            <option value="1">عادی</option>
+                                            <option value="2">حرفه‌ای</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                        <label for="floatingSelectPronoun">ضمیر را انتخاب کنید</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="floatingSelectTone" aria-label="Floating label select example">
+                                            <option selected>عمومی</option>
+                                            <option value="1">حرفه‌ای</option>
+                                            <option value="2">حرفه‌ای</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                        <label for="floatingSelectTone">مخاطب نوشتار را انتخاب کنید</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="floatingSelectPronoun4" aria-label="Floating label select example">
+                                            <option selected>تا ۳۰۰۰ کلمه</option>
+                                            <option value="1">عادی</option>
+                                            <option value="2">حرفه‌ای</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                        <label for="floatingSelectPronoun4">طول نوشتار را انتخاب کنید</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-4 mt-4">
+                                <div class="w-100 p-3 text-right">زبان نوشتار را انتخاب کنید</div>
+                                <div class="w-100 p-3 text-center">
+                                    <input type="radio" class="btn-check" name="options-outlined" id="fa-outlined" autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary" for="fa-outlined">
+                                        <span class="fi fi-ir me-1"></span>فارسی
+                                    </label>
+                                    <input type="radio" class="btn-check" name="options-outlined" id="en-outlined" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="en-outlined">
+                                        <span class="fi fi-us me-1"></span>English
+                                    </label>
+                                    <input type="radio" class="btn-check" name="options-outlined" id="ar-outlined" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="ar-outlined">
+                                        <span class="fi fi-ae me-1"></span>عربى
+                                    </label>
+                                    <input type="radio" class="btn-check" name="options-outlined" id="fr-outlined" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="fr-outlined">
+                                        <span class="fi fi-fr me-1"></span>Français
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    {% endfor %}
-                </div>
-                <div class="form-group mb-4 mt-2">
-                    <button type="button" class="btn btn-link" id="add-url">
-                        <i class="fa fa-plus"></i>
-                    </button>
-                    <button type="button" id="remove-url" class="btn btn-link">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <div class="form-text">
-                        لینک‌های ورودی به عنوان منبع رو تولید محتوا استفاده می‌شوند.
+                    <div class="wizard-step" data-title="منابع و ورودی‌ها">
+                        <div class="row">
+                            <div class="col-11 mr-auto mx-auto">
+                                <div class="w-100 p-2 mb-2 mt-2 text-primary-emphasis">
+                                     حداکثر ۵ منبع می‌توانید انتخاب کنید
+                                </div>
+
+                                <div id="selected-resources">
+                                    <!-- Selected resources will be appended here -->
+                                </div>
+                                <div class="d-flex justify-content-end mt-3">
+                                    <input type="file" id="file-upload" class="d-none" />
+                                    <button class="btn btn-primary" id="upload-button">
+                                        <i class="fa-solid fa-upload me-2"></i>
+                                        <span>آپلود فایل</span>
+                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-11 mr-auto mx-auto mt-4 pt-4">
+                                <div class="form-group">
+                                    <label for="search_in_resource" class="mb-3">جستجو در منابع</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" placeholder="جستجو در منابع"
+                                            name="search_in_resource" aria-label="جستجو"
+                                            aria-describedby="button-addon2">
+                                        <button class="btn btn-outline-secondary" type="button" id="button-addon2">
+                                            <i class="fa-solid fa-magnifying-glass"></i> </button>
+                                    </div>
+                                </div>
+                                <div class="list-group mt-3" style="overflow-y: auto; height: 650px;" id="resource-result">
+                                    <!-- Resources will be appended here -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group mb-4 mt-2 pb-4">
-                    <label for="tags" class="mb-2">{{ form.tags.label }}</label>
-                    {{ form.tags(size=40, id="tags-input", class="form-control") }}
-                    <div class="form-text">
-                        پس از وارد کردن هر کلمه Enter بزنید.
+                    <div class="wizard-step" data-title="انتخاب تیتر مقاله">
+                        <div class="form-group">
+                            <label for="titleNoti">Action <span class="required">*</span></label>
+                            <select class="form-control required" name="action">
+                                <option>Select one ...</option>
+                                <option value="0">Open bolus configurator</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bodyNoti">Segment</label>
+                            <select class="form-control" name="segment">
+                                <option>Select one ...</option>
+                                <option value="0">País</option>
+                                <option value="1">Language</option>
+                                <option value="2">Diabetes Type</option>
+                                <option value="3">Center</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group text-center mt-4">
-                    {{ form.submit(class_="btn btn-primary text-white w-50") }}
-                </div>
+                    <div class="wizard-step" data-title="انتخاب عناوین مقاله">
+                        <div class="form-group">
+                            <label for="titleNoti">Action <span class="required">*</span></label>
+                            <select class="form-control required" name="action">
+                                <option>Select one ...</option>
+                                <option value="0">Open bolus configurator</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bodyNoti">Segment</label>
+                            <select class="form-control" name="segment">
+                                <option>Select one ...</option>
+                                <option value="0">País</option>
+                                <option value="1">Language</option>
+                                <option value="2">Diabetes Type</option>
+                                <option value="3">Center</option>
+                            </select>
+                        </div>
+                    </div>
+                </aside>
             </form>
         </div>
     </div>
-    <div class="col-8">
-        <div class="rounded card-shadow position-relative p-1">
-            <div id="loading-content" class="text-center mr-auto mx-auto"
-                style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
-                <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
-                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
-                        background="transparent" speed="1" loop autoplay></lottie-player>
-                </div>
-            </div>
-            <div id="text-editor-area">
-                {{ form.body(id="text-editor", class="form-control") }}
-            </div>
-        </div>
-    </div>
 </div>
-
-<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-<script src="{{ url_for('static', filename='js/ckeditor.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tagify.min.js') }}"></script>
-
 <script>
-
-    let editor;
-
-    ClassicEditor
-        .create(document.querySelector('#text-editor'), {
-            language: "fa",
-            height: 500
-        })
-        .then(newEditor => {
-            editor = newEditor;
-        })
-        .catch(error => {
-            console.error(error);
-        });
-
-    // Initialize Tagify
-    var input = document.getElementById('tags-input');
-    new Tagify(input);
-
-    $('#submission_form').submit(function (e) {
-        e.preventDefault();
-
-        // Show the loading content
-        $('#loading-content').show();
-
-        // Serialize the form data
-        var formData = $(this).serialize();
-
-        // Submit the form using AJAX
-        $.ajax({
-            type: "POST",
-            url: "{{ url_for('dashboard.article_pro') }}",
-            data: formData,
-            success: function (data) {
-                // Handle the successful response
-                const jobId = data.job_id;
-                const contentId = data.content_id;
-                checkJobStatus(jobId, contentId);
-            },
-            error: function (xhr, status, error) {
-                // Handle the error response
-                $('#loading-content').hide();
-                console.error(error);
-            }
-        });
-    });
-
-    function checkJobStatus(jobId, contentId) {
-        $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
-            if (data.status === 'SUCCESS') {
-                fetchContent(contentId);
-            } else {
-                setTimeout(() => checkJobStatus(jobId, contentId), 2000);
-            }
-        });
-    }
-
-    function fetchContent(contentId) {
-        $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
-            $('#loading-content').hide();
-            editor.setData(data.content);
-        });
-    }
-
-    function validateURL(url) {
-        const pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-            '((([a-z\\d](([a-z\\d-]*[a-z\\d])?)\\.)+[a-z]{2,}|' + // domain name
-            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-            '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-        return !!pattern.test(url);
-    }
-
     $(document).ready(function () {
-        $('#urls').on('input', '.url-input', function () {
-            const $input = $(this);
-            const urlValue = $input.val();
-            const $icon = $input.siblings('.valid-icon');
-            
-            if (validateURL(urlValue)) {
-                $input.css('border', '2px solid green');
-                $icon.html('<i class="fa fa-check text-success"></i>');
-            } else {
-                $input.css('border', '');
-                $icon.html('');
-            }
-        });
+        let maxSelectedResources = 5;
 
-        $('#add-url').on('click', function () {
-            const newField = `
-            <div class="url-field position-relative">
-                {{ form.urls.append_entry().url(class_="form-control mb-2 url-input") }}
-                <span class="valid-icon" style="position: absolute; right: 10px; top: 38px;"></span>
+        function updateResourceCount() {
+            let selectedCount = $("#selected-resources .row").length;
+            let remaining = maxSelectedResources - selectedCount;
+            $("#resource-result .add-resource").toggle(remaining > 0);
+        }
+
+        function addResource(key, type, title, url) {
+            if ($("#selected-resources .row").length >= maxSelectedResources) {
+                alert('You can select up to ' + maxSelectedResources + ' resources only.');
+                return;
+            }
+
+            let badgeClass = type === 'file' ? 'text-bg-secondary' : 'text-bg-primary';
+            let selectedRow = `<div class="row p-1 rounded border mt-2" id="${key}-selected">
+                <div class="col-3 p-2 text-right">
+                    <i class="fa-solid fa-circle-minus text-danger remove-resource"></i>                             
+                    <i class="fa-solid fa-pen-to-square text-primary"></i>                                        
+                </div>
+                <div class="col-9 p-2" style="direction: ltr; text-align: left;">
+                    <span class="badge ${badgeClass} ms-2">${type === 'file' ? 'فایل' : 'وب'}</span>
+                    <a class="link-primary" href="${url}">${title}</a>    
+                </div>
             </div>`;
-            $('#urls').append(newField);
-        });
+            $("#selected-resources").append(selectedRow);
 
-        $('#remove-url').on('click', function () {
-            const container = $('#urls');
-            if (container.children('.url-field').length > 1) {
-                container.children('.url-field').last().remove();
+            // Add remove event listener
+            $(".remove-resource").off('click').on("click", function () {
+                let selectedResource = $(this).closest(".row");
+                selectedResource.remove();
+                updateResourceCount();
+            });
+
+            updateResourceCount();
+        }
+
+        let wz_class = ".wizard";
+        let args = {
+            wz_class: wz_class,
+            wz_nav_style: "dots", // dots, tabs, progress
+            wz_ori: "vertical",
+            buttons: true,
+            navigation: "all",
+            next: "بعدی",
+            prev: "قبلی",
+            wz_button: ".btn-outline-primary",
+            wz_next: ".m-2",
+            wz_prev: ".btn-outline-secondary"
+        };
+
+        const wizard = new Wizard(args);
+        wizard.init();
+
+        let $wz_doc = document.querySelector(wz_class);
+
+        $wz_doc.addEventListener("wz.btn.next", function (e) {
+            if (wizard.current_step === 0) {
+                var request = {
+                    "user_topic": $("input[name='main_tag']").val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('dashboard.get_resources') }}",
+                    data: JSON.stringify(request),
+                    contentType: "application/json",
+                    processData: false,
+                    success: function (response) {
+                        $("#resource-result").empty();
+                        $.each(response, function (key, value) {
+                            let row = `<li class="border border-light-subtle p-2 rounded list-group-item mb-2 p-2" aria-current="true" id="${key}-source" data-key="${key}">
+                                <div class="d-flex w-100 justify-content-start">
+                                    <p class="mb-1 p-2 ">
+                                        <a class="link-primary me-2 add-resource"><i class="fa-solid fa-circle-plus"></i></a>
+                                        ${value['title']}
+                                    </p>
+                                </div>
+                                <p class="mb-1 text-secondary mt-2 small">${value['content']}</p>
+                                <div class='w-100 fst-italic' style="direction: ltr; text-align:left;">
+                                    <small><a class="link-primary mt-2" href="${decodeURIComponent(value['url'])}">${decodeURIComponent(value['url'])}</a></small>
+                                </div>
+                            </li>`;
+                            $("#resource-result").append(row);
+                        });
+
+                        // Add event listener to dynamically added elements
+                        $(".add-resource").off('click').on("click", function () {
+                            let resourceItem = $(this).closest("li");
+                            let key = resourceItem.data("key");
+                            let title = resourceItem.find('a.link-primary').text();
+                            let url = resourceItem.find('a.link-primary').attr('href');
+
+                            addResource(key, 'web', title, url);
+                            resourceItem.remove();
+                        });
+
+                        updateResourceCount();
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
             }
         });
+
+        // File upload handling
+        $('#upload-button').on('click', function (e) {
+            e.preventDefault();
+            $('#file-upload').click();
+        });
+
+        $('#file-upload').on('change', function () {
+            if ($("#selected-resources .row").length >= maxSelectedResources) {
+                alert('You can select up to ' + maxSelectedResources + ' resources only.');
+                return;
+            }
+
+            var formData = new FormData();
+            var file = $('#file-upload')[0].files[0];
+            formData.append('file', file);
+
+            var $uploadButton = $('#upload-button');
+            $uploadButton.find('.spinner-border').removeClass('d-none');
+            $uploadButton.prop('disabled', true);
+
+            $.ajax({
+                url: '{{ url_for("dashboard.upload_resource") }}',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    addResource(data.filename, 'file', data.filename, data.url);
+                    $uploadButton.find('.spinner-border').addClass('d-none');
+                    $uploadButton.prop('disabled', false);
+                    $('#file-upload').val('');
+                },
+            error: function (error) {
+                    <!-- console.log('Error:', error); -->
+                    $uploadButton.find('.spinner-border').addClass('d-none');
+                    $uploadButton.prop('disabled', false);
+                }
+            });
+        });
+
+        $wz_doc.addEventListener("wz.end", function (e) {
+            alert("Wizard End");
+        });
+
+        $wz_doc.addEventListener("wz.error", function (e) {
+            console.log(`↓ ID ↓`);
+            console.log(e.detail.id); // form_validaton
+            console.log(`↓ Message ↓`);
+            console.log(e.detail.msg); //options.i18n.form_validation
+        });
+
+        updateResourceCount();
     });
 </script>
 {% endblock %}

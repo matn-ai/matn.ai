@@ -11,9 +11,11 @@ from .repository import (
     get_content_by_id,
     get_job_by_id,
     get_content_info,
+    search_resources
 )
-import json
+import json, os
 from ..utils import utils_gre2jalali
+from .. import app
 
 
 @dashboard.route("/dashboard", methods=["GET"])
@@ -139,6 +141,30 @@ def article_pro(id=None):
 
     return render_template("dashboard/article/article_pro.html", form=form)
 
+@dashboard.route("/dashboard/article/resources/upload", methods=["POST"])
+def upload_resource():
+    if 'file' not in request.files:
+        return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
+    if file:
+        filename = file.filename
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        return jsonify({'filename': filename, 'url': filepath}), 200
+
+
+
+@dashboard.route("/dashboard/article/resources", methods=["POST"])
+@login_required
+def get_resources():
+    data = request.data
+    topic = json.loads(data)
+    # topic = data['user_topic']
+    print (topic)
+    resources = search_resources(topic['user_topic'])
+    return jsonify(resources)
 
 @dashboard.route("/dashboard/article/info/<content_id>", methods=["GET"])
 @login_required
