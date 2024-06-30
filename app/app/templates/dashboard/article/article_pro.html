@@ -9,6 +9,15 @@
         min-height: 660px;
     }
 </style>
+<style>
+    .wizard.vertical .wizard-nav {
+        padding-right: 0px;
+    }
+
+    .wizard.vertical .wizard-content {
+        min-height: 660px;
+    }
+</style>
 <div class="row">
     <div class="col-12 mr-auto mx-auto">
         <div class="d-flex">
@@ -27,7 +36,115 @@
                 <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">زمان تقریبی ۴ تا ۶ دقیقه</span>
             </div>
         </div>
+    <div class="col-12 mr-auto mx-auto">
+        <div class="d-flex">
+            <div class="p-2 ">
+                <h4 class="">تولید مقاله حرفه‌ای</h4>
+            </div>
+            <div class="p-2 ms-auto">
+                <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">نسخه پلاس</label>
+                    </div>
+                </span>
+            </div>
+            <div class=" p-2">
+                <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">زمان تقریبی ۴ تا ۶ دقیقه</span>
+            </div>
+        </div>
         <div class="bg-white rounded p-4 card-shadow">
+            <div class="d-flex justify-content-between mb-4 w-100"></div>
+            <form class="wizard" id="formWizard" class="p-2">
+                <aside class="wizard-content container border p-4 mb-4 rounded">
+                    <div class="wizard-step" data-title="تنظیمات مقاله">
+                        <form id="form_step1" class="form-group mb-4 mt-4" action="{{ url_for('dashboard.article_pro') }}" method="post">
+                            {{ form.hidden_tag() }}
+                            <div class="form-group mb-4 mt-2">
+                                <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
+                                {{ form.user_topic(size=500, class_="form-control", style="max-height: 100px;" ) }}
+                                <div class="form-text">عنوان یا شرح موضوع مقاله را وارد کنید.</div>
+                            </div>
+                            <div class="form-group mb-4 mt-2 pb-4">
+                                <label for="tags" class="mb-2">{{ form.main_tag.label }}</label>
+                                {{ form.main_tag(size=40, id="tags-input", class="form-control") }}
+                                <div class="form-text">پس از وارد کردن هر کلمه Enter بزنید.</div>
+                            </div>
+                            <div class="form-group mb-4 mt-2 pb-4">
+                                <label for="tags" class="mb-2">{{ form.tags.label }}</label>
+                                {{ form.tags(size=40, id="tags-input", class="form-control") }}
+                                <div class="form-text">پس از وارد کردن هر کلمه Enter بزنید.</div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="floatingSelectTone" aria-label="Floating label select example">
+                                            <option selected>لحن متن</option>
+                                            <option value="1">عادی</option>
+                                            <option value="2">حرفه‌ای</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                        <label for="floatingSelectTone">لحن نوشتار متن را انتخاب کنید</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="floatingSelectPronoun" aria-label="Floating label select example">
+                                            <option selected>ضمیر</option>
+                                            <option value="1">عادی</option>
+                                            <option value="2">حرفه‌ای</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                        <label for="floatingSelectPronoun">ضمیر را انتخاب کنید</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="floatingSelectTone" aria-label="Floating label select example">
+                                            <option selected>عمومی</option>
+                                            <option value="1">حرفه‌ای</option>
+                                            <option value="2">حرفه‌ای</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                        <label for="floatingSelectTone">مخاطب نوشتار را انتخاب کنید</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="floatingSelectPronoun4" aria-label="Floating label select example">
+                                            <option selected>تا ۳۰۰۰ کلمه</option>
+                                            <option value="1">عادی</option>
+                                            <option value="2">حرفه‌ای</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                        <label for="floatingSelectPronoun4">طول نوشتار را انتخاب کنید</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-4 mt-4">
+                                <div class="w-100 p-3 text-right">زبان نوشتار را انتخاب کنید</div>
+                                <div class="w-100 p-3 text-center">
+                                    <input type="radio" class="btn-check" name="options-outlined" id="fa-outlined" autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary" for="fa-outlined">
+                                        <span class="fi fi-ir me-1"></span>فارسی
+                                    </label>
+                                    <input type="radio" class="btn-check" name="options-outlined" id="en-outlined" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="en-outlined">
+                                        <span class="fi fi-us me-1"></span>English
+                                    </label>
+                                    <input type="radio" class="btn-check" name="options-outlined" id="ar-outlined" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="ar-outlined">
+                                        <span class="fi fi-ae me-1"></span>عربى
+                                    </label>
+                                    <input type="radio" class="btn-check" name="options-outlined" id="fr-outlined" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="fr-outlined">
+                                        <span class="fi fi-fr me-1"></span>Français
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
             <div class="d-flex justify-content-between mb-4 w-100"></div>
             <form class="wizard" id="formWizard" class="p-2">
                 <aside class="wizard-content container border p-4 mb-4 rounded">
@@ -153,26 +270,46 @@
                                 </div>
                             </div>
                         </div>
+                    <div class="wizard-step" data-title="منابع و ورودی‌ها">
+                        <div class="row">
+                            <div class="col-11 mr-auto mx-auto">
+                                <div class="w-100 p-2 mb-2 mt-2 text-primary-emphasis">
+                                     حداکثر ۵ منبع می‌توانید انتخاب کنید
+                                </div>
+                                <div id="selected-resources">
+                                    <!-- Selected resources will be appended here -->
+                                </div>
+                                <div class="d-flex justify-content-end mt-3">
+                                    <input type="file" id="file-upload" class="d-none" />
+                                    <button class="btn btn-primary" id="upload-button">
+                                        <i class="fa-solid fa-upload me-2"></i>
+                                        <span>آپلود فایل</span>
+                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-11 mr-auto mx-auto mt-4 pt-4">
+                                <div class="form-group">
+                                    <label for="search_in_resource" class="mb-3">جستجو در منابع</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" placeholder="جستجو در منابع" name="search_in_resource" aria-label="جستجو" aria-describedby="button-addon2">
+                                        <button class="btn btn-outline-secondary" type="button" id="button-addon2">
+                                            <i class="fa-solid fa-magnifying-glass"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="list-group mt-3" style="overflow-y: auto; height: 650px;" id="resource-result">
+                                    <!-- Resources will be appended here -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="wizard-step" data-title="انتخاب تیتر مقاله">
 
                         <div class="w-100 p-2 mb-2 mt-2 text-primary-emphasis">
                             یکی از تیتر های پیشنهادی برای نوشتار را انتخاب کنید:
                        </div>
-                       <ul class="list-group">
-                        <li class="list-group-item">
-                          <input class="form-check-input me-1" type="checkbox" value="" id="firstCheckboxStretched">
-                          <label class="form-check-label stretched-link" for="firstCheckboxStretched">First checkbox</label>
-                        </li>
-                        <li class="list-group-item">
-                          <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckboxStretched">
-                          <label class="form-check-label stretched-link" for="secondCheckboxStretched">Second checkbox</label>
-                        </li>
-                        <li class="list-group-item">
-                          <input class="form-check-input me-1" type="checkbox" value="" id="thirdCheckboxStretched">
-                          <label class="form-check-label stretched-link" for="thirdCheckboxStretched">Third checkbox</label>
-                        </li>
-                      </ul>
+
                         <div class="p-3 rounded list-group" id="suggest-titles">
 
                         </div>
@@ -182,6 +319,34 @@
                             </button>
                         </div>
                     </div>
+                    <div class="wizard-step" data-title="انتخاب عناوین مقاله">
+                        <div class="form-group">
+                            <label for="titleNoti">Action <span class="required">*</span></label>
+                            <select class="form-control required" name="action">
+                                <option>Select one ...</option>
+                                <option value="0">Open bolus configurator</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bodyNoti">Segment</label>
+                            <select class="form-control" name="segment">
+                                <option>Select one ...</option>
+                                <option value="0">País</option>
+                                <option value="1">Language</option>
+                                <option value="2">Diabetes Type</option>
+                                <option value="3">Center</option>
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <input type="file" id="final-file-upload" class="d-none" />
+                            <button class="btn btn-primary" id="final-upload-button">
+                                <i class="fa-solid fa-upload me-2"></i>
+                                <span>آپلود فایل نهایی</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </aside>
                     <div class="wizard-step" data-title="انتخاب عناوین مقاله">
                         <div class="form-group">
                             <label for="titleNoti">Action <span class="required">*</span></label>
@@ -337,7 +502,7 @@
                             $("#suggest-titles").html(''); 
                             $.each(response, function (key, value) {
                                 let row = `<li class="list-group-item mt-2 mb-2 p-2 text-bg-light rounded" id="titles-${key}">
-                                    <input class="form-check-input me-1" type="radio" name="listGroupRadio value="" id="titles-checkbox-${key}">
+                                    <input class="form-check-input me-1" type="radio"  value="" id="titles-checkbox-${key}">
                                     <label class="form-check-label" for="titles-checkbox-${key}">${value}</label>
                                   </li>`
                                 $("#suggest-titles").append(row); 
@@ -465,3 +630,4 @@
     });
 </script>
 {% endblock %}
+
