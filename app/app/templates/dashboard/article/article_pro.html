@@ -159,8 +159,21 @@
                         <div class="w-100 p-2 mb-2 mt-2 text-primary-emphasis">
                             یکی از تیتر های پیشنهادی برای نوشتار را انتخاب کنید:
                        </div>
-
-                        <div class="p-3 rounded bg" id="suggest-titles">
+                       <ul class="list-group">
+                        <li class="list-group-item">
+                          <input class="form-check-input me-1" type="checkbox" value="" id="firstCheckboxStretched">
+                          <label class="form-check-label stretched-link" for="firstCheckboxStretched">First checkbox</label>
+                        </li>
+                        <li class="list-group-item">
+                          <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckboxStretched">
+                          <label class="form-check-label stretched-link" for="secondCheckboxStretched">Second checkbox</label>
+                        </li>
+                        <li class="list-group-item">
+                          <input class="form-check-input me-1" type="checkbox" value="" id="thirdCheckboxStretched">
+                          <label class="form-check-label stretched-link" for="thirdCheckboxStretched">Third checkbox</label>
+                        </li>
+                      </ul>
+                        <div class="p-3 rounded list-group" id="suggest-titles">
 
                         </div>
                         <div class="d-flex justify-text-center">
@@ -324,7 +337,7 @@
                             $("#suggest-titles").html(''); 
                             $.each(response, function (key, value) {
                                 let row = `<li class="list-group-item mt-2 mb-2 p-2 text-bg-light rounded" id="titles-${key}">
-                                    <input class="form-check-input me-1" type="radio" value="" id="titles-checkbox-${key}">
+                                    <input class="form-check-input me-1" type="radio" name="listGroupRadio value="" id="titles-checkbox-${key}">
                                     <label class="form-check-label" for="titles-checkbox-${key}">${value}</label>
                                   </li>`
                                 $("#suggest-titles").append(row); 

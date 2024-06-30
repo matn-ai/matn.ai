@@ -131,7 +131,7 @@ def article_pro(id=None):
         return jsonify(job_id=job.id, content_id=content.id)
 
     if request.method == "GET" and id:
-        print(id)
+        # print(id)
         content = get_content_by_id(id)
         if not content:
             return abort(404)
@@ -164,7 +164,7 @@ def get_resources():
     data = request.data
     topic = json.loads(data)
     # topic = data['user_topic']
-    print (topic)
+    # print (topic)
     resources = search_resources(topic['user_topic'])
     return jsonify(resources)
 
@@ -175,7 +175,7 @@ def get_titles():
     data = request.data
     topic = json.loads(data)
     # topic = data['user_topic']
-    print (topic)
+    # print (topic)
     resources = suggest_titles(topic['user_topic'], 'persian')
     return jsonify(resources)
 
@@ -186,7 +186,7 @@ def get_outlines():
     data = request.data
     topic = json.loads(data)
     # topic = data['user_topic']
-    print (topic)
+    # print (topic)
     resources = suggest_outlines(topic['user_topic'])
     return jsonify(resources)
 
