@@ -11,14 +11,16 @@ from .repository import (
     get_content_by_id,
     get_job_by_id,
     get_content_info,
-    search_resources
+    search_resources,
+    suggest_titles,
+    suggest_outlines
 )
 import json, os
 from ..utils import utils_gre2jalali
 from .. import app
 
 
-@dashboard.route("/dashboard", methods=["GET"])
+@dashboard.route("/", methods=["GET"])
 @login_required
 def index():
     search_query = request.args.get("q", "")
@@ -79,8 +81,8 @@ def index():
     )
 
 
-@dashboard.route("/dashboard/article/blog", methods=["GET", "POST"])
-@dashboard.route("/dashboard/article/blog/<id>", methods=["GET", "POST"])
+@dashboard.route("/article/blog", methods=["GET", "POST"])
+@dashboard.route("/article/blog/<id>", methods=["GET", "POST"])
 @login_required
 def article_blog(id=None):
 
@@ -114,8 +116,8 @@ def article_blog(id=None):
     )
 
 
-@dashboard.route("/dashboard/article/professional", methods=["GET", "POST"])
-@dashboard.route("/dashboard/article/professional/<id>", methods=["GET", "POST"])
+@dashboard.route("/article/professional", methods=["GET", "POST"])
+@dashboard.route("/article/professional/<id>", methods=["GET", "POST"])
 @login_required
 def article_pro(id=None):
     form = GenerateArticlePro()
@@ -141,7 +143,7 @@ def article_pro(id=None):
 
     return render_template("dashboard/article/article_pro.html", form=form)
 
-@dashboard.route("/dashboard/article/resources/upload", methods=["POST"])
+@dashboard.route("/article/resources/upload", methods=["POST"])
 def upload_resource():
     if 'file' not in request.files:
         return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
@@ -156,7 +158,7 @@ def upload_resource():
 
 
 
-@dashboard.route("/dashboard/article/resources", methods=["POST"])
+@dashboard.route("/article/resources", methods=["POST"])
 @login_required
 def get_resources():
     data = request.data
@@ -166,7 +168,31 @@ def get_resources():
     resources = search_resources(topic['user_topic'])
     return jsonify(resources)
 
-@dashboard.route("/dashboard/article/info/<content_id>", methods=["GET"])
+
+@dashboard.route("/article/get_titles", methods=["POST"])
+@login_required
+def get_titles():
+    data = request.data
+    topic = json.loads(data)
+    # topic = data['user_topic']
+    print (topic)
+    resources = suggest_titles(topic['user_topic'], 'persian')
+    return jsonify(resources)
+
+
+@dashboard.route("/article/get_outlines", methods=["POST"])
+@login_required
+def get_outlines():
+    data = request.data
+    topic = json.loads(data)
+    # topic = data['user_topic']
+    print (topic)
+    resources = suggest_outlines(topic['user_topic'])
+    return jsonify(resources)
+
+
+
+@dashboard.route("/article/info/<content_id>", methods=["GET"])
 @login_required
 def article_info(content_id):
     info = get_content_info(content_id)
@@ -175,8 +201,8 @@ def article_info(content_id):
     return abort(404)
 
 
-@dashboard.route("/dashboard/article/blog/status/id/<job_id>", methods=["GET"])
-@dashboard.route("/dashboard/article/blog/status/cid/<job_id>", methods=["GET"])
+@dashboard.route("/article/blog/status/id/<job_id>", methods=["GET"])
+@dashboard.route("/article/blog/status/cid/<job_id>", methods=["GET"])
 @login_required
 def article_blog_status(job_id):
     job_cid = get_job_by_cid(job_id)
@@ -203,14 +229,14 @@ def article_blog_status(job_id):
     return abort(404)
 
 
-@dashboard.route("/dashboard/article/blog/list/<content_id>", methods=["GET"])
+@dashboard.route("/article/blog/list/<content_id>", methods=["GET"])
 @login_required
 def article_blog_content_list(content_id):
     content = get_content_by_id(content_id)
     return jsonify({"title": content.system_title, "count": content.word_count})
 
 
-@dashboard.route("/dashboard/article/blog/content/<content_id>", methods=["GET"])
+@dashboard.route("/article/blog/content/<content_id>", methods=["GET"])
 @login_required
 def article_blog_content(content_id):
     content = get_content_by_id(content_id)
@@ -220,13 +246,13 @@ def article_blog_content(content_id):
 ### PRODUCT
 
 
-@dashboard.route("/dashboard/product/product-description", methods=["GET", "POST"])
+@dashboard.route("/product/product-description", methods=["GET", "POST"])
 @login_required
 def product_describe():
     return render_template("dashboard/product/product_describe.html")
 
 
-@dashboard.route("/dashboard/idea/brainstorming", methods=["GET", "POST"])
+@dashboard.route("/idea/brainstorming", methods=["GET", "POST"])
 @login_required
 def idea_brainstorming():
     return render_template("dashboard/idea_brainstorming.html")
@@ -235,13 +261,13 @@ def idea_brainstorming():
 ### TRANSLATE
 
 
-@dashboard.route("/dashboard/translate/to-persian", methods=["GET", "POST"])
+@dashboard.route("/translate/to-persian", methods=["GET", "POST"])
 @login_required
 def translate_to_persian():
     return render_template("dashboard/translate/translate_to_persian.html")
 
 
-@dashboard.route("/dashboard/translate/from-persian", methods=["GET", "POST"])
+@dashboard.route("/translate/from-persian", methods=["GET", "POST"])
 @login_required
 def translate_from_persian():
     return render_template("dashboard/translate/translate_from_persian.html")
