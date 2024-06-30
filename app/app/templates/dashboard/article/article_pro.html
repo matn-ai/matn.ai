@@ -16,8 +16,7 @@
                 <h4 class="">تولید مقاله حرفه‌ای</h4>
             </div>
             <div class="p-2 ms-auto">
-                <span
-                    class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
+                <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
                         <label class="form-check-label" for="flexSwitchCheckDefault">نسخه پلاس</label>
@@ -25,13 +24,11 @@
                 </span>
             </div>
             <div class=" p-2">
-                <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">زمان
-                    تقریبی ۴ تا ۶ دقیقه</span>
+                <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">زمان تقریبی ۴ تا ۶ دقیقه</span>
             </div>
         </div>
         <div class="bg-white rounded p-4 card-shadow">
-            <div class="d-flex justify-content-between mb-4 w-100">
-            </div>
+            <div class="d-flex justify-content-between mb-4 w-100"></div>
             <form class="wizard" id="formWizard" class="p-2">
                 <aside class="wizard-content container border p-4 mb-4 rounded">
                     <div class="wizard-step" data-title="تنظیمات مقاله">
@@ -129,7 +126,6 @@
                                 <div class="w-100 p-2 mb-2 mt-2 text-primary-emphasis">
                                      حداکثر ۵ منبع می‌توانید انتخاب کنید
                                 </div>
-
                                 <div id="selected-resources">
                                     <!-- Selected resources will be appended here -->
                                 </div>
@@ -146,11 +142,10 @@
                                 <div class="form-group">
                                     <label for="search_in_resource" class="mb-3">جستجو در منابع</label>
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="جستجو در منابع"
-                                            name="search_in_resource" aria-label="جستجو"
-                                            aria-describedby="button-addon2">
+                                        <input type="text" class="form-control" placeholder="جستجو در منابع" name="search_in_resource" aria-label="جستجو" aria-describedby="button-addon2">
                                         <button class="btn btn-outline-secondary" type="button" id="button-addon2">
-                                            <i class="fa-solid fa-magnifying-glass"></i> </button>
+                                            <i class="fa-solid fa-magnifying-glass"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="list-group mt-3" style="overflow-y: auto; height: 650px;" id="resource-result">
@@ -160,22 +155,31 @@
                         </div>
                     </div>
                     <div class="wizard-step" data-title="انتخاب تیتر مقاله">
-                        <div class="form-group">
-                            <label for="titleNoti">Action <span class="required">*</span></label>
-                            <select class="form-control required" name="action">
-                                <option>Select one ...</option>
-                                <option value="0">Open bolus configurator</option>
-                            </select>
+
+                        <div class="w-100 p-2 mb-2 mt-2 text-primary-emphasis">
+                            یکی از تیتر های پیشنهادی برای نوشتار را انتخاب کنید:
+                       </div>
+                       <ul class="list-group">
+                        <li class="list-group-item">
+                          <input class="form-check-input me-1" type="checkbox" value="" id="firstCheckboxStretched">
+                          <label class="form-check-label stretched-link" for="firstCheckboxStretched">First checkbox</label>
+                        </li>
+                        <li class="list-group-item">
+                          <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckboxStretched">
+                          <label class="form-check-label stretched-link" for="secondCheckboxStretched">Second checkbox</label>
+                        </li>
+                        <li class="list-group-item">
+                          <input class="form-check-input me-1" type="checkbox" value="" id="thirdCheckboxStretched">
+                          <label class="form-check-label stretched-link" for="thirdCheckboxStretched">Third checkbox</label>
+                        </li>
+                      </ul>
+                        <div class="p-3 rounded list-group" id="suggest-titles">
+
                         </div>
-                        <div class="form-group">
-                            <label for="bodyNoti">Segment</label>
-                            <select class="form-control" name="segment">
-                                <option>Select one ...</option>
-                                <option value="0">País</option>
-                                <option value="1">Language</option>
-                                <option value="2">Diabetes Type</option>
-                                <option value="3">Center</option>
-                            </select>
+                        <div class="d-flex justify-text-center">
+                            <button class="btn btn-outline-info" id="refresh-suggest-titles" type="button">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="wizard-step" data-title="انتخاب عناوین مقاله">
@@ -195,6 +199,14 @@
                                 <option value="2">Diabetes Type</option>
                                 <option value="3">Center</option>
                             </select>
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
+                            <input type="file" id="final-file-upload" class="d-none" />
+                            <button class="btn btn-primary" id="final-upload-button">
+                                <i class="fa-solid fa-upload me-2"></i>
+                                <span>آپلود فایل نهایی</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            </button>
                         </div>
                     </div>
                 </aside>
@@ -245,7 +257,7 @@
         let wz_class = ".wizard";
         let args = {
             wz_class: wz_class,
-            wz_nav_style: "dots", // dots, tabs, progress
+            wz_nav_style: "dots",
             wz_ori: "vertical",
             buttons: true,
             navigation: "all",
@@ -308,10 +320,63 @@
                         console.log('Error:', error);
                     }
                 });
+            } else if (wizard.current_step === 1) {
+                
+                var request = {
+                    "user_topic": $("input[name='main_tag']").val()
+                };
+                $("#refresh-suggest-titles").click(function(){
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ url_for('dashboard.get_titles') }}",
+                        data: JSON.stringify(request),
+                        contentType: "application/json",
+                        processData: false,
+                        success: function (response) {
+                            $("#suggest-titles").html(''); 
+                            $.each(response, function (key, value) {
+                                let row = `<li class="list-group-item mt-2 mb-2 p-2 text-bg-light rounded" id="titles-${key}">
+                                    <input class="form-check-input me-1" type="radio" name="listGroupRadio value="" id="titles-checkbox-${key}">
+                                    <label class="form-check-label" for="titles-checkbox-${key}">${value}</label>
+                                  </li>`
+                                $("#suggest-titles").append(row); 
+                            });
+                            console.log('Titles saved:', response);
+                        },
+                        error: function (error) {
+                            console.log('Error:', error);
+                        }
+                    });
+                });
+                // AJAX call on step 3
+
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url_for('dashboard.get_titles') }}",
+                    data: JSON.stringify(request),
+                    contentType: "application/json",
+                    processData: false,
+                    success: function (response) {
+                        $("#suggest-titles").html(''); 
+                        $.each(response, function (key, value) {
+                            let row = `<li class="list-group-item mt-2 mb-2 p-2 text-bg-light rounded" id="titles-${key}">
+                                <input class="form-check-input me-1" type="radio" value="" id="titles-checkbox-${key}">
+                                <label class="form-check-label" for="titles-checkbox-${key}">${value}</label>
+                              </li>`
+                            $("#suggest-titles").append(row); 
+                        });
+                        console.log('Titles saved:', response);
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
             }
         });
 
-        // File upload handling
+        // File upload handling on step 2
         $('#upload-button').on('click', function (e) {
             e.preventDefault();
             $('#file-upload').click();
@@ -343,8 +408,42 @@
                     $uploadButton.prop('disabled', false);
                     $('#file-upload').val('');
                 },
-            error: function (error) {
-                    <!-- console.log('Error:', error); -->
+                error: function (error) {
+                    $uploadButton.find('.spinner-border').addClass('d-none');
+                    $uploadButton.prop('disabled', false);
+                }
+            });
+        });
+
+        // File upload handling on the last step
+        $('#final-upload-button').on('click', function (e) {
+            e.preventDefault();
+            $('#final-file-upload').click();
+        });
+
+        $('#final-file-upload').on('change', function () {
+            var formData = new FormData();
+            var file = $('#final-file-upload')[0].files[0];
+            formData.append('file', file);
+
+            var $uploadButton = $('#final-upload-button');
+            $uploadButton.find('.spinner-border').removeClass('d-none');
+            $uploadButton.prop('disabled', true);
+
+            $.ajax({
+                url: '{{ url_for("dashboard.upload_resource") }}',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    console.log('Final file uploaded:', data);
+                    $uploadButton.find('.spinner-border').addClass('d-none');
+                    $uploadButton.prop('disabled', false);
+                    $('#final-file-upload').val('');
+                },
+                error: function (error) {
+                    console.log('Error:', error);
                     $uploadButton.find('.spinner-border').addClass('d-none');
                     $uploadButton.prop('disabled', false);
                 }

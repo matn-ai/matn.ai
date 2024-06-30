@@ -1,11 +1,5 @@
 from flask import Blueprint
 
-dashboard = Blueprint('dashboard', __name__)
+dashboard = Blueprint('dashboard', __name__, url_prefix="/dashboard")
 
 from . import views, errors
-from ..models import Permission
-
-
-@dashboard.app_context_processor
-def inject_permissions():
-    return dict(Permission=Permission)
