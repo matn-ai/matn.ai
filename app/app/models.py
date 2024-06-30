@@ -13,6 +13,8 @@ from .const import content_type_map
 from .utils import utils_gre2jalali, to_persian_numerals
 import jdatetime
 
+from .finance.models import *
+
 
 class Permission:
     WRITE = 4
@@ -213,6 +215,11 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+    
+
+    @property
+    def remain_charge(self):
+        return Charge.get_user_charge(user_id=self.id)
 
 
 class AnonymousUser(AnonymousUserMixin):
@@ -371,4 +378,3 @@ class Job(db.Model):
         return '<Job %r>' % self.id
     
     
-from .finance.models import *

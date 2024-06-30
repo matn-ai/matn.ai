@@ -152,3 +152,23 @@ def create_admin(username, email, password):
             click.echo(f"Admin user {username} created successfully.")
         except:
             click.echo("Skipped")
+
+
+@app.cli.command("create-bank")
+@click.argument("slug")
+def create_admin(slug):
+    """Create an admin user."""
+    with app.app_context():
+        try:
+            from .models import Role, User
+            from .finance.models import Bank
+        
+            user = User(username=slug, email=slug + '@novahub.ir', confirmed=True)
+            user.password = 'sldjhflakdsjfalkdjf'
+            db.session.add(user)
+            bank = Bank(slug=slug, user_id=user.id, name=slug)
+            db.session.add(bank)
+            db.session.commit()
+            click.echo(f"Admin user and bank {slug} created successfully.")
+        except:
+            click.echo("Skipped")

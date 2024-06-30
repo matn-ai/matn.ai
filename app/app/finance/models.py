@@ -3,7 +3,7 @@ from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import JSON
 from .. import db, mdb, login_manager, contents_collection
 
-from .business import calculate_charge_rule
+from .business import calculate_charge_rule, calculate_reduce_charge
 
 
 
@@ -133,14 +133,19 @@ class Charge(db.Model):
         obj = cls(user_id=user_id,
                   word_count=total_words)
         db.session.add(obj)
+        db.session.commit()
         return obj
 
-    def reduce_user_charge(self, total_words):
+    @classmethod
+    def reduce_user_charge(cls, user_id, total_words, model='gpt-3.5'):
         if total_words < 0:
             total_words = -1 * total_words
-        self.word_count = -1 * total_words
+        total_words = calculate_reduce_charge(total_words, model=model)
+        obj = cls(user_id=user_id,
+                  word_count=total_words * -1)
+        db.session.add(obj)
         db.session.commit()
-        return self
+        return obj
     
     @classmethod
     def get_user_charge(cls, user_id):

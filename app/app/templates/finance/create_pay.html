@@ -1,23 +1,70 @@
 {% extends "dashboard/dashboard.html" %}
 {% block dashboard %}
 
-<h1>Create Pay</h1>
-<form method="POST" action="{{ url_for('finance.create_pay') }}">
-    {{ form.hidden_tag() }}
-    <div>
-        <label for="amount">Amount:</label>
-        <input type="range" id="amountSlider" name="amount" min="0" max="10000" step="100" value="0" oninput="updateAmount(this.value)">
-        <span id="amountDisplay">0</span>
+<div class="col-md-5 rounded bg-white p-4">
+
+    <div class="d-flex justify-content-evenly mb-4">
+        <div class="text-center">
+            <span class="badge badge-primary text-dark"> کلمه</span>
+            <div id="rangeThumb" class="range-thumb rounded p-2 bg-light fs-4" style="right: 0%;">۲۰۰۰</div>
+        </div>
+        <div class="text-center">
+            <span class="badge badge-primary text-dark"> قیمت هر کلمه</span>
+            <div id="pricePerWord" class="text-muted rounded p-2 bg-light fs-4"> ۲۰
+            </div>
+        </div>
     </div>
-    <div>
-        <button type="submit">Submit</button>
+
+    <div class="range-slider mb-4 text-center mt-4 pt-4">
+        <label for="wordCountSlider" class="form-label">تعداد کلمات مورد نیاز</label>
+        <input id="wordCountSlider" type="range" class="form-range" min="2000" max="100000" value="2000" step="100"
+            oninput="updatePrice()">
     </div>
-</form>
+
+    <div class="text-center mt-4 pt-4">
+        <span class="badge badge-primary text-dark"> جمع</span>
+        <div id="total" class="font-weight-bold fs-4">۴۰٬۰۰۰ تومان</div>
+    </div>
+
+    <div class="text-center mt-4">
+        <form method="POST" action="{{ url_for('finance.create_pay') }}">
+            {{ form.hidden_tag() }}
+            <input type="hidden" id="amount" name="amount" value="0">
+            <button type="submit" class="btn btn-primary w-50 text-white">خرید</button>
+        </form>
+    </div>
+</div>
 
 <script>
-    function updateAmount(value) {
-        document.getElementById('amountDisplay').innerText = value;
+    function updatePrice() {
+        const rangeValue = document.getElementById('wordCountSlider').value;
+        let pricePerWord;
+
+        if (rangeValue <= 19999) {
+            pricePerWord = 20;
+        } else if (rangeValue <= 39999) {
+            pricePerWord = 19;
+        } else if (rangeValue <= 59999) {
+            pricePerWord = 18;
+        } else if (rangeValue <= 79999) {
+            pricePerWord = 17;
+        } else {
+            pricePerWord = 16;
+        }
+
+        const totalPrice = rangeValue * pricePerWord;
+        document.getElementById('pricePerWord').textContent = `${parseInt(pricePerWord).toLocaleString('fa-IR')}`;
+        document.getElementById('total').textContent = `${totalPrice.toLocaleString('fa-IR')} تومان`;
+        document.getElementById('rangeThumb').style.right = `${((rangeValue - 2000) / 98000) * 100}%`;
+        document.getElementById('rangeThumb').textContent = parseInt(rangeValue).toLocaleString('fa-IR');
+        document.getElementById('amount').value = totalPrice;
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updatePrice();
+    });
 </script>
+
+
 
 {% endblock %}

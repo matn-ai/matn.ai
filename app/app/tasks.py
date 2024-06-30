@@ -10,6 +10,12 @@ from flask import current_app
 from . import app as flask_app, celery_app as celery, db, contents_collection
 from .models import Content, Job
 
+from .finance.models import Charge
+
+from logging import getLogger
+
+logger = getLogger(__name__)
+
 load_dotenv()
 
 
@@ -121,7 +127,7 @@ def generate_outlines_blog_post(user_title, lang, article_length, llm_type):
         )
     else:
         random.seed(int(time.time()))
-        rand = random.randint(9, 13)
+        rand = random.randint(3, 5)
         user_prompt += (
             f"Generate a concise outline for a short blog post on the following topic: {user_title}\n"
             f"The outline should include an introduction, {rand} main headline and no sub headline , and a conclusion.\n"
@@ -289,7 +295,7 @@ def generate_article_body(title, outlines, keywords, lang, llm_type):
 
 
 
-def save_article_to_db(content_id, body, title, outlines, content_length):
+def save_article_to_db(content_id, body, title, outlines, content_length, model='gpt-4o'):
     with flask_app.app_context():
         body_document = {"body": body}
         mongo_result = contents_collection.insert_one(body_document)
@@ -303,7 +309,15 @@ def save_article_to_db(content_id, body, title, outlines, content_length):
             content.outlines = outlines
             db.session.add(content)
             db.session.commit()
-
+            
+            ## Reduce Charge
+            logger.info(f'Reducing charge from user {content.author_id}')
+            charge = Charge.reduce_user_charge(
+                user_id=content.author_id,
+                total_words=content_length,
+                model=model
+            )
+            logger.info(f'Reducing charge from user {content.author_id} -> {content_length} [{model}] == {charge.word_count}')
             return content.id
         return None
 
@@ -323,23 +337,29 @@ def update_job_status(task_id, status, duration=None):
 @celery.task
 def generate_blog_simple(content_id, user_input):
     start_time = datetime.now()
-
+    logger.info(f'Goint to create blog post for {content_id}')
     title = user_input["user_topic"]
     keywords = user_input["tags"].split(",")
     lang = "فارسی" if user_input["lang"] else "English"
-    llm = "gpt-4o"
+    llm = "gpt-3.5-turbo"
+    logger.info(f'The LLM is {llm}')
     article_length = user_input["article_length"]
 
     title = generate_title_blog_post(title, lang, article_length, llm)
+    logger.info(f'Generated Title: {title}')
     outlines = generate_outlines_blog_post(title, lang, article_length, llm)
+    logger.info(f'<Content:{content_id}>  The outlines has been created')
     body = generate_blog_post_body(title, outlines, keywords, lang, article_length, llm)
-
+    logger.info(f'<Content:{content_id}>   The body has been created')
     content_length = len(body.split())
-    content_id = save_article_to_db(content_id, body, title, outlines, content_length)
+    logger.info(f'<Content:{content_id}>  Going to save the article. Length of the article {content_length}')
+    content_id = save_article_to_db(content_id, body, title, outlines, content_length, model=llm)
 
     task_status = "SUCCESS" if content_id else "FAILURE"
     end_time = datetime.now()
     duration = end_time - start_time
+    logger.info(f'<Content:{content_id}> elapsed time {duration}')
+
 
     update_job_status(generate_blog_simple.request.id, task_status, duration.seconds)
 
@@ -354,14 +374,14 @@ def generate_pro_article(content_id, user_input):
     title = user_input["user_topic"]
     keywords = user_input["tags"].split(",")
     lang = "فارسی" if user_input["lang"] else "English"
-    llm = "gpt-4o"
+    llm = "gpt-3.5-turbo"
 
     title = generate_title(title, lang, llm)
     outlines = generate_outlines(title, lang, llm)
     body = generate_article_body(title, outlines, keywords, lang, llm)
 
     content_length = len(body.split())
-    content_id = save_article_to_db(content_id, body, title, outlines, content_length)
+    content_id = save_article_to_db(content_id, body, title, outlines, content_length, model=llm)
 
     task_status = "SUCCESS" if content_id else "FAILURE"
     end_time = datetime.now()

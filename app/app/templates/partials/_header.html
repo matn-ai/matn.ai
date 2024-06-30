@@ -28,7 +28,7 @@
                         </ul>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('finance.create_pay') }}">خرید اعتبار</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">دانشنامه</a></li>
+                    <!-- <li class="nav-item"><a class="nav-link" href="#">دانشنامه</a></li> -->
                     <li class="nav-item"><a class="nav-link" href="#">درباره</a></li>
                 </ul>
                 <ul class="navbar-nav flex-row mb-2 mb-lg-0 ms-lg-3" id="left-side">
@@ -39,7 +39,7 @@
                           <div class="col-5">موجودی :</div>
                           <div class="col-4">
                             <span class="fw-bold">
-                                ۳،۰۰۰،۰۰۰
+                                {{ current_user.remain_charge }}
                             </span>
                           </div>
                           <div class="col-2">
