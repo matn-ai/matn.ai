@@ -155,51 +155,35 @@
                         </div>
                     </div>
                     <div class="wizard-step" data-title="انتخاب تیتر مقاله">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div class="p-2 mb-2 mt-2 text-primary-emphasis">
+                                یکی از تیتر های پیشنهادی برای نوشتار را انتخاب کنید
+                           </div>
+                            <button class="btn btn-link" id="refresh-suggest-titles" type="button">
+                                <i class="fa-solid fa-arrows-rotate me-2"></i>
+                            </button>
+                        </div>
+                        <ul class="p-3 rounded list-group" id="suggest-titles">
 
+                        </ul>
+
+                    </div>
+                    <div class="wizard-step" data-title="انتخاب عناوین مقاله">
+
+                        
                         <div class="w-100 p-2 mb-2 mt-2 text-primary-emphasis">
                             یکی از تیتر های پیشنهادی برای نوشتار را انتخاب کنید:
                        </div>
-                       <ul class="list-group">
-                        <li class="list-group-item">
-                          <input class="form-check-input me-1" type="checkbox" value="" id="firstCheckboxStretched">
-                          <label class="form-check-label stretched-link" for="firstCheckboxStretched">First checkbox</label>
-                        </li>
-                        <li class="list-group-item">
-                          <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckboxStretched">
-                          <label class="form-check-label stretched-link" for="secondCheckboxStretched">Second checkbox</label>
-                        </li>
-                        <li class="list-group-item">
-                          <input class="form-check-input me-1" type="checkbox" value="" id="thirdCheckboxStretched">
-                          <label class="form-check-label stretched-link" for="thirdCheckboxStretched">Third checkbox</label>
-                        </li>
-                      </ul>
-                        <div class="p-3 rounded list-group" id="suggest-titles">
+                        <ul class="p-3 rounded list-group" id="suggest-titles">
 
-                        </div>
-                        <div class="d-flex justify-text-center">
+                        </ul>
+                        <div class="d-flex justify-content-end">
                             <button class="btn btn-outline-info" id="refresh-suggest-titles" type="button">
                                 <i class="fa-solid fa-arrows-rotate"></i>
                             </button>
                         </div>
-                    </div>
-                    <div class="wizard-step" data-title="انتخاب عناوین مقاله">
-                        <div class="form-group">
-                            <label for="titleNoti">Action <span class="required">*</span></label>
-                            <select class="form-control required" name="action">
-                                <option>Select one ...</option>
-                                <option value="0">Open bolus configurator</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="bodyNoti">Segment</label>
-                            <select class="form-control" name="segment">
-                                <option>Select one ...</option>
-                                <option value="0">País</option>
-                                <option value="1">Language</option>
-                                <option value="2">Diabetes Type</option>
-                                <option value="3">Center</option>
-                            </select>
-                        </div>
+
+
                         <div class="d-flex justify-content-end mt-3">
                             <input type="file" id="final-file-upload" class="d-none" />
                             <button class="btn btn-primary" id="final-upload-button">
