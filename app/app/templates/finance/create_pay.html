@@ -1,0 +1,23 @@
+{% extends "dashboard/dashboard.html" %}
+{% block dashboard %}
+
+<h1>Create Pay</h1>
+<form method="POST" action="{{ url_for('finance.create_pay') }}">
+    {{ form.hidden_tag() }}
+    <div>
+        <label for="amount">Amount:</label>
+        <input type="range" id="amountSlider" name="amount" min="0" max="10000" step="100" value="0" oninput="updateAmount(this.value)">
+        <span id="amountDisplay">0</span>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</form>
+
+<script>
+    function updateAmount(value) {
+        document.getElementById('amountDisplay').innerText = value;
+    }
+</script>
+
+{% endblock %}

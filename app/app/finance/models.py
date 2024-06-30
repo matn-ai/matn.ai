@@ -30,7 +30,7 @@ class Bank(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     slug = db.Column(db.String(64), unique=True)
-    name = db.Column(db.Integer, db.ForeignKey('users.id'))
+    name = db.Column(db.String(64))
     logo_url = db.Column(db.Text)
     api_key = db.Column(db.Text)
     description = db.Column(db.Text)
@@ -101,14 +101,15 @@ class Receipt(db.Model):
         return self
     
     def add_transaction(self, bank_slug='zibal', description=''):
-        bank = Bank.query.filter_by(slug=bank_slug)
+        bank = Bank.query.filter_by(slug=bank_slug).first()
         self.bank_id = bank.id
         # Add transaction for user
         Transaction.create_charge_transaction(user_id=self.user_id, 
                                               amount=self.amount, 
                                               description='User charges for {} [{}]'.format(self.tracker_id, description))
         # To have system balance, add another transaction for bank
-        Transaction.create_charge_transaction(user_id=self.bank.user_id, 
+        
+        Transaction.create_charge_transaction(user_id=bank.user_id, 
                                               amount=self.amount * -1, 
                                               description='Payment {} [{}]'.format(self.tracker_id, description))
         

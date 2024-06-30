@@ -7,20 +7,26 @@ from .models import Receipt, Bank, Charge
 from .forms import CreatePayForm
 from flask_login import login_required, current_user
 
+import os
+
+import logging
+logger = logging.getLogger()
+
 import zibal.zibal as zibal
 
-merchant_id = 'zibal'
-callback_url = 'https://novahub.ir/finance/webhook'
-START_PAYMENT_URL = 'https://gateway.zibal.ir/start/3653515082'
+merchant_id = os.environ.get('ZIBAL_MERCHAND_ID', 'zibal') # zibal for test mode
+callback_url = os.environ.get('ZIBAL_CALLBACK_URL', 'http://127.0.0.1/finance/webhook/zibal')
+START_PAYMENT_URL = 'https://gateway.zibal.ir/start/'
 
 
-@finance.route('/create_pay', methods=['POST'])
+@finance.route('/finance/create_pay', methods=['GET', 'POST'])
 @login_required
 def create_pay():
     form = CreatePayForm()
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         user = current_user
-        amount = form.amount
+        amount = float(form.amount.data)
+        logger.info('Requested amount for user {} is {}'.format(user, amount))
         bank = Bank.get_bank_by_slug('zibal')
         receipt = Receipt.create_receipt(user_id=user.id, amount=amount, bank_id=bank.id)
         
@@ -35,19 +41,20 @@ def create_pay():
             raise Exception('Zibal request is not successful')
         
         receipt.update_additional_data({'request_to_zibal': request_to_zibal})
-
-        redirect_url = START_PAYMENT_URL + request_to_zibal.get('trackId')
+        receipt.set_tracker_id(str(request_to_zibal.get('trackId')))
+        redirect_url = START_PAYMENT_URL + str(request_to_zibal.get('trackId'))
+        logger.info(redirect_url)
         
         return redirect(redirect_url)
         
         
         
-    return render_template('finance/status_page.html')
+    return render_template('finance/create_pay.html', form=form)
 
 
-@finance.route('/webhook', methods=['GET'])
+@finance.route('/finance/webhook/zibal', methods=['GET'])
 @login_required
-def webhook():
+def zibal_webhook():
     track_id = request.args.get('trackId')
     success = request.args.get('success')
     status = request.args.get('status')
@@ -58,30 +65,41 @@ def webhook():
         return render_template('finance/status_page.html')
     
     # Check receipt be pending and exists
-    receipt = Receipt.query.filter_by(track_id=track_id).first()
+    logger.info('Incoming track id ' + str(track_id))
+    receipt = Receipt.query.filter_by(tracker_id=str(track_id)).first()
+    logger.info('Found receipt : {}'.format(receipt))
     if not receipt or receipt.status != 'pending':
-        flash('Receipt not found', 'danger')
+        flash('Receipt not found or has not been pending', 'danger')
+        return render_template('finance/status_page.html')
+    
+    if status == '1':
+        receipt.set_status('failed')
+        flash('پرداخت شما قبلا داخل سیستم نشسته است', 'danger')
         return render_template('finance/status_page.html')
     
     # Check status be success 1: success, 0: failed
-    if status != '1':
+    if status != '2':
         receipt.set_status('failed')
-        flash('Payment not success', 'danger')
+        flash('پرداخت شما موفقیت امیز نبود', 'danger')
         return render_template('finance/status_page.html')
     
+    logger.info('Adding the additional data')
     # Check receipt
     receipt.update_additional_data({'call_back_data': request.args.to_dict()})
-    receipt.set_status('success')
     receipt.add_transaction(bank_slug='zibal', description='Success')
+    receipt.set_status('success')
     
+    logger.info(f'Charge user {receipt.user_id} -> {receipt.amount}')
     # Add user charge (see finance.business about charge business and rules)
-    Charge.add_user_charge(user_id=receipt.user_id, amount=receipt.amount)
+    user_new_charge = Charge.add_user_charge(user_id=receipt.user_id, amount=receipt.amount)
     
+    logger.info(f'Going to verify the payment {track_id} -> {receipt.user_id}')
     # Verify it
     zb = zibal.zibal(merchant_id, callback_url)
     verify_zibal = zb.verify(track_id)
     verify_result = verify_zibal['result']
+    logger.info('Verify result {}'.format(verify_result))
     receipt.update_additional_data({'verify_result': verify_result})
     
-    
-    return redirect(url_for('finance/status_page.html'))
+    flash('اکانت شما به میزان {} شارژ شد'.format(user_new_charge.word_count), 'success')
+    return render_template('finance/status_page.html')
