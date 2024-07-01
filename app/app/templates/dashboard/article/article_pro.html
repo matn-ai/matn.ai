@@ -8,6 +8,10 @@
     .wizard.vertical .wizard-content {
         min-height: 660px;
     }
+
+    .is-invalid {
+        border-color: red !important;
+    }
 </style>
 <div class="row">
     <div class="col-12 mr-auto mx-auto">
@@ -23,7 +27,7 @@
                     </div>
                 </span>
             </div>
-            <div class=" p-2">
+            <div class="p-2">
                 <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">زمان تقریبی ۴ تا ۶ دقیقه</span>
             </div>
         </div>
@@ -32,87 +36,69 @@
             <form class="wizard" id="formWizard" class="p-2">
                 <aside class="wizard-content container border p-4 mb-4 rounded">
                     <div class="wizard-step" data-title="تنظیمات مقاله">
-                        <form id="form_step1" class="form-group mb-4 mt-4" action="{{ url_for('dashboard.article_pro') }}" method="post">
+                        <form id="form-step1" class="form-group mb-4 mt-4" method="post">
                             {{ form.hidden_tag() }}
                             <div class="form-group mb-4 mt-2">
                                 <label for="user_topic" class="mb-2">{{ form.user_topic.label }}</label>
-                                {{ form.user_topic(size=500, class_="form-control", style="max-height: 100px;" ) }}
+                                {{ form.user_topic(id="form_user_topic", size=500, class_="form-control", style="max-height: 100px;") }}
+                                <div id="user_topic_error" class="form-text text-danger"></div>
                                 <div class="form-text">عنوان یا شرح موضوع مقاله را وارد کنید.</div>
                             </div>
                             <div class="form-group mb-4 mt-2 pb-4">
                                 <label for="tags" class="mb-2">{{ form.main_tag.label }}</label>
-                                {{ form.main_tag(size=40, id="tags-input", class="form-control") }}
+                                {{ form.main_tag(id="main-tag-input", class="form-control") }}
+                                <div id="main_tag_error" class="form-text text-danger"></div>
                                 <div class="form-text">پس از وارد کردن هر کلمه Enter بزنید.</div>
                             </div>
                             <div class="form-group mb-4 mt-2 pb-4">
                                 <label for="tags" class="mb-2">{{ form.tags.label }}</label>
-                                {{ form.tags(size=40, id="tags-input", class="form-control") }}
+                                {{ form.tags(id="tags-input", class="form-control") }}
                                 <div class="form-text">پس از وارد کردن هر کلمه Enter بزنید.</div>
                             </div>
                             <div class="row mb-4">
                                 <div class="col-6">
                                     <div class="form-floating">
-                                        <select class="form-select" id="floatingSelectTone" aria-label="Floating label select example">
-                                            <option selected>لحن متن</option>
-                                            <option value="1">عادی</option>
-                                            <option value="2">حرفه‌ای</option>
-                                            <option value="3">Three</option>
-                                        </select>
-                                        <label for="floatingSelectTone">لحن نوشتار متن را انتخاب کنید</label>
+                                        {{ form.point_ofview(class="form-select") }}
+                                        <label for="floatingSelectTone">{{ form.point_ofview.label }}</label>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-floating">
-                                        <select class="form-select" id="floatingSelectPronoun" aria-label="Floating label select example">
-                                            <option selected>ضمیر</option>
-                                            <option value="1">عادی</option>
-                                            <option value="2">حرفه‌ای</option>
-                                            <option value="3">Three</option>
-                                        </select>
-                                        <label for="floatingSelectPronoun">ضمیر را انتخاب کنید</label>
+                                        {{ form.target_audience(class="form-select") }}
+                                        <label for="floatingSelectTone">{{ form.target_audience.label }}</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-floating">
-                                        <select class="form-select" id="floatingSelectTone" aria-label="Floating label select example">
-                                            <option selected>عمومی</option>
-                                            <option value="1">حرفه‌ای</option>
-                                            <option value="2">حرفه‌ای</option>
-                                            <option value="3">Three</option>
-                                        </select>
-                                        <label for="floatingSelectTone">مخاطب نوشتار را انتخاب کنید</label>
+                                        {{ form.voice_tune(class="form-select") }}
+                                        <label for="floatingSelectTone">{{ form.voice_tune.label }}</label>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-floating">
-                                        <select class="form-select" id="floatingSelectPronoun4" aria-label="Floating label select example">
-                                            <option selected>تا ۳۰۰۰ کلمه</option>
-                                            <option value="1">عادی</option>
-                                            <option value="2">حرفه‌ای</option>
-                                            <option value="3">Three</option>
-                                        </select>
-                                        <label for="floatingSelectPronoun4">طول نوشتار را انتخاب کنید</label>
+                                        {{ form.article_length(class="form-select") }}
+                                        <label for="floatingSelectTone">{{ form.article_length.label }}</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group mb-4 mt-4">
                                 <div class="w-100 p-3 text-right">زبان نوشتار را انتخاب کنید</div>
                                 <div class="w-100 p-3 text-center">
-                                    <input type="radio" class="btn-check" name="options-outlined" id="fa-outlined" autocomplete="off" checked>
+                                    <input type="radio" class="btn-check" name="language" id="fa-outlined" autocomplete="off" checked>
                                     <label class="btn btn-outline-primary" for="fa-outlined">
                                         <span class="fi fi-ir me-1"></span>فارسی
                                     </label>
-                                    <input type="radio" class="btn-check" name="options-outlined" id="en-outlined" autocomplete="off">
+                                    <input type="radio" class="btn-check" name="language" id="en-outlined" autocomplete="off">
                                     <label class="btn btn-outline-primary" for="en-outlined">
                                         <span class="fi fi-us me-1"></span>English
                                     </label>
-                                    <input type="radio" class="btn-check" name="options-outlined" id="ar-outlined" autocomplete="off">
+                                    <input type="radio" class="btn-check" name="language" id="ar-outlined" autocomplete="off">
                                     <label class="btn btn-outline-primary" for="ar-outlined">
                                         <span class="fi fi-ae me-1"></span>عربى
                                     </label>
-                                    <input type="radio" class="btn-check" name="options-outlined" id="fr-outlined" autocomplete="off">
+                                    <input type="radio" class="btn-check" name="language" id="fr-outlined" autocomplete="off">
                                     <label class="btn btn-outline-primary" for="fr-outlined">
                                         <span class="fi fi-fr me-1"></span>Français
                                     </label>
@@ -124,7 +110,7 @@
                         <div class="row">
                             <div class="col-11 mr-auto mx-auto">
                                 <div class="w-100 p-2 mb-2 mt-2 text-primary-emphasis">
-                                     حداکثر ۵ منبع می‌توانید انتخاب کنید
+                                    حداکثر ۵ منبع می‌توانید انتخاب کنید
                                 </div>
                                 <div id="selected-resources">
                                     <!-- Selected resources will be appended here -->
@@ -134,7 +120,8 @@
                                     <button class="btn btn-primary" id="upload-button">
                                         <i class="fa-solid fa-upload me-2"></i>
                                         <span>آپلود فایل</span>
-                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                        <span class="spinner-border spinner-border-sm d-none" role="status"
+                                            aria-hidden="true"></span>
                                     </button>
                                 </div>
                             </div>
@@ -142,23 +129,26 @@
                                 <div class="form-group">
                                     <label for="search_in_resource" class="mb-3">جستجو در منابع</label>
                                     <div class="input-group mb-3">
-                                        <input type="text" class="form-control" placeholder="جستجو در منابع" name="search_in_resource" aria-label="جستجو" aria-describedby="button-addon2">
+                                        <input type="text" class="form-control" placeholder="جستجو در منابع"
+                                            name="search_in_resource" aria-label="جستجو"
+                                            aria-describedby="button-addon2">
                                         <button class="btn btn-outline-secondary" type="button" id="button-addon2">
                                             <i class="fa-solid fa-magnifying-glass"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="list-group mt-3" style="overflow-y: auto; height: 650px;" id="resource-result">
+                                <div class="list-group mt-3" style="overflow-y: auto; height: 650px;"
+                                    id="resource-result">
                                     <!-- Resources will be appended here -->
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="wizard-step" data-title="انتخاب تیتر مقاله">
-                        <div class="d-flex justify-content-between mb-2">
+                        <div class="d-flex justify-content-between mb-4">
                             <div class="p-2 mb-2 mt-2 text-primary-emphasis">
                                 یکی از تیتر های پیشنهادی برای نوشتار را انتخاب کنید
-                           </div>
+                            </div>
                             <button class="btn btn-link" id="refresh-suggest-titles" type="button">
                                 <i class="fa-solid fa-arrows-rotate me-2"></i>
                             </button>
@@ -169,39 +159,52 @@
 
                     </div>
                     <div class="wizard-step" data-title="انتخاب عناوین مقاله">
-
-                        
                         <div class="w-100 p-2 mb-2 mt-2 text-primary-emphasis">
-                            یکی از تیتر های پیشنهادی برای نوشتار را انتخاب کنید:
-                       </div>
-                        <ul class="p-3 rounded list-group" id="suggest-titles">
+                            یکی از لیست‌‌های عناوین پیشنهادی برای نوشتار را انتخاب کنید:
+                        </div>
 
+                        <ul class="nav nav-tabs" id="outlineTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="tab-1-tab" data-bs-toggle="tab" data-bs-target="#tab-1" type="button" role="tab" aria-controls="tab-1" aria-selected="true">لیست ۱</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tab-2-tab" data-bs-toggle="tab" data-bs-target="#tab-2" type="button" role="tab" aria-controls="tab-2" aria-selected="false">لیست ۲</button>
+                            </li>
                         </ul>
-                        <div class="d-flex justify-content-end">
-                            <button class="btn btn-outline-info" id="refresh-suggest-titles" type="button">
-                                <i class="fa-solid fa-arrows-rotate"></i>
-                            </button>
+                        <div class="tab-content" id="outlineTabsContent">
+                            <div class="tab-pane fade show active" id="tab-1" role="tabpanel" aria-labelledby="tab-1-tab">
+                                <div id="list-1" class="p-3 mt-2"></div>
+                                <button class="btn btn-outline-primary add-main-outline-btn" data-list="1" type="button">
+                                    <i class="fas fa-plus"></i> افزودن خط اصلی
+                                </button>
+                            </div>
+                            <div class="tab-pane fade" id="tab-2" role="tabpanel" aria-labelledby="tab-2-tab">
+                                <div id="list-2" class="p-3 mt-2"></div>
+                                <button class="btn btn-outline-primary add-main-outline-btn" data-list="2" type="button">
+                                    <i class="fas fa-plus"></i> افزودن خط اصلی
+                                </button>
+                            </div>
                         </div>
 
-
-                        <div class="d-flex justify-content-end mt-3">
-                            <input type="file" id="final-file-upload" class="d-none" />
-                            <button class="btn btn-primary" id="final-upload-button">
-                                <i class="fa-solid fa-upload me-2"></i>
-                                <span>آپلود فایل نهایی</span>
-                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                            </button>
-                        </div>
                     </div>
+                    
                 </aside>
             </form>
         </div>
     </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tagify.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/wizard.min.js') }}"></script>
+
 <script>
     $(document).ready(function () {
         let maxSelectedResources = 5;
+        let resources = [];
+        let selected_title = "";
+        let mainOutlineCounter = 0;  // Counter to generate unique IDs for main outlines
+        let subOutlineCounter = 0;   // Counter to generate unique IDs for sub outlines
 
         function updateResourceCount() {
             let selectedCount = $("#selected-resources .row").length;
@@ -218,12 +221,12 @@
             let badgeClass = type === 'file' ? 'text-bg-secondary' : 'text-bg-primary';
             let selectedRow = `<div class="row p-1 rounded border mt-2" id="${key}-selected">
                 <div class="col-3 p-2 text-right">
-                    <i class="fa-solid fa-circle-minus text-danger remove-resource"></i>                             
-                    <i class="fa-solid fa-pen-to-square text-primary"></i>                                        
+                    <i class="fa-solid fa-circle-minus text-danger remove-resource"></i>
+                    <i class="fa-solid fa-pen-to-square text-primary"></i>
                 </div>
                 <div class="col-9 p-2" style="direction: ltr; text-align: left;">
                     <span class="badge ${badgeClass} ms-2">${type === 'file' ? 'فایل' : 'وب'}</span>
-                    <a class="link-primary" href="${url}">${title}</a>    
+                    <a class="link-primary" href="${url}">${title}</a>
                 </div>
             </div>`;
             $("#selected-resources").append(selectedRow);
@@ -246,121 +249,257 @@
             buttons: true,
             navigation: "all",
             next: "بعدی",
+            nav: true,
             prev: "قبلی",
+            finish: "نوشتن را شروع کن",
             wz_button: ".btn-outline-primary",
             wz_next: ".m-2",
-            wz_prev: ".btn-outline-secondary"
+            wz_prev: ".btn-outline-dark",
+            wz_finish: ".btn-outline-success"
         };
 
         const wizard = new Wizard(args);
         wizard.init();
 
+        let input = document.getElementById('tags-input');
+        let tagify = new Tagify(input, {
+            maxTags: 5
+        });
+
+        let main_tag = document.getElementById('main-tag-input');
+        let main_tagify = new Tagify(main_tag, {
+            maxTags: 1,
+            required: true
+        });
+
         let $wz_doc = document.querySelector(wz_class);
 
         $wz_doc.addEventListener("wz.btn.next", function (e) {
             if (wizard.current_step === 0) {
-                var request = {
-                    "user_topic": $("input[name='main_tag']").val()
-                };
-
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url_for('dashboard.get_resources') }}",
-                    data: JSON.stringify(request),
-                    contentType: "application/json",
-                    processData: false,
-                    success: function (response) {
-                        $("#resource-result").empty();
-                        $.each(response, function (key, value) {
-                            let row = `<li class="border border-light-subtle p-2 rounded list-group-item mb-2 p-2" aria-current="true" id="${key}-source" data-key="${key}">
-                                <div class="d-flex w-100 justify-content-start">
-                                    <p class="mb-1 p-2 ">
-                                        <a class="link-primary me-2 add-resource"><i class="fa-solid fa-circle-plus"></i></a>
-                                        ${value['title']}
-                                    </p>
-                                </div>
-                                <p class="mb-1 text-secondary mt-2 small">${value['content']}</p>
-                                <div class='w-100 fst-italic' style="direction: ltr; text-align:left;">
-                                    <small><a class="link-primary mt-2" href="${decodeURIComponent(value['url'])}">${decodeURIComponent(value['url'])}</a></small>
-                                </div>
-                            </li>`;
-                            $("#resource-result").append(row);
-                        });
-
-                        // Add event listener to dynamically added elements
-                        $(".add-resource").off('click').on("click", function () {
-                            let resourceItem = $(this).closest("li");
-                            let key = resourceItem.data("key");
-                            let title = resourceItem.find('a.link-primary').text();
-                            let url = resourceItem.find('a.link-primary').attr('href');
-
-                            addResource(key, 'web', title, url);
-                            resourceItem.remove();
-                        });
-
-                        updateResourceCount();
-                    },
-                    error: function (error) {
-                        console.log('Error:', error);
-                    }
-                });
+                // Validate First Step
+                if (validateFirstStep()) {
+                    loadResources();
+                } else {
+                    e.preventDefault();  // Prevent from proceeding if validation fails
+                }
             } else if (wizard.current_step === 1) {
-                
-                var request = {
-                    "user_topic": $("input[name='main_tag']").val()
-                };
-                $("#refresh-suggest-titles").click(function(){
-
-                    $.ajax({
-                        type: 'POST',
-                        url: "{{ url_for('dashboard.get_titles') }}",
-                        data: JSON.stringify(request),
-                        contentType: "application/json",
-                        processData: false,
-                        success: function (response) {
-                            $("#suggest-titles").html(''); 
-                            $.each(response, function (key, value) {
-                                let row = `<li class="list-group-item mt-2 mb-2 p-2 text-bg-light rounded" id="titles-${key}">
-                                    <input class="form-check-input me-1" type="radio" name="listGroupRadio value="" id="titles-checkbox-${key}">
-                                    <label class="form-check-label" for="titles-checkbox-${key}">${value}</label>
-                                  </li>`
-                                $("#suggest-titles").append(row); 
-                            });
-                            console.log('Titles saved:', response);
-                        },
-                        error: function (error) {
-                            console.log('Error:', error);
-                        }
-                    });
-                });
-                // AJAX call on step 3
-
-
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url_for('dashboard.get_titles') }}",
-                    data: JSON.stringify(request),
-                    contentType: "application/json",
-                    processData: false,
-                    success: function (response) {
-                        $("#suggest-titles").html(''); 
-                        $.each(response, function (key, value) {
-                            let row = `<li class="list-group-item mt-2 mb-2 p-2 text-bg-light rounded" id="titles-${key}">
-                                <input class="form-check-input me-1" type="radio" value="" id="titles-checkbox-${key}">
-                                <label class="form-check-label" for="titles-checkbox-${key}">${value}</label>
-                              </li>`
-                            $("#suggest-titles").append(row); 
-                        });
-                        console.log('Titles saved:', response);
-                    },
-                    error: function (error) {
-                        console.log('Error:', error);
-                    }
-                });
+                if (resources.length < 1) {
+                    e.preventDefault();  // Prevent moving to the next step if there are no resources selected
+                }
+                loadTitles();
+            } else if (wizard.current_step === 2) {
+                loadOutlines();
             }
         });
 
-        // File upload handling on step 2
+        function validateFirstStep() {
+            let isValid = true;
+
+            const userTopicField = document.getElementById('form_user_topic');
+            const userTopicError = document.getElementById('user_topic_error');
+            const mainTagField = document.getElementById('main-tag-input');
+            const mainTagError = document.getElementById('main_tag_error');
+
+            // Reset previous validation messages and styles
+            userTopicField.classList.remove('is-invalid');
+            userTopicError.textContent = '';
+            mainTagField.classList.remove('is-invalid');
+            mainTagError.textContent = '';
+
+            // Validate user topic field is not empty
+            if (!userTopicField.value.trim()) {
+                isValid = false;
+                userTopicField.classList.add('is-invalid');
+                userTopicError.textContent = 'عنوان مقاله خالی است.';
+            }
+
+            // Validate main tag field has at least one value
+            if (main_tagify.value.length !== 1) {
+                isValid = false;
+                mainTagField.classList.add('is-invalid');
+                mainTagError.textContent = 'کلمه کلیدی ضروری است.';
+            }
+
+            return isValid;
+        }
+
+        function loadResources() {
+            let request = {
+                "main_topic": main_tagify.value[0]['value']
+            }
+            console.log(main_tagify.value)
+            $("input[name='search_in_resource']").val(main_tagify.value[0]['value'])
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('dashboard.get_resources') }}",
+                data: JSON.stringify(request),
+                contentType: "application/json",
+                processData: false,
+                success: function (response) {
+                    $("#resource-result").empty();
+                    $.each(response, function (key, value) {
+                        let row = `<li class="border border-light-subtle p-2 rounded list-group-item mb-2 p-2" aria-current="true" id="${key}-source" data-key="${key}">
+                            <div class="d-flex w-100 justify-content-start">
+                                <p class="mb-1 p-2 ">
+                                    <a class="link-primary me-2 add-resource"><i class="fa-solid fa-circle-plus"></i></a>
+                                    ${value['title']}
+                                </p>
+                            </div>
+                            <p class="mb-1 text-secondary mt-2 small">${value['content']}</p>
+                            <div class='w-100 fst-italic' style="direction: ltr; text-align:left;">
+                                <small><a class="link-primary mt-2" href="${decodeURIComponent(value['url'])}">${decodeURIComponent(value['url'])}</a></small>
+                            </div>
+                        </li>`;
+                        $("#resource-result").append(row);
+                    });
+
+                    $(".add-resource").off('click').on("click", function () {
+                        let resourceItem = $(this).closest("li");
+                        let key = resourceItem.data("key");
+                        let title = resourceItem.find('a.link-primary').text();
+                        let url = resourceItem.find('a.link-primary').attr('href');
+
+                        resources.push(url);
+                        addResource(key, 'web', title, url);
+                        resourceItem.remove();
+                    });
+
+                    updateResourceCount();
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
+        function loadTitles() {
+            var request = {
+                "user_topic": $("input[name='main_tag']").val()
+            };
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('dashboard.get_titles') }}",
+                data: JSON.stringify(request),
+                contentType: "application/json",
+                processData: false,
+                success: function (response) {
+                    $("#suggest-titles").html('');
+                    $.each(response, function (key, value) {
+                        let row = `<li class="list-group-item mt-2 mb-2 p-2 text-bg-light rounded" id="titles-${key}">
+                            <input class="form-check-input me-1" type="radio" name="listGroupRadio" id="titles-checkbox-${key}">
+                            <label class="form-check-label" for="titles-checkbox-${key}">${value}</label>
+                        </li>`;
+                        $("#suggest-titles").append(row);
+                    });
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
+        function loadOutlines() {
+            let selectedTitle = $("input[name='listGroupRadio']:checked").next('label').text();
+            if (!selectedTitle) {
+                alert('Please select a title before proceeding.');
+                return;
+            }
+
+            var request = {
+                "selected_title": selectedTitle
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('dashboard.get_outlines') }}",
+                data: JSON.stringify(request),
+                contentType: "application/json",
+                processData: false,
+                success: function (response) {
+                    // Clear previous contents
+                    $("#list-1").empty();
+                    $("#list-2").empty();
+
+                    $.each(response, function (index, outlineArray) {
+                        let tabContent = index === 0 ? "#list-1" : "#list-2";
+
+                        $.each(outlineArray, function (outlineIndex, outline) {
+                            mainOutlineCounter++;
+                            let mainOutlineId = `main-outline-${mainOutlineCounter}`;
+                            subOutlineCounter++;
+                            let mainHead = outline.head;
+                            let subHeads = outline.subs;
+                            let outlineHTML = `<div class="mb-3 outline-item" id="${mainOutlineId}">
+                                <div class="d-flex mb-2">
+                                    <input type="text" class="form-control main-outline-input" id="${mainOutlineId}-input" value="${mainHead}" />
+                                    <button type="button" class="btn btn-outline-danger ms-2 remove-main-outline" id="${mainOutlineId}-remove"><i class="fas fa-trash"></i></button>
+                                    <button type="button" class="btn btn-outline-success ms-2 add-sub-outline" id="${mainOutlineId}-add-sub"><i class="fas fa-plus"></i></button>
+                                </div>
+                                <div class="ms-3 sub-outline-container" id="${mainOutlineId}-subs">`;
+
+                            $.each(subHeads, function (subIndex, subHead) {
+                                subOutlineCounter++;
+                                let subOutlineId = `sub-outline-${subOutlineCounter}`;
+                                outlineHTML += `<div class="d-flex mb-2 sub-outline-item" id="${subOutlineId}">
+                                    <input type="text" class="form-control sub-outline-input" id="${subOutlineId}-input" value="${subHead}" />
+                                    <button type="button" class="btn btn-outline-danger ms-2 remove-sub-outline" id="${subOutlineId}-remove"><i class="fas fa-trash"></i></button>
+                                </div>`;
+                            });
+
+                            outlineHTML += `</div></div>`;
+
+                            $(tabContent).append(outlineHTML);
+                        });
+                    });
+
+                    // Attach event listeners for dynamically added elements
+                    attachEventHandlers();
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
+        function attachEventHandlers() {
+            $('.remove-main-outline').off('click').on('click', function () {
+                $(this).closest('.outline-item').remove();
+            });
+
+            $('.add-sub-outline').off('click').on('click', function () {
+                subOutlineCounter++;
+                let parentId = $(this).closest('.outline-item').attr('id');
+                let subOutlineId = `sub-outline-${subOutlineCounter}`;
+                let subOutlineHTML = `<div class="d-flex mb-2 sub-outline-item" id="${subOutlineId}">
+                    <input type="text" class="form-control sub-outline-input" id="${subOutlineId}-input" value="" />
+                    <button class="btn btn-outline-danger ms-2 remove-sub-outline" type="button" id="${subOutlineId}-remove"><i class="fas fa-trash"></i></button>
+                </div>`;
+                $(`#${parentId}-subs`).append(subOutlineHTML);
+                attachEventHandlers(); // Re-attach event handlers to new elements
+            });
+
+            $('.remove-sub-outline').off('click').on('click', function () {
+                $(this).closest('.sub-outline-item').remove();
+            });
+
+            $('.add-main-outline-btn').off('click').on('click', function () {
+                mainOutlineCounter++;
+                let listId = $(this).data('list');
+                let mainOutlineId = `main-outline-${mainOutlineCounter}`;
+                let mainOutlineHTML = `<div class="mb-3 outline-item" id="${mainOutlineId}">
+                    <div class="d-flex mb-2">
+                        <input type="text" class="form-control main-outline-input" id="${mainOutlineId}-input" value="" />
+                        <button type="button" class="btn btn-outline-danger ms-2 remove-main-outline" id="${mainOutlineId}-remove"><i class="fas fa-trash"></i></button>
+                        <button type="button" class="btn btn-outline-success ms-2 add-sub-outline" id="${mainOutlineId}-add-sub"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="ms-3 sub-outline-container" id="${mainOutlineId}-subs"></div>
+                </div>`;
+                $("#list-" + listId).append(mainOutlineHTML);
+                attachEventHandlers(); // Re-attach event handlers to new elements
+            });
+        }
+
         $('#upload-button').on('click', function (e) {
             e.preventDefault();
             $('#file-upload').click();
@@ -388,6 +527,7 @@
                 processData: false,
                 success: function (data) {
                     addResource(data.filename, 'file', data.filename, data.url);
+                    resources.push(data.url);
                     $uploadButton.find('.spinner-border').addClass('d-none');
                     $uploadButton.prop('disabled', false);
                     $('#file-upload').val('');
@@ -399,7 +539,6 @@
             });
         });
 
-        // File upload handling on the last step
         $('#final-upload-button').on('click', function (e) {
             e.preventDefault();
             $('#final-file-upload').click();
@@ -439,13 +578,29 @@
         });
 
         $wz_doc.addEventListener("wz.error", function (e) {
+            e.preventDefault();
             console.log(`↓ ID ↓`);
-            console.log(e.detail.id); // form_validaton
+            console.log(e.detail.id);
             console.log(`↓ Message ↓`);
-            console.log(e.detail.msg); //options.i18n.form_validation
+            console.log(e.detail.msg);
         });
 
         updateResourceCount();
+
+        function checkValidation() {
+            let form = $("#form")[0];
+            if (form) {
+                let isFormValid = form.checkValidity();
+                $(".wizard .btn-next").prop("disabled", !isFormValid);
+            }
+        }
+
+        $("#form input, #form select").on("change input", checkValidation);
+
+        checkValidation();
+
+        // Initial attachment of event handlers
+        attachEventHandlers();
     });
 </script>
 {% endblock %}
