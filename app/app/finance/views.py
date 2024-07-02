@@ -25,7 +25,7 @@ def create_pay():
     form = CreatePayForm()
     if request.method == 'POST' and form.validate_on_submit():
         user = current_user
-        amount = float(form.amount.data)
+        amount = float(form.amount.data) * 10 # It is IRT needs to change to IRR
         logger.info('Requested amount for user {} is {}'.format(user, amount))
         bank = Bank.get_bank_by_slug('zibal')
         receipt = Receipt.create_receipt(user_id=user.id, amount=amount, bank_id=bank.id)
