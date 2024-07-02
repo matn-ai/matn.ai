@@ -99,7 +99,6 @@ class User(UserMixin, db.Model):
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = self.gravatar_hash()
             
-        Charge.add_user_charge(user_id=self.id, amount=40000)
 
     @property
     def password(self):
@@ -125,6 +124,7 @@ class User(UserMixin, db.Model):
         if data.get('confirm') != self.id:
             return False
         self.confirmed = True
+        Charge.add_user_charge(user_id=self.id, amount=30000)
         db.session.add(self)
         return True
 
