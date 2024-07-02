@@ -21,9 +21,9 @@ services:
       - no-new-privileges:true
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.papkorn-app.rule=Host(`behnevis.tosihgar.ir`)"
-      - "traefik.http.routers.papkorn-app.entrypoints=websecure"
-      - "traefik.http.routers.papkorn-app.tls.certresolver=myresolver"
+      - "traefik.http.routers.web.rule=Host(`behnevis.tosihgar.ir`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls.certresolver=myresolver"
 
   worker:
     build: .
@@ -72,11 +72,10 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`nh-mongoexpress.tosiehgar.ir`)"
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
-      - "traefik.http.routers.whoami.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=papkorn:$$2y$$05$$x2eP45dysR1z7CaZNZcxfujdtkk3gbHZzhvwCM73IgxaTRdTWuo4i"
+      - "traefik.http.routers.mongo-express.rule=Host(`nh-mongoexpress.tosiehgar.ir`)"
+      - "traefik.http.routers.mongo-express.entrypoints=websecure"
+      - "traefik.http.routers.mongo-express.tls.certresolver=myresolver"
+      - "traefik.http.routers.mongo-express.middlewares=auth"
 
   redis:
     image: redis:alpine
