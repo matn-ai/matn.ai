@@ -36,7 +36,7 @@ def create_pay():
         request_to_zibal = zb.request(amount=amount, 
                                       description=description, 
                                       order_id=receipt.number)
-        
+        logger.info('Zibal request data {}'.format(request_to_zibal))
         if request_to_zibal.get('message') != 'success':
             raise Exception('Zibal request is not successful')
         
