@@ -77,7 +77,6 @@ def generate_title(user_title, lang, llm_type):
     return chat(llm_type, messages)
 
 
-
 def generate_title_blog_post(user_title, lang, article_length, llm_type):
     user_prompt = f"The content language is {lang}\n"
     if article_length == "short":
@@ -182,7 +181,7 @@ def generate_blog_post_sections(
             f"The response should be formatted in HTML using <p> tags for each paragraph. Ensure that the writing is free from stereotypes. \n"
             f"Use correct grammar and maintain a professional tone suitable for the blog's target audience.\n"
         )
-        
+
     avoid_list = [
         "در نهایت",
         "به طوری کلی",
@@ -196,15 +195,15 @@ def generate_blog_post_sections(
     prompt += f"Avoid finish the paragraph with {' and '.join(avoid_list)}\n"
     prompt += f"\nDo not include the headline title again.\n"
     prompt += f"Like: <p> [text here] </p> <p> [text here] </p><p> [text here] </p>\n"
-    
-    #[{\"value\":\"\u06a9\u0627\u0634\u062a\u0646 \u0628\u0644\u0648\u0628\u0631\u06cc\"},{\"value\":\"\u062f\u0631\u062e\u062a\"},{\"value\":\"\u062a\u0631\"}]
+
+    # [{\"value\":\"\u06a9\u0627\u0634\u062a\u0646 \u0628\u0644\u0648\u0628\u0631\u06cc\"},{\"value\":\"\u062f\u0631\u062e\u062a\"},{\"value\":\"\u062a\u0631\"}]
     # print(keywords)
     # print(type(keywords))
     # print("*"*90)
     if keywords:
         for item in keywords:
-            item = str(item).replace("["," ")
-            item = str(item).replace("]"," ")
+            item = str(item).replace("[", " ")
+            item = str(item).replace("]", " ")
             _keywords = json.loads(item.strip())
             prompt += f"Use the following keyword if relevant: {_keywords['value']}\n"
 
@@ -221,7 +220,9 @@ def generate_blog_post_sections(
 
     return chat(llm_type, messages)
 
+
 ['[{"value":"کاشت درخت سیب"}', '{"value":"درخت آلبالو"}]']
+
 
 def generate_sections(headline_text, outlines, keywords, lang, llm_type):
     prompt = (
@@ -268,6 +269,79 @@ def generate_blog_post_body(title, outlines, keywords, lang, length, llm_type):
     return f"<h1>{title}</h1><br/>{inside}"
 
 
+def generate_article_pro_body(
+    title,
+    main_tag,
+    language_model,
+    keywords,
+    lang,
+    outlines,
+    point_ofview,
+    target_audience,
+    voice_tune,
+):
+
+    body = f"<h1>{title}</h1>"
+
+    for outline in outlines:
+        head = outline.get("head")
+        subs = outline.get("subs", [])
+
+        body += f"<h2>{head}</h2>"
+
+        for sub in subs:
+            body += f"<h3>{sub}</h3>"
+            section_content = generate_sections_article_pro(
+                sub,
+                main_tag,
+                keywords,
+                lang,
+                language_model,
+                point_ofview,
+                target_audience,
+                voice_tune,
+            )
+            body += section_content
+
+    return body
+
+
+def generate_sections_article_pro(
+    sub_heading,
+    main_tag,
+    keywords,
+    lang,
+    language_model,
+    point_ofview,
+    target_audience,
+    voice_tune,
+):
+    prompt = (
+        f"Write detailed paragraphs for the section titled '{sub_heading}' of a professional article. "
+        f"The content should be well-researched, engaging, and informative. "
+        f"The content language is {lang}. Use the '{point_ofview}' point of view, and target audience as '{target_audience}'. "
+        f"Make sure to maintain a '{voice_tune}' tone throughout the text.\n"
+    )
+
+    if keywords:
+        prompt += f"Use the following keywords where relevant: {', '.join(keywords)}.\n"
+
+    if main_tag:
+        prompt += f"Make sure to include the main tag: {main_tag}.\n"
+
+    assistant_prompt = (
+        f"You are an SEO-optimized professional article writer. Ensure correct grammar. "
+        f"Return the result in HTML with <p> tags. Do not include the heading title again.\n"
+    )
+
+    messages = [
+        {"role": "assistant", "content": assistant_prompt},
+        {"role": "user", "content": prompt},
+    ]
+
+    return chat(language_model, messages)
+
+
 def generate_article_body(title, outlines, keywords, lang, llm_type):
     soup = BeautifulSoup(outlines, "html.parser")
     headlines_elements = soup.find_all(["h2", "h3", "h4", "h5", "h6"])
@@ -287,8 +361,6 @@ def generate_article_body(title, outlines, keywords, lang, llm_type):
     return f"<h1>{title}</h1><br/>{toc}<br/><hr/><br/>{inside}"
 
 
-
-
 def save_article_to_db(content_id, body, title, outlines, content_length):
     with flask_app.app_context():
         body_document = {"body": body}
@@ -300,7 +372,7 @@ def save_article_to_db(content_id, body, title, outlines, content_length):
             content.word_count = content_length
             content.mongo_id = mongo_id
             content.system_title = title
-            content.outlines = outlines
+            content.outlines = str(outlines)
             db.session.add(content)
             db.session.commit()
 
@@ -346,26 +418,44 @@ def generate_blog_simple(content_id, user_input):
     return content_id
 
 
-
 @celery.task
 def generate_pro_article(content_id, user_input):
     start_time = datetime.now()
 
     title = user_input["user_topic"]
-    main_tag = user_input['main_tag']
-    language_model = user_input['language_model']
-    keywords = user_input["tags"].split(",")
-    lang = "فارسی" if user_input["lang"] else "English"
+    main_tag = user_input["main_tag"]
+    # language_model = user_input["language_model"]
+    language_model = 'gpt-4o'
+    keywords = user_input["tags"]
+    lang = "فارسی" if user_input["lang"] == "fa" else "English"
     llm = "gpt-4o"
     outlines = user_input["outlines"]
+    point_ofview = user_input["point_ofview"]
+    target_audience = user_input["target_audience"]
+    voice_tune = user_input["voice_tune"]
 
-    point_ofview = user_input['point_ofview']
-    target_audience = user_input['target_audience']
-    voice_tune = user_input['voice_tune']
+    print(f"{title}\n")
+    print(f"{main_tag}\n")
+    print(f"{language_model}\n")
+    print(f"{keywords}\n")
+    print(f"{lang}\n")
+    print(f"{llm}\n")
+    print(f"{outlines}\n")
+    print(f"{point_ofview}\n")
+    print(f"{target_audience}\n")
+    print(f"{voice_tune}\n")
 
-    title = generate_title(title, lang, llm)
-    outlines = generate_outlines(title, lang, llm)
-    body = generate_article_body(title, outlines, keywords, lang, llm)
+    body = generate_article_pro_body(
+        title,
+        main_tag,
+        language_model,
+        keywords,
+        lang,
+        outlines,
+        point_ofview,
+        target_audience,
+        voice_tune,
+    )
 
     content_length = len(body.split())
     content_id = save_article_to_db(content_id, body, title, outlines, content_length)

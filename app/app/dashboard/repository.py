@@ -1,3 +1,4 @@
+from flask import send_file
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import or_
 from .. import db, contents_collection
@@ -7,12 +8,35 @@ import json, requests, os, random, time
 from openai import OpenAI
 from bs4 import BeautifulSoup
 import re
+from io import BytesIO
+from docx import Document
+from html2docx import html2docx
+
 
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_API = os.getenv("OPENROUTER_API")
 
 # Initialize OpenAI and Redis clients
 openai_client = OpenAI(base_url=OPENROUTER_API, api_key=API_KEY)
+
+
+def html_to_docx(html_string):
+    # Create a new Document
+    doc = Document()
+
+    # Create an in-memory buffer
+    buffer = BytesIO()
+
+    # Use html2docx to convert the HTML string to docx content
+    html2docx(html_string, doc)
+
+    # Save the document to the buffer
+    doc.save(buffer)
+
+    # Reset the buffer's position to the beginning
+    buffer.seek(0)
+
+    return buffer
 
 
 def suggest_outlines(user_title, lang, llm_type="gpt-4o"):
@@ -53,7 +77,6 @@ def suggest_outlines(user_title, lang, llm_type="gpt-4o"):
         {"role": "user", "content": user_prompt},
     ]
 
-
     response = openai_client.chat.completions.create(
         model=llm_type, messages=messages, temperature=0.8
     )
@@ -75,8 +98,6 @@ def suggest_outlines(user_title, lang, llm_type="gpt-4o"):
         lists.append(list_dict)
 
     return lists
-
-
 
 
 def suggest_titles(topic, lang, llm_type="gpt-4o"):
@@ -164,6 +185,41 @@ def update_content(content_id, user_input):
         # Commit the changes to the SQL database
         db.session.commit()
 
+        return content
+
+    except NoResultFound:
+        raise ValueError("Content not found")
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+
+def update_article_pro(content_id, body):
+    try:
+        content = Content.query.get_or_404(content_id)
+        mongo_id = content.mongo_id
+
+        contents_collection.update_one(
+            {"_id": ObjectId(mongo_id)}, {"$set": {"body": body}}
+        )
+        db.session.commit()
+        return content
+
+    except NoResultFound:
+        raise ValueError("Content not found")
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+
+def delete_article_pro(content_id):
+    try:
+        content = Content.query.get_or_404(content_id)
+        mongo_id = content.mongo_id
+
+        contents_collection.delete_one({"_id": ObjectId(mongo_id)})
+        db.session.delete(content)
+        db.session.commit()
         return content
 
     except NoResultFound:

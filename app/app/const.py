@@ -1,7 +1,6 @@
-content_type_map = {0: "مقاله بلاگ", 1: "مقاله عمومی", 2: "مقاله حرفه‌ای"}
+content_type_map = {0: "مقاله بلاگ", 1: "مقاله حرفه‌ای"}
 ARTICLE_BLOG_POST = 0
-ARTICLE_GENERAL = 1
-ARTICLE_PRO = 2
+ARTICLE_PRO = 1
 # ARTICLE_BLOG_POST = "ARTICLE_BLOG_POST"
 # ARTICLE_PRO = "ARTICLE_PRO"
 

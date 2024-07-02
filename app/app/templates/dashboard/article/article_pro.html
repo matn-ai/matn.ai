@@ -20,13 +20,13 @@
                 <h4 class="">تولید مقاله حرفه‌ای</h4>
             </div>
             <div class="p-2 ms-auto">
-                <span
+                <!-- <span
                     class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
                         <label class="form-check-label" for="flexSwitchCheckDefault">نسخه پلاس</label>
                     </div>
-                </span>
+                </span> -->
             </div>
             <div class="p-2">
                 <span
@@ -34,7 +34,7 @@
                     تقریبی ۴ تا ۶ دقیقه</span>
             </div>
         </div>
-        <div class="bg-white rounded p-4 card-shadow">
+        <div class="bg-white rounded p-4 card-shadow" id="form-container">
             <div class="d-flex justify-content-between mb-4 w-100"></div>
             <form class="wizard" id="formWizard" class="p-2">
                 <aside class="wizard-content container border p-4 mb-4 rounded">
@@ -315,11 +315,28 @@
                 </aside>
             </form>
         </div>
+        <div class="bg-white rounded p-4 card-shadow" id="content-container" style="display: none; position: relative; height: 100%">
+            <div id="loading-content" class="text-center mr-auto mx-auto"
+                style="display: none; margin-top: 50%; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+                <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
+                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
+                        background="transparent" speed="1" loop autoplay></lottie-player>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control border-0 bg-white text-center fs-2" aria-label="Sizing example input"
+                                aria-describedby="inputGroup-sizing-default" value="" id="article-info-timer" disabled>
+                        </div>
+                </div>
+            </div>
+            <div id="text-editor-area">
+                {{ form.body(id="text-editor", class="form-control") }}
+            </div>
+        </div>
     </div>
 </div>
 
 <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tagify.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ckeditor.js') }}"></script>
 <script src="{{ url_for('static', filename='js/wizard.min.js') }}"></script>
 
 <script>
@@ -331,6 +348,61 @@
         let selectedTitle = "";
         let mainOutlineCounter = 0;
         let subOutlineCounter = 0;
+
+
+        function startTimer(startDate = null) {
+            if (startDate) {
+                var start = new Date(startDate);
+            } else {
+                var start = new Date();
+            }
+            setInterval(function () {
+                var now = new Date();
+                var elapsed = Math.floor((now - start) / 1000);
+                var hours = Math.floor(elapsed / 3600);
+                var minutes = Math.floor((elapsed % 3600) / 60);
+                var seconds = elapsed % 60;
+
+                function pad(number) {
+                    return number < 10 ? '0' + number : number;
+                }
+
+                function toPersianNumber(number) {
+                    var persianMap = {
+                        '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴',
+                        '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹'
+                    };
+                    return number.toString().split('').map(char => persianMap[char] || char).join('');
+                }
+
+                var time = `${toPersianNumber(pad(minutes))}:${toPersianNumber(pad(seconds))}`
+                $("#article-info-timer").val(time)
+            }, 1000);
+        }
+        function checkJobStatus(jobId, contentId) {
+            $.get(`/dashboard/article/blog/status/cid/${jobId}`, function (data) {
+                if (data.status === 'SUCCESS') {
+                    $('#article-info-timer').html(data.running_duration);
+                    fetchContent(contentId);
+                } else if (data.status === 'FAILURE') {
+                    $('#loading-content').hide();
+                    // $('#submission_form').find('input, textarea, button, select').prop('disabled', false);
+                    tagify.setReadonly(false);
+                } else {
+                    setTimeout(() => checkJobStatus(jobId, contentId), 2000);
+                }
+            });
+        }
+    
+        function fetchContent(contentId) {
+            $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
+                $('#loading-content').hide();
+                editor.setData(data.content);
+                //tagify.setReadonly(false);
+                //$('#word-count').val(data.content.word_count)
+                //$('#submission_form').find('input, textarea, button, select').prop('disabled', false);
+            });
+        }
 
         function updateResourceCount() {
             let selectedCount = $("#selected-resources .row").length;
@@ -711,7 +783,8 @@
                 lang: $('input[name="language"]:checked').val(),
                 selected_resources: selectedResources,
                 selected_title: selectedTitle,
-                outlines: selected_list
+                outlines: selected_list,
+                content_type: 1
             };
             console.log(requestData)
 
@@ -721,8 +794,16 @@
                 data: JSON.stringify(requestData),
                 contentType: "application/json",
                 processData: false,
-                success: function (response) {
-                    alert("Successfully submitted!");
+                success: function (data) {
+                    // alert("Successfully submitted!");
+                    $('#form-container').hide()
+                    $('#content-container').show()
+                    $('#loading-content').show()
+                    const jobId = data.job_id;
+                    const contentId = data.content_id;
+    
+                    startTimer()
+                    checkJobStatus(jobId, contentId);
                 },
                 error: function (error) {
                     console.error("Submission error:", error);
@@ -782,6 +863,19 @@
             console.log(e.detail.msg);
         });
 
+        ClassicEditor
+        .create(document.querySelector('#text-editor'), {
+            language: "fa",
+            height: 500
+        })
+        .then(newEditor => {
+            editor = newEditor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+
         updateResourceCount();
 
         function checkValidation() {
@@ -791,6 +885,8 @@
                 $(".wizard .btn-next").prop("disabled", !isFormValid);
             }
         }
+
+
 
         $("#form input, #form select").on("change input", checkValidation);
 
