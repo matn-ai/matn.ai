@@ -352,9 +352,16 @@ def generate_pro_article(content_id, user_input):
     start_time = datetime.now()
 
     title = user_input["user_topic"]
+    main_tag = user_input['main_tag']
+    language_model = user_input['language_model']
     keywords = user_input["tags"].split(",")
     lang = "فارسی" if user_input["lang"] else "English"
     llm = "gpt-4o"
+    outlines = user_input["outlines"]
+
+    point_ofview = user_input['point_ofview']
+    target_audience = user_input['target_audience']
+    voice_tune = user_input['voice_tune']
 
     title = generate_title(title, lang, llm)
     outlines = generate_outlines(title, lang, llm)

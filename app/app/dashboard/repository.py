@@ -53,32 +53,30 @@ def suggest_outlines(user_title, lang, llm_type="gpt-4o"):
         {"role": "user", "content": user_prompt},
     ]
 
-    try:
-        response = openai_client.chat.completions.create(
-            model=llm_type, messages=messages, temperature=0.8
-        )
-        result = response.choices[0].message.content
 
-        soup = BeautifulSoup(result, "html.parser")
-        lists = []
+    response = openai_client.chat.completions.create(
+        model=llm_type, messages=messages, temperature=0.8
+    )
+    result = response.choices[0].message.content
 
-        for list_tag in soup.find_all("list"):
-            list_dict = []
-            for block in list_tag.find_all("block"):
-                for h1_tag in block.find_all("h1"):
-                    h1 = h1_tag.get_text()
-                h2_dict = []
-                for h2_tag in block.find_all("h2"):
-                    h2_dict.append(h2_tag.get_text())
-                list_dict.append({"head": h1, "subs": h2_dict})
+    soup = BeautifulSoup(result, "html.parser")
+    lists = []
 
-            lists.append(list_dict)
+    for list_tag in soup.find_all("list"):
+        list_dict = []
+        for block in list_tag.find_all("block"):
+            for h1_tag in block.find_all("h1"):
+                h1 = h1_tag.get_text()
+            h2_dict = []
+            for h2_tag in block.find_all("h2"):
+                h2_dict.append(h2_tag.get_text())
+            list_dict.append({"head": h1, "subs": h2_dict})
 
-        return lists
+        lists.append(list_dict)
 
-    except Exception as e:
-        print(f"Error calling OpenAI API: {str(e)}")
-        return None
+    return lists
+
+
 
 
 def suggest_titles(topic, lang, llm_type="gpt-4o"):
@@ -112,7 +110,7 @@ def suggest_titles(topic, lang, llm_type="gpt-4o"):
         for headline_element in headlines_elements:
             headline_text = headline_element.get_text()
             titles.append(headline_text)
-        print(titles)
+        # print(titles)
         return titles
     except Exception as e:
         print(f"Error calling OpenAI API: {str(e)}")

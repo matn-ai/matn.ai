@@ -1,4 +1,5 @@
 from flask import render_template, jsonify, abort, request, url_for
+from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
 from app.dashboard.forms import GenerateArticleBlog, GenerateArticlePro
 from app.dashboard import dashboard
@@ -16,6 +17,7 @@ from .repository import (
     suggest_outlines
 )
 import json, os
+import uuid
 from ..utils import utils_gre2jalali
 from .. import app
 
@@ -80,6 +82,19 @@ def index():
         sort_order=sort_order,
     )
 
+@dashboard.route("/article/professional/create", methods=["POST"])
+@login_required
+def create_article_pro():
+    data = request.data
+    article_data = json.loads(data)
+    
+    content = create_content(user_input=article_data, author=current_user)
+
+    job = generate_pro_article.delay(content.id, data)
+    create_job_record(job_id=job.id, content=content)
+    j_date = utils_gre2jalali(content.job.created_at)
+
+    return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
 
 @dashboard.route("/article/blog", methods=["GET", "POST"])
 @dashboard.route("/article/blog/<id>", methods=["GET", "POST"])
@@ -121,14 +136,14 @@ def article_blog(id=None):
 @login_required
 def article_pro(id=None):
     form = GenerateArticlePro()
-    if form.validate_on_submit():
-        form_data = request.form.to_dict()
-        content = create_content(user_input=form_data, author=current_user)
+    # if form.validate_on_submit():
+    #     form_data = request.form.to_dict()
+    #     content = create_content(user_input=form_data, author=current_user)
 
-        job = generate_pro_article.delay(content.id, form_data)
-        create_job_record(job_id=job.id, content=content)
+    #     job = generate_pro_article.delay(content.id, form_data)
+    #     create_job_record(job_id=job.id, content=content)
 
-        return jsonify(job_id=job.id, content_id=content.id)
+    #     return jsonify(job_id=job.id, content_id=content.id)
 
     if request.method == "GET" and id:
         # print(id)
@@ -143,19 +158,46 @@ def article_pro(id=None):
 
     return render_template("dashboard/article/article_pro.html", form=form)
 
+ALLOWED_EXTENSIONS = {'pdf'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 @dashboard.route("/article/resources/upload", methods=["POST"])
 def upload_resource():
     if 'file' not in request.files:
         return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
+    
     file = request.files['file']
+    
     if file.filename == '':
         return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
-    if file:
-        filename = file.filename
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+    if file and allowed_file(file.filename):
+        # Check file size
+        file.seek(0, os.SEEK_END)
+        file_size = file.tell()
+        file.seek(0)
+        
+        if file_size > MAX_FILE_SIZE:
+            return jsonify({'error': 'حجم فایل بیش از حد مجاز است'}), 400
+        
+        # Secure the filename and make it unique
+        filename = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        
+        # Save the file
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
         file.save(filepath)
-        return jsonify({'filename': filename, 'url': filepath}), 200
-
+        
+        # Generate HTTP path
+        # file_url = url_for('static', filename=f'uploads/{unique_filename}', _external=True)
+        
+        return jsonify({'url': file.filename}), 200
+    
+    return jsonify({'error': 'فرمت فایل مجاز نیست'}), 400
 
 
 @dashboard.route("/article/resources", methods=["POST"])
