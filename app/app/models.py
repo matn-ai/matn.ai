@@ -98,6 +98,8 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(default=True).first()
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = self.gravatar_hash()
+            
+        Charge.add_user_charge(user_id=self.id, amount=40000)
 
     @property
     def password(self):
