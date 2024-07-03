@@ -7,8 +7,6 @@ services:
     restart: always
     volumes:
       - .:/app
-    ports:
-      - "80:80"
     env_file:
       - .env
     depends_on:
@@ -21,6 +19,11 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`behnevis.tosiehgar.ir`) || Host(`pay.novahub.ir`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls.certresolver=myresolver"
 
   worker:
     build: .
@@ -57,8 +60,6 @@ services:
   mongo-express:
     image: mongo-express
     restart: always
-    ports:
-      - 8082:8082
     env_file:
       - .env
     environment:
@@ -69,16 +70,21 @@ services:
     networks:
       - backend
 
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mongo-express.rule=Host(`nh-mongoexpress.tosiehgar.ir`)"
+      - "traefik.http.routers.mongo-express.entrypoints=websecure"
+      - "traefik.http.routers.mongo-express.tls.certresolver=myresolver"
+      - "traefik.http.routers.mongo-express.middlewares=auth"
+
   redis:
     image: redis:alpine
     restart: always
-    ports:
-      - "6379:6379"
     networks:
       - backend
 
   mysql:
-    image: mysql:8.0
+    image: mariadb:11.4.2
     restart: always
     volumes:
       - mysql-data:/var/lib/mysql
@@ -88,8 +94,6 @@ services:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
       - MYSQL_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "3306:3306"
     networks:
       - backend
 
@@ -99,4 +103,4 @@ volumes:
 
 networks:
   backend:
-    driver: bridge
+    external: True

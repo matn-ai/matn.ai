@@ -8,6 +8,7 @@ set -e
 flask db upgrade
 flask db migrate
 flask create-admin admin admin@admin.com admin123
+flask create-bank zibal
 
 # Start the Flask development server
 exec flask run --host=0.0.0.0 --port=80

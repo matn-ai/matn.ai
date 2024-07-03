@@ -3,6 +3,7 @@ FROM python:3.9-slim
 
 # Set the working directory in the container
 WORKDIR /app
+EXPOSE 80
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \

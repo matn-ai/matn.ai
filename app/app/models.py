@@ -13,6 +13,8 @@ from .const import content_type_map
 from .utils import utils_gre2jalali, to_persian_numerals
 import jdatetime
 
+from .finance.models import *
+
 
 class Permission:
     WRITE = 4
@@ -96,6 +98,7 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(default=True).first()
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = self.gravatar_hash()
+            
 
     @property
     def password(self):
@@ -121,6 +124,7 @@ class User(UserMixin, db.Model):
         if data.get('confirm') != self.id:
             return False
         self.confirmed = True
+        Charge.add_user_charge(user_id=self.id, amount=30000)
         db.session.add(self)
         return True
 
@@ -213,6 +217,11 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+    
+
+    @property
+    def remain_charge(self):
+        return Charge.get_user_charge(user_id=self.id)
 
 
 class AnonymousUser(AnonymousUserMixin):
@@ -369,6 +378,5 @@ class Job(db.Model):
 
     def __repr__(self):
         return '<Job %r>' % self.id
-    
     
     
