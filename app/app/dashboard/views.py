@@ -245,7 +245,7 @@ def get_resources():
 def get_titles():
     data = request.data
     topic = json.loads(data)
-    resources = suggest_titles(topic['user_topic'], 'persian')
+    resources = suggest_titles(topic['user_topic'], topic['lang'], topic['language_model'])
     return jsonify(resources)
 
 
@@ -254,7 +254,7 @@ def get_titles():
 def get_outlines():
     data = request.data
     topic = json.loads(data)
-    resources = suggest_outlines(topic['selected_title'], 'persian')
+    resources = suggest_outlines(topic['selected_title'], topic['lang'], topic['language_model'])
     return jsonify(resources)
 
 

@@ -124,7 +124,7 @@
                                         <div class="col">
                                             <div class="card h-100">
                                                 <div class="card-body">
-                                                    <input type="radio" class="btn-check" value="gpt4" name="language_model" id="gpt4-outlined"
+                                                    <input type="radio" class="btn-check" value="gpt-4o" name="language_model" id="gpt4-outlined"
                                                         autocomplete="off" checked>
                                                     <label class="btn btn-outline-primary w-100 h-100" for="gpt4-outlined">
                                                         <img src="/static/images/logo-gpt4.jpeg" alt="OpenAI" class="mb-3 rounded" style="height: 72px;">
@@ -137,7 +137,7 @@
                                         <div class="col">
                                             <div class="card h-100">
                                                 <div class="card-body">
-                                                    <input type="radio" class="btn-check" value="gpt3.5" name="language_model" id="gpt3.5-outlined"
+                                                    <input type="radio" class="btn-check" value="gpt-3.5-turbo" name="language_model" id="gpt3.5-outlined"
                                                         autocomplete="off">
                                                     <label class="btn btn-outline-primary w-100 h-100" for="gpt3.5-outlined">
                                                         <img src="/static/images/logo-gpt3.5.jpeg" alt="OpenAI" class="mb-3 rounded" style="height: 72px;">
@@ -150,10 +150,10 @@
                                         <div class="col">
                                             <div class="card h-100">
                                                 <div class="card-body">
-                                                    <input type="radio" class="btn-check" value="gemini-pro" name="language_model" id="gemini-pro-outlined"
+                                                    <input type="radio" class="btn-check" value="gemini-pro-1.5" name="language_model" id="gemini-pro-outlined"
                                                         autocomplete="off">
                                                     <label class="btn btn-outline-primary w-100 h-100" for="gemini-pro-outlined">
-                                                        <img src="/static/images/logo-gemini.jpeg" alt="OpenAI" class="mb-3 rounded" style="height: 72px;">
+                                                        <img src="/static/images/logo-gemini.jpeg" alt="Gemini" class="mb-3 rounded" style="height: 72px;">
                                                         <h5 class="card-title">Gemini Pro 1.5</h5>
                                                         <p class="card-text">ضریب کلمه: ۳</p>
                                                     </label>
@@ -163,10 +163,10 @@
                                         <div class="col">
                                             <div class="card h-100">
                                                 <div class="card-body">
-                                                    <input type="radio" class="btn-check" value="claude3-haiku" name="language_model" id="claude3-haiku-outlined"
+                                                    <input type="radio" class="btn-check" value="claude-3-haiku" name="language_model" id="claude3-haiku-outlined"
                                                         autocomplete="off">
                                                     <label class="btn btn-outline-primary w-100 h-100" for="claude3-haiku-outlined">
-                                                        <img src="/static/images/logo-claude.jpeg" alt="OpenAI" class="mb-3 rounded" style="height: 72px;">
+                                                        <img src="/static/images/logo-claude.jpeg" alt="Haiku" class="mb-3 rounded" style="height: 72px;">
                                                         <h5 class="card-title">Claude 3 Haiku</h5>
                                                         <p class="card-text">ضریب کلمه: ۱</p>
                                                     </label>
@@ -176,10 +176,10 @@
                                         <div class="col">
                                             <div class="card h-100">
                                                 <div class="card-body">
-                                                    <input type="radio" class="btn-check" value="claude3-sonnet" name="language_model" id="claude3-sonnet-outlined"
+                                                    <input type="radio" class="btn-check" value="claude-3.5-sonnet" name="language_model" id="claude3-sonnet-outlined"
                                                         autocomplete="off">
                                                     <label class="btn btn-outline-primary w-100 h-100" for="claude3-sonnet-outlined">
-                                                        <img src="/static/images/logo-claude.jpeg" alt="OpenAI" class="mb-3 rounded" style="height: 72px;">
+                                                        <img src="/static/images/logo-claude.jpeg" alt="Sonnet" class="mb-3 rounded" style="height: 72px;">
                                                         <h5 class="card-title">Claude 3 Sonnet</h5>
                                                         <p class="card-text">ضریب کلمه: ۴</p>
                                                     </label>
@@ -601,7 +601,8 @@
 
             var request = {
                 "user_topic": $("input[name='main_tag']").val(),
-                "language_model": $("input[name='language_model']").val()
+                "language_model": $("input[name='language_model']").val(),
+                "lang": $('input[name="language"]:checked').val()
             };
             $.ajax({
                 type: 'POST',
@@ -639,7 +640,8 @@
 
             var request = {
                 "selected_title": selectedTitle,
-                "language_model": $("input[name='language_model']").val()
+                "language_model": $("input[name='language_model']").val(),
+                "lang": $('input[name="language"]:checked').val()
             };
 
             $.ajax({

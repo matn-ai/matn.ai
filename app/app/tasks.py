@@ -428,7 +428,8 @@ def generate_pro_article(content_id, user_input):
     language_model = 'gpt-4o'
     keywords = user_input["tags"]
     lang = "فارسی" if user_input["lang"] == "fa" else "English"
-    llm = "gpt-4o"
+    # llm = "gpt-4o"
+    llm = user_input["language_model"]
     outlines = user_input["outlines"]
     point_ofview = user_input["point_ofview"]
     target_audience = user_input["target_audience"]
