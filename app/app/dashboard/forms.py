@@ -35,7 +35,7 @@ class GenerateArticlePro(FlaskForm):
     point_ofview = SelectField('زاویه دید را انتخاب کنید', choices=POINT_OF_VIEW_CHOICES, default='first_person_singular')
     target_audience = SelectField('گروه هدف را انتخاب کنید', choices=TARGET_AUDIENCE_CHOICES, default='general_public')
     article_length = SelectField('طول مقاله را انتخاب کنید', choices=ARTICLE_LENGTH_PRO_CHOICES, default='normal')
-    voice_tune = SelectField('لحن نوشته را انتخاب کنید', choices=VOICE_TUNE_CHOICES)
+    voice_tune = SelectField('لحن نوشته را انتخاب کنید', choices=VOICE_TUNE_CHOICES, default='official_pro')
 
     def __init__(self, *args, **kwargs):
         super(GenerateArticlePro, self).__init__(*args, **kwargs)
