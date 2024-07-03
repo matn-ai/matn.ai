@@ -475,6 +475,7 @@
 
         $wz_doc.addEventListener("wz.btn.next", function (e) {
             if (wizard.current_step === 0) {
+                    $(".loading").hide()
                 // Validate First Step
                 if (validateFirstStep()) {
                     $("input[name='search_in_resource']").prop('disabled', true)
