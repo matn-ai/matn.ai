@@ -33,6 +33,11 @@
                     class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">زمان
                     تقریبی ۴ تا ۶ دقیقه</span>
             </div>
+            <div class="p-2" id="article-container-timer" style="display: none;">
+                <span
+                    class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2" id="article-info-timer">
+                    </span>
+            </div>
         </div>
         <div class="bg-white rounded p-4 card-shadow" id="form-container">
             <div class="d-flex justify-content-between mb-4 w-100"></div>
@@ -317,14 +322,10 @@
         </div>
         <div class="bg-white rounded p-4 card-shadow" id="content-container" style="display: none; position: relative; height: 100%">
             <div id="loading-content" class="text-center mr-auto mx-auto"
-                style="display: none; margin-top: 50%; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+                style="display: none;  height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
                 <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
                     <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
                         background="transparent" speed="1" loop autoplay></lottie-player>
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control border-0 bg-white text-center fs-2" aria-label="Sizing example input"
-                                aria-describedby="inputGroup-sizing-default" value="" id="article-info-timer" disabled>
-                        </div>
                 </div>
             </div>
             <div id="text-editor-area">
@@ -376,7 +377,7 @@
                 }
 
                 var time = `${toPersianNumber(pad(minutes))}:${toPersianNumber(pad(seconds))}`
-                $("#article-info-timer").val(time)
+                $("#article-info-timer").html(time)
             }, 1000);
         }
         function checkJobStatus(jobId, contentId) {
@@ -494,6 +495,11 @@
 
         $("#refresh-suggest-titles").click(function () {
             loadTitles()
+        });
+
+        $("#user-title-input").click(function(){
+            $("#titles-user-input-radio").prop('checked',true)
+
         });
 
         function validateFirstStep() {
@@ -786,7 +792,7 @@
                 outlines: selected_list,
                 content_type: 1
             };
-            console.log(requestData)
+            //console.log(requestData)
 
             $.ajax({
                 type: 'POST',
@@ -799,6 +805,7 @@
                     $('#form-container').hide()
                     $('#content-container').show()
                     $('#loading-content').show()
+                    $('#article-container-timer').show()
                     const jobId = data.job_id;
                     const contentId = data.content_id;
     

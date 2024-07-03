@@ -11,33 +11,84 @@ import re
 from io import BytesIO
 from docx import Document
 from html2docx import html2docx
-
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
 
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_API = os.getenv("OPENROUTER_API")
 
 # Initialize OpenAI and Redis clients
 openai_client = OpenAI(base_url=OPENROUTER_API, api_key=API_KEY)
-
+def set_paragraph_rtl(paragraph):
+    # Set paragraph RTL formatting
+    paragraph.paragraph_format.right_to_left = True
+    p = paragraph._element
+    pProperties = p.get_or_add_pPr()
+    bidi = OxmlElement('w:bidi')
+    bidi.set(qn('w:val'), '1')
+    pProperties.append(bidi)
 
 def html_to_docx(html_string):
     # Create a new Document
     doc = Document()
 
+    # Set RTL for the entire document (default section)
+    section = doc.sections[0]
+    section.right_to_left = True
+
+    # Parse HTML using BeautifulSoup
+    soup = BeautifulSoup(html_string, "html.parser")
+    
+    for elem in soup.descendants:
+        paragraph = None
+        
+        # Handle headings
+        if elem.name and elem.name.startswith('h'):
+            level = int(elem.name[1])
+            paragraph = doc.add_heading(elem.get_text(), level=level)
+        
+        # Handle paragraphs
+        elif elem.name == "p":
+            paragraph = doc.add_paragraph(elem.get_text())
+        
+        # Handle unordered lists
+        elif elem.name == "ul":
+            for li in elem.find_all('li'):
+                paragraph = doc.add_paragraph(f'- {li.get_text()}', style='ListBullet')
+        
+        # Handle ordered lists
+        elif elem.name == "ol":
+            for li in elem.find_all('li'):
+                paragraph = doc.add_paragraph(li.get_text(), style='ListNumber')
+        
+        # Handle links
+        elif elem.name == "a":
+            tag_text = elem.get_text()
+            href = elem.get('href', '#')
+            paragraph = doc.add_paragraph(f'{tag_text} ({href})')
+        
+        # Handle bold text
+        elif elem.name == "b":
+            run = doc.add_paragraph().add_run(elem.get_text())
+            run.bold = True
+            paragraph = run.paragraph
+
+        # Handle italic text
+        elif elem.name == "i":
+            run = doc.add_paragraph().add_run(elem.get_text())
+            run.italic = True
+            paragraph = run.paragraph
+
+        # Set RTL for the paragraph if it was created
+        if paragraph:
+            set_paragraph_rtl(paragraph)
+
     # Create an in-memory buffer
     buffer = BytesIO()
-
-    # Use html2docx to convert the HTML string to docx content
-    html2docx(html_string, doc)
-
-    # Save the document to the buffer
     doc.save(buffer)
-
-    # Reset the buffer's position to the beginning
     buffer.seek(0)
 
     return buffer
-
 
 def suggest_outlines(user_title, lang, llm_type="gpt-4o"):
 

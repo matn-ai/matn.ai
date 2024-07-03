@@ -167,7 +167,7 @@ def get_docx():
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
 
-@dashboard.route("/article/pro/delete/<content_id>", methods=["DELETE"])
+@dashboard.route("/article/delete/<content_id>", methods=["DELETE"])
 @login_required
 def delete_article_pro_route(content_id):
     try:
