@@ -114,3 +114,4 @@ WTForms==3.1.2
 zibal==1.1.0
 zipp==3.19.2
 zibal
+persian-tools

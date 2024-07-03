@@ -9,15 +9,17 @@ from flask_login import login_required, current_user
 
 import os
 
+from persian_tools import digits, separator
+
 import logging
 logger = logging.getLogger()
 
 import zibal.zibal as zibal
 
 merchant_id = os.environ.get('ZIBAL_MERCHAND_ID', 'zibal') # zibal for test mode
-callback_url = os.environ.get('ZIBAL_CALLBACK_URL', 'http://127.0.0.1/finance/webhook/zibal')
+callback_url = os.environ.get('ZIBAL_CALLBACK_URL', 'http://localhost/finance/webhook/zibal')
 START_PAYMENT_URL = 'https://gateway.zibal.ir/start/'
-
+MAIN_URL = os.environ.get('MAIN_URL', 'http://127.0.0.1')
 
 @finance.route('/finance/create_pay', methods=['GET', 'POST'])
 @login_required
@@ -25,15 +27,15 @@ def create_pay():
     form = CreatePayForm()
     if request.method == 'POST' and form.validate_on_submit():
         user = current_user
-        amount = float(form.amount.data) * 10 # It is IRT needs to change to IRR
+        amount = float(form.amount.data)
         logger.info('Requested amount for user {} is {}'.format(user, amount))
         bank = Bank.get_bank_by_slug('zibal')
         receipt = Receipt.create_receipt(user_id=user.id, amount=amount, bank_id=bank.id)
         
         zb = zibal.zibal(merchant_id, callback_url)
-        description = 'خرید شارژ به میزان {} ریال'.format(amount) # Amount is in RIAL !!!!!
+        description = 'خرید شارژ به میزان {} ریال'.format(amount * 10) # Amount is in RIAL !!!!!
         
-        request_to_zibal = zb.request(amount=amount, 
+        request_to_zibal = zb.request(amount=amount * 10, 
                                       description=description, 
                                       order_id=receipt.number)
         logger.info('Zibal request data {}'.format(request_to_zibal))
@@ -53,7 +55,7 @@ def create_pay():
 
 
 @finance.route('/finance/webhook/zibal', methods=['GET'])
-@login_required
+# @login_required
 def zibal_webhook():
     track_id = request.args.get('trackId')
     success = request.args.get('success')
@@ -91,7 +93,7 @@ def zibal_webhook():
     
     logger.info(f'Charge user {receipt.user_id} -> {receipt.amount}')
     # Add user charge (see finance.business about charge business and rules)
-    user_new_charge = Charge.add_user_charge(user_id=receipt.user_id, amount=receipt.amount)
+    user_new_charge = Charge.add_user_charge(user_id=receipt.user_id, toman_amount=receipt.amount)
     
     logger.info(f'Going to verify the payment {track_id} -> {receipt.user_id}')
     # Verify it
@@ -101,5 +103,16 @@ def zibal_webhook():
     logger.info('Verify result {}'.format(verify_result))
     receipt.update_additional_data({'verify_result': verify_result})
     
-    flash('اکانت شما به میزان {} شارژ شد'.format(user_new_charge.word_count), 'success')
+    return redirect(MAIN_URL + '/finance/status?receipt_number={}&user_charge={}'.format(receipt.number, user_new_charge.word_count))
+
+
+@finance.route('/finance/status', methods=['GET'])
+@login_required
+def payment_status():
+    receipt_number = request.args.get('receipt_number')
+    receipt_number = digits.convert_to_fa(receipt_number)
+    charge = request.args.get('user_charge')
+    charge = digits.convert_to_fa(charge)
+    charge = separator.add(charge)
+    flash('اکانت شما به شماره تراکنش {} در سیستم ثبت شد. تعداد {} کلمه اکانت شما شارژ شد'.format(receipt_number, charge), 'success')
     return render_template('finance/status_page.html')
