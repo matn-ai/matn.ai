@@ -1,0 +1,365 @@
+{% extends "dashboard/dashboard.html" %}
+{% block dashboard %}
+<div class="row">
+    <div class="col-12">
+        <div class="row rounded  mb-2">
+            {% if content %}
+            {% if content.job.job_status == "SUCCESS" %}
+            <div class="col-12">
+                <div class="d-flex">
+                    <div class="p-2">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">تعداد
+                            کلمات: {{ content.word_count | to_persian_num }}</span>
+                    </div>
+                    <div class="p-2 ms-auto">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">تاریخ
+                            تولید: {{ content.timestamp | gregorian_to_jalali_detail }}</span>
+                    </div>
+                    <div class="p-2">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">مدت:
+                            {{ content.job.running_duration | convert_seconds_to_min_sec }}</span>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+
+            <div class="col-12">
+                <div class="d-flex">
+                    <div class="p-2">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">زمان حدودی ۴ تا ۶ دقیقه</span>
+                    </div>
+                    <div class="p-2 ms-auto">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">تاریخ
+                            تولید: {{ content.timestamp | gregorian_to_jalali_detail }}</span>
+                    </div>
+                    <div class="p-2">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2" id="article-info-timer">
+                            </span>
+                    </div>
+                </div>
+            </div>
+
+            {% endif %}
+            {% else %}
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <span class="input-group-text " id="inputGroup-sizing-default">زمان تقریبی</span>
+                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle"
+                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                        value=" ۳ تا ۶ دقیقه" disabled>
+                </div>
+            </div>
+            <div class="col-5">
+                <div class="input-group mb-3 info-detail" style="display: none;">
+                    <span class="input-group-text" id="inputGroup-sizing-default">تاریخ تولید</span>
+                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle"
+                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default"
+                        id="article-info-date" value="" disabled>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group mb-3 info-detail" style="display: none;">
+                    <span class="input-group-text" id="inputGroup-sizing-default">
+                        مدت
+                    </span>
+                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle"
+                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value=""
+                        id="article-info-timer" disabled>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="rounded card-shadow position-relative p-1">
+            <div id="loading-content" class="text-center mr-auto mx-auto"
+                style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+                <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
+                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
+                        background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+            </div>
+            <div id="text-editor-area">
+                <textarea id="text-editor">
+                    {% if content.job.job_status == "SUCCESS" %}
+                    {{content.body}}
+                    {% endif %}
+                </textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ckeditor.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tagify.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modals.js') }}"></script>
+
+<script>
+    let editor;
+
+    ClassicEditor
+        .create(document.querySelector('#text-editor'), {
+            language: "fa",
+            height: 500,
+        })
+        .then(newEditor => {
+            editor = newEditor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    $(function () {
+        {% if content %}
+        {% if content.job.job_status != "SUCCESS" %}
+        $('#loading-content').show();
+        checkJobStatus('{{ content.job.job_id }}', '{{ content.id }}');
+        startTimer('{{ content.job.created_at }}')
+        {% endif %}
+        {% endif %}
+    });
+
+    function toPersianNumber(number) {
+        const persianMap = {
+            '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴',
+            '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹'
+        };
+        return number.toString().split('').map(char => persianMap[char] || char).join('');
+    }
+
+    // Timer function
+    function startTimer(startDate = null) {
+        if (startDate) {
+            var start = new Date(startDate);
+        } else {
+            var start = new Date();
+        }
+        setInterval(function () {
+            var now = new Date();
+            var elapsed = Math.floor((now - start) / 1000);
+            var minutes = Math.floor((elapsed % 3600) / 60);
+            var seconds = elapsed % 60;
+
+            function pad(number) {
+                return number < 10 ? '0' + number : number;
+            }
+
+            function toPersianNumber(number) {
+                var persianMap = {
+                    '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴',
+                    '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹'
+                };
+                return number.toString().split('').map(char => persianMap[char] || char).join('');
+            }
+
+            var time = `${toPersianNumber(pad(minutes))}:${toPersianNumber(pad(seconds))}`
+            $("#article-info-timer").html(time)
+        }, 1000);
+    }
+
+    // Check job status
+    function checkJobStatus(jobId, contentId) {
+        $.get(`/dashboard/article/blog/status/cid/${jobId}`, function (data) {
+            if (data.status === 'SUCCESS') {
+                $('#article-info-timer').html(data.running_duration);
+                fetchContent(contentId);
+            } else if (data.status === 'FAILURE') {
+                $('#loading-content').hide();
+            } else {
+                setTimeout(() => checkJobStatus(jobId, contentId), 2000);
+            }
+        });
+    }
+
+    // Fetch content
+    function fetchContent(contentId) {
+        $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
+            $('#loading-content').hide();
+            editor.setData(data.content);
+            $('#word-count').val(data.content.word_count)
+        });
+    }
+
+    function showDeleteModal(contentId) {
+        const modalBodyContent = '<p>آیا مطمئن هستید که می‌خواهید این محتوا را حذف کنید؟</p>';
+        const modalFooterContent = `
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+          <button type="button" class="btn btn-danger" onclick="deleteContent('${contentId}')">حذف</button>
+        `;
+        createAndOpenModal('deleteModal', 'حذف محتوا', modalBodyContent, modalFooterContent);
+    }
+
+
+
+    function updateContent(contentId) {
+        const content = editor.getData();
+        $.ajax({
+            url: "{{ url_for('dashboard.update_article_pro_route', content_id='') }}" + contentId,
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ body: content }),
+            success: function (response) {
+                const editModal = document.getElementById('createModal');
+                const editModalInstance = bootstrap.Modal.getInstance(editModal);
+                editModalInstance.hide();
+
+                let timeLeft = 1.01; // 3 seconds
+                const modalBodyContent = `
+              <p>محتوا با موفقیت به‌روزرسانی شد.</p>
+            `;
+                const modalFooterContent = `
+            <span id="success-modal-timer" class="badge text-bg-secondary">۳:۰۰</span>
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal">باشه</button>
+            `;
+                createAndOpenModal('successModal', 'به‌روزرسانی محتوا', modalBodyContent, modalFooterContent);
+
+                // Timer function
+                const successModalTimer = setInterval(() => {
+                    const timerDisplay = document.getElementById('success-modal-timer');
+                    timeLeft -= 0.01; // Decrement time by 10 milliseconds
+                    //timerDisplay.textContent = timeLeft.toFixed(2); // Update the timer display
+                    timerDisplay.textContent = toPersianNumber(timeLeft.toFixed(2));
+
+                    if (timeLeft <= 0) {
+                        clearInterval(successModalTimer);
+                        const successModal = document.getElementById('successModal');
+                        const successModalInstance = bootstrap.Modal.getInstance(successModal);
+                        successModalInstance.hide();
+                    }
+                }, 25); // Update the timer every 10 milliseconds
+            },
+            error: function () {
+                alert('Error saving content!');
+            }
+        });
+    }
+
+    function showConfirmModal(contentId) {
+        const modalBodyContent = '<p>آیا مطمئن هستید که می‌خواهید این محتوا را به‌روزرسانی کنید؟</p>';
+        const modalFooterContent = `
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+          <button type="button" class="btn btn-danger" onclick="updateContent('${contentId}')">ذخیره</button>
+        `;
+        createAndOpenModal('createModal', 'به‌روز‌رسانی محتوا', modalBodyContent, modalFooterContent);
+
+    }
+
+    function deleteContent(contentId) {
+        $.ajax({
+            url: `/dashboard/article/delete/${contentId}`,
+            type: 'DELETE',
+            success: function (result) {
+                const editModal = document.getElementById('deleteModal');
+                const editModalInstance = bootstrap.Modal.getInstance(editModal);
+                editModalInstance.hide();
+
+                const modalBodyContent = '<p>محتوا با موفقیت حذف شد.</p>';
+                const modalFooterContent = `
+                <span id="delete-modal-timer" class="badge text-bg-secondary">۳:۰۰</span>
+              <button type="button" class="btn btn-success" data-bs-dismiss="modal">باشه</button>
+            `;
+                createAndOpenModal('successModal', 'به‌روزرسانی محتوا', modalBodyContent, modalFooterContent);
+
+                // Timer function
+                const successModalTimer = setInterval(() => {
+                    const timerDisplay = document.getElementById('delete-modal-timer');
+                    timeLeft -= 0.01; // Decrement time by 10 milliseconds
+                    //timerDisplay.textContent = timeLeft.toFixed(2); // Update the timer display
+                    timerDisplay.textContent = toPersianNumber(timeLeft.toFixed(2));
+
+                    if (timeLeft <= 0) {
+                        clearInterval(successModalTimer);
+                        const successModal = document.getElementById('successModal');
+                        const successModalInstance = bootstrap.Modal.getInstance(successModal);
+                        successModalInstance.hide();
+                    }
+                }, 25); // Update the timer every 10 milliseconds
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $(".ck-toolbar__items").append('<span class="flex-fill">&nbsp;</span>');
+        //        $(".ck-toolbar__items").append('<button id="create-pdf" class="ck ck-button" style="font-family: Vazirmatn;" type="button" tabindex="-1" aria-disabled="true" data-cke-tooltip-text="دانلود PDF"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf me-2" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/><path d="M4.603 14.087a.8.8 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.7 7.7 0 0 1 1.482-.645 20 20 0 0 0 1.062-2.227 7.3 7.3 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a11 11 0 0 0 .98 1.686 5.8 5.8 0 0 1 1.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 0 1-.354.416.86.86 0 0 1-.51.138c-.331-.014-.654-.196-.933-.417a5.7 5.7 0 0 1-.911-.95 11.7 11.7 0 0 0-1.997.406 11.3 11.3 0 0 1-1.02 1.51c-.292.35-.609.656-.927.787a.8.8 0 0 1-.58.029m1.379-1.901q-.25.115-.459.238c-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361q.016.032.026.044l.035-.012c.137-.056.355-.235.635-.572a8 8 0 0 0 .45-.606m1.64-1.33a13 13 0 0 1 1.01-.193 12 12 0 0 1-.51-.858 21 21 0 0 1-.5 1.05zm2.446.45q.226.245.435.41c.24.19.407.253.498.256a.1.1 0 0 0 .07-.015.3.3 0 0 0 .094-.125.44.44 0 0 0 .059-.2.1.1 0 0 0-.026-.063c-.052-.062-.2-.152-.518-.209a4 4 0 0 0-.612-.053zM8.078 7.8a7 7 0 0 0 .2-.828q.046-.282.038-.465a.6.6 0 0 0-.032-.198.5.5 0 0 0-.145.04c-.087.035-.158.106-.196.283-.04.192-.03.469.046.822q.036.167.09.346z"/></svg>PDF</button>');
+        $(".ck-toolbar__items").append('<button id="create-docx" class="ck ck-button" style="font-family: Vazirmatn;" type="button" tabindex="-1" aria-disabled="true" data-cke-tooltip-text="دانلود DOCX"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-word me-2" viewBox="0 0 16 16"><path d="M5.485 6.879a.5.5 0 1 0-.97.242l1.5 6a.5.5 0 0 0 .967.01L8 9.402l1.018 3.73a.5.5 0 0 0 .967-.01l1.5-6a.5.5 0 0 0-.97-.242l-1.036 4.144-.997-3.655a.5.5 0 0 0-.964 0l-.997 3.655L5.485 6.88z"/><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/></svg>DOCX</button>');
+        $(".ck-toolbar__items").append('<span style="height: 100%; border-right: 1px solid #ccc;">&nbsp;</span>');
+        $(".ck-toolbar__items").append('<button id="save-content" class="ck ck-button ms-3" style="font-family: Vazirmatn;" type="button" tabindex="-1" aria-disabled="true" data-cke-tooltip-text="ذخیره متن"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save2 me-2" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1z"/></svg>ذخیره</button>');
+        $(".ck-toolbar__items").append('<button id="delete-content" class="ck ck-button ms-3" style="font-family: Vazirmatn;" type="button" tabindex="-1" aria-disabled="true" data-cke-tooltip-text="حذف کردن"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash me-2" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/><path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/></svg>حذف</button>');
+
+        var contentId = '{{ content.id }}';
+
+
+        // Save content action
+        $("#save-content").on('click', function () {
+            showConfirmModal(contentId)
+        });
+
+        // Delete content action
+        $("#delete-content").on('click', function () {
+            showDeleteModal(contentId)
+        });
+
+
+
+        $('#create-docx').click(function () {
+            var request = {
+                "content_id": "{{content.id}}",
+            };
+            $.ajax({
+                url: "{{ url_for('dashboard.get_docx') }}",
+                type: 'POST',
+                data: JSON.stringify(request),
+                contentType: "application/json",
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data) {
+                    const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const randomFileName = `matn_ai_converted_${Math.floor(Math.random() * 1000000)}.docx`;
+                    a.download = randomFileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                },
+                error: function () {
+                    alert('Error converting HTML to DOCX');
+                }
+            });
+        });
+
+
+
+        // Download .docx file
+        $('#create-pdf').click(function () {
+            var request = {
+                "content_id": "{{content.id}}",
+            };
+            $.ajax({
+                url: "{{ url_for('dashboard.get_docx') }}",
+                type: 'POST',
+                data: JSON.stringify(request),
+                contentType: "application/json",
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data) {
+                    console.log(data)
+                    window.location = data
+                },
+                error: function () {
+                    alert('Error converting HTML to DOCX');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

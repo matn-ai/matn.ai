@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}به‌نویس - نویسنده‌ی هوشمند{% endblock %}</title>
+    <title>{% block title %}متن - نویسنده‌ی هوشمند{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.rtl.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome/css/solid.min.css') }}">
@@ -11,8 +11,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tagify.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/flag-icons.min.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Wizard-JS@1.9.9/styles/css/main.css">
-    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/wizard.css') }}">
 
 </head>
 <body>
@@ -53,7 +52,7 @@
 <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 <script src="{{ url_for('static', filename='fontawesome/js/all.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/lottie-player.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/gh/AdrianVillamayor/Wizard-JS@1.9.9/src/wizard.min.js"></script>
+
 
 <script>
     // Initialize Bootstrap Toasts

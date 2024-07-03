@@ -47,89 +47,72 @@
         <div class="row rounded  mb-2">
             {% if content %}
             {% if content.job.job_status == "SUCCESS" %}
-
-            <div class="col-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text card-shadow" id="inputGroup-sizing-default">تعداد کلمات</span>
-                    <input type="text" class="form-control text-center text-primary-emphasis bg-light-subtle card-shadow" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-default" value="{{ content.word_count | to_persian_num }}"
-                        disabled>
+            <div class="col-12">
+                <div class="d-flex">
+                    <div class="p-2">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">تعداد
+                            کلمات: {{ content.word_count | to_persian_num }}</span>
+                    </div>
+                    <div class="p-2 ms-auto">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">تاریخ
+                            تولید: {{ content.timestamp | gregorian_to_jalali_detail }}</span>
+                    </div>
+                    <div class="p-2">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">مدت:
+                            {{ content.job.running_duration | convert_seconds_to_min_sec }}</span>
+                    </div>
                 </div>
             </div>
-            <div class="col-5">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="inputGroup-sizing-default">تاریخ تولید</span>
-                    <input type="text" class="form-control text-center text-primary-emphasis bg-light-subtle" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-default"
-                        value="{{ content.timestamp | gregorian_to_jalali_detail }}" disabled>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="inputGroup-sizing-default">
-                        مدت
-                    </span>
-                    <input type="text" class="form-control text-center text-primary-emphasis bg-light-subtle" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-default"
-                        value="{{ content.job.running_duration | convert_seconds_to_min_sec }}" disabled>
-                </div>
-            </div>
+            
             {% else %}
 
 
-            <div class="col-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="inputGroup-sizing-default">تعداد کلمات</span>
-                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-default" id="word-count" value="-" disabled>
-                </div>
-            </div>
-            <div class="col-5">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="inputGroup-sizing-default">تاریخ تولید</span>
-                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-default"
-                        value="{{ content.timestamp | gregorian_to_jalali_detail }}" disabled>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="inputGroup-sizing-default">
-                        مدت
-                    </span>
-                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-default" value="" id="article-info-timer" disabled>
+            <div class="col-12">
+                <div class="d-flex">
+                    <div class="p-2">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">زمان حدودی ۲ تا ۴ دقیقه</span>
+                    </div>
+                    <div class="p-2 ms-auto">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">تاریخ
+                            تولید: {{ content.timestamp | gregorian_to_jalali_detail }}</span>
+                    </div>
+                    <div class="p-2">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2" id="article-info-timer">
+                            ۰۰:۰۰
+                            </span>
+                    </div>
                 </div>
             </div>
 
             {% endif %}
             {% else %}
-            <div class="col-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text " id="inputGroup-sizing-default">زمان تقریبی</span>
-                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-default"  value=" ۳ تا ۶ دقیقه" disabled>
+
+            <div class="col-12">
+                <div class="d-flex">
+                    <div class="p-2">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">زمان حدودی ۴ تا ۶ دقیقه</span>
+                    </div>
+                    <div class="p-2 ms-auto" style="display: none;" id="article-date-container">
+                        <span id="article-info-date"
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
+                            </span>
+                    </div>
+                    <div class="p-2" style="display: none;" id="article-timer-container">
+                        <span
+                            class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2" id="article-info-timer">
+                            ۰۰:۰۰
+                            </span>
+                    </div>
                 </div>
             </div>
 
-
-            <div class="col-5">
-                <div class="input-group mb-3 info-detail" style="display: none;">
-                    <span class="input-group-text" id="inputGroup-sizing-default">تاریخ تولید</span>
-                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-default" id="article-info-date" 
-                        value="" disabled>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="input-group mb-3 info-detail" style="display: none;">
-                    <span class="input-group-text" id="inputGroup-sizing-default">
-                        مدت
-                    </span>
-                    <input type="text" class="form-control text-center text-light-emphasis bg-light-subtle" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-default" value="" id="article-info-timer" disabled>
-                </div>
-            </div>
 
 
             {% endif %}
@@ -213,8 +196,10 @@
 
 
                 $('.info-detail').show();
-                $('#article-info-date').val(job_date);
+                $('#article-info-date').html(job_date);
                 $('#article-info-timer').show();
+                $('#article-date-container').show();
+                $('#article-timer-container').show();
 
 
                 startTimer();
@@ -254,7 +239,7 @@
             }
 
             var time = `${toPersianNumber(pad(minutes))}:${toPersianNumber(pad(seconds))}`
-            $("#article-info-timer").val(time)
+            $("#article-info-timer").html(time)
         }, 1000);
     }
 

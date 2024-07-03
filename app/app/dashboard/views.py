@@ -1,4 +1,5 @@
-from flask import render_template, jsonify, abort, request, url_for
+from flask import render_template, jsonify, abort, request, url_for, send_file
+from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
 from app.dashboard.forms import GenerateArticleBlog, GenerateArticlePro
 from app.dashboard import dashboard
@@ -13,9 +14,13 @@ from .repository import (
     get_content_info,
     search_resources,
     suggest_titles,
-    suggest_outlines
+    suggest_outlines,
+    delete_article_pro,
+    update_article_pro,
+    html_to_docx
 )
 import json, os
+import uuid
 from ..utils import utils_gre2jalali
 from .. import app
 
@@ -116,46 +121,112 @@ def article_blog(id=None):
     )
 
 
-@dashboard.route("/article/professional", methods=["GET", "POST"])
-@dashboard.route("/article/professional/<id>", methods=["GET", "POST"])
+@dashboard.route("/article/pro/create", methods=["POST"])
 @login_required
-def article_pro(id=None):
+def create_article_pro():
+    data = request.data
+    article_data = json.loads(data)
+    
+    content = create_content(user_input=article_data, author=current_user)
+
+    job = generate_pro_article.delay(content.id, article_data)
+    create_job_record(job_id=job.id, content=content)
+    j_date = utils_gre2jalali(content.job.created_at)
+
+    return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
+
+
+@dashboard.route("/article/pro", methods=["GET", "POST"])
+@login_required
+def article_pro():
     form = GenerateArticlePro()
-    if form.validate_on_submit():
-        form_data = request.form.to_dict()
-        content = create_content(user_input=form_data, author=current_user)
-
-        job = generate_pro_article.delay(content.id, form_data)
-        create_job_record(job_id=job.id, content=content)
-
-        return jsonify(job_id=job.id, content_id=content.id)
-
-    if request.method == "GET" and id:
-        # print(id)
-        content = get_content_by_id(id)
-        if not content:
-            return abort(404)
-        inputs = json.loads(content.user_input)
-        form.user_topic.data = inputs["user_topic"]
-        form.lang.data = inputs["lang"]
-        form.tags.data = inputs["tags"]
-        form.body.data = content.body
 
     return render_template("dashboard/article/article_pro.html", form=form)
+
+@dashboard.route("/article/pro/update/<content_id>", methods=["POST", "PUT"])
+@login_required
+def update_article_pro_route(content_id):
+    try:
+        data = request.get_json()
+        update_article_pro(content_id, data['body'])
+        return jsonify({"message": "Article updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@dashboard.route('/article/get_docx', methods=['POST'])
+def get_docx():
+    data = request.get_json()
+    content = get_content_by_id(data['content_id'])
+    docx_buffer = html_to_docx(content.body)
+    print(docx_buffer)
+    return send_file(
+        docx_buffer,
+        as_attachment=True,
+        download_name='converted.docx',
+        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+
+@dashboard.route("/article/delete/<content_id>", methods=["DELETE"])
+@login_required
+def delete_article_pro_route(content_id):
+    try:
+        delete_article_pro(content_id)
+        return jsonify({"message": "Article deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+    
+@dashboard.route("/article/pro/<id>", methods=["GET", "POST"])
+@login_required
+def article_pro_View(id=None):
+    content = get_content_by_id(id)
+    if not content:
+        return abort(404)
+
+    return render_template("dashboard/article/article_pro_view.html", content=content)
+
+
+ALLOWED_EXTENSIONS = {'pdf'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @dashboard.route("/article/resources/upload", methods=["POST"])
 def upload_resource():
     if 'file' not in request.files:
         return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
+    
     file = request.files['file']
+    
     if file.filename == '':
         return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
-    if file:
-        filename = file.filename
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+    if file and allowed_file(file.filename):
+        # Check file size
+        file.seek(0, os.SEEK_END)
+        file_size = file.tell()
+        file.seek(0)
+        
+        if file_size > MAX_FILE_SIZE:
+            return jsonify({'error': 'حجم فایل بیش از حد مجاز است'}), 400
+        
+        # Secure the filename and make it unique
+        filename = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        
+        # Save the file
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
         file.save(filepath)
-        return jsonify({'filename': filename, 'url': filepath}), 200
-
+        
+        # Generate HTTP path
+        # file_url = url_for('static', filename=f'uploads/{unique_filename}', _external=True)
+        
+        return jsonify({'url': file.filename}), 200
+    
+    return jsonify({'error': 'فرمت فایل مجاز نیست'}), 400
 
 
 @dashboard.route("/article/resources", methods=["POST"])
@@ -165,7 +236,7 @@ def get_resources():
     topic = json.loads(data)
     # topic = data['user_topic']
     # print (topic)
-    resources = search_resources(topic['user_topic'])
+    resources = search_resources(topic['main_topic'])
     return jsonify(resources)
 
 
@@ -174,9 +245,7 @@ def get_resources():
 def get_titles():
     data = request.data
     topic = json.loads(data)
-    # topic = data['user_topic']
-    # print (topic)
-    resources = suggest_titles(topic['user_topic'], 'persian')
+    resources = suggest_titles(topic['user_topic'], topic['lang'], topic['language_model'])
     return jsonify(resources)
 
 
@@ -185,9 +254,7 @@ def get_titles():
 def get_outlines():
     data = request.data
     topic = json.loads(data)
-    # topic = data['user_topic']
-    # print (topic)
-    resources = suggest_outlines(topic['user_topic'])
+    resources = suggest_outlines(topic['selected_title'], topic['lang'], topic['language_model'])
     return jsonify(resources)
 
 
