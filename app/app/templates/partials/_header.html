@@ -34,19 +34,14 @@
                 <ul class="navbar-nav flex-row mb-2 mb-lg-0 ms-lg-3" id="left-side">
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                    <button class="btn btn-outline-primary me-2">
+                    <a class="btn btn-outline-primary me-2" href="{{ url_for('finance.create_pay') }}">
                         <div class="row">
-                          <div class="col-5">موجودی :</div>
-                          <div class="col-4">
-                            <span class="fw-bold">
-                                {{ current_user.remain_charge }}
-                            </span>
-                          </div>
-                          <div class="col-2">
+                          <div class="col-12">موجودی :
+                                {{ current_user.remain_charge | to_persian_num }}
                             <span class="badge bg-light text-dark">کلمه</span>
                           </div>
                         </div>
-                      </button>
+                    </a>
                     </li>
                     <li class="nav-item">
                         <a class="btn btn-outline-primary" href="{{ url_for('dashboard.index') }}">

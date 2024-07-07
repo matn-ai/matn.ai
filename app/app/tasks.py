@@ -456,16 +456,6 @@ def generate_pro_article(content_id, user_input):
     target_audience = user_input["target_audience"]
     voice_tune = user_input["voice_tune"]
 
-    print(f"{title}\n")
-    print(f"{main_tag}\n")
-    print(f"{language_model}\n")
-    print(f"{keywords}\n")
-    print(f"{lang}\n")
-    print(f"{llm}\n")
-    print(f"{outlines}\n")
-    print(f"{point_ofview}\n")
-    print(f"{target_audience}\n")
-    print(f"{voice_tune}\n")
 
     body = generate_article_pro_body(
         title,

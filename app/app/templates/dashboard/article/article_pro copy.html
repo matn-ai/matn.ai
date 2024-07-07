@@ -282,7 +282,7 @@
                                 <div class="d-flex align-items-center">
                                     <input class="form-check-input me-1" type="radio" name="listGroupRadio"
                                         id="titles-user-input-radio">
-                                    <input type="text" minlength="10" class="form-control me-2" id="user-title-input"
+                                    <input type="text" class="form-control me-2" id="user-title-input"
                                         placeholder="عنوان دلخواه خود را وارد کنید">
                                 </div>
                             </li>
@@ -345,14 +345,6 @@
                             </div>
                             <div class="loading-text">در حال دریافت تصاویر...</div>
                         </div>
-                        <div class="loading text-center" style="height: 650px;" id="loading-images">
-                            <div class="spinner-border text-primary" role="status"
-                                style="margin-top: 40%;width: 3rem; height: 3rem;">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <div class="loading-text">در حال دریافت منابع...</div>
-                        </div>
-
                         <div id="images-container">
 
                         </div>
@@ -387,7 +379,7 @@
         let maxSelectedResources = 5;
         let resources = [];
         let suggested_lists = [];
-        let selected_list = null;
+        let selected_list = [];
         let selectedTitle = "";
         let mainOutlineCounter = 0;
         let subOutlineCounter = 0;
@@ -480,7 +472,7 @@
             wz_nav_style: "dots",
             wz_ori: "vertical",
             buttons: true,
-            navigation: "buttons",
+            navigation: "all",
             next: "بعدی",
             prev: "قبلی",
             finish: "نوشتن را شروع کن",
@@ -503,10 +495,10 @@
 
         $wz_doc.addEventListener("wz.btn.next", function (e) {
             if (wizard.current_step === 0) {
-                $(".loading").hide()
+                $(".loading").hide();
                 if (validateFirstStep()) {
-                    $("input[name='search_in_resource']").prop('disabled', true)
-                    $("#search-resource-btn").prop('disabled', true)
+                    $("input[name='search_in_resource']").prop('disabled', true);
+                    $("#search-resource-btn").prop('disabled', true);
 
                     wizard.lock();
                     loadResources(false);
@@ -515,217 +507,46 @@
                     e.preventDefault();  // Prevent from proceeding if validation fails
                 }
             } else if (wizard.current_step === 1) {
-                wizard.lock();
-                loadTitles();
-                wizard.unlock();
-            } else if (wizard.current_step === 2) {
                 if (validateSecondStep()) {
                     wizard.lock();
-                    loadOutlines();
+
+                        $("#user-title-input").removeAttr('required');
+                        let selectedTitle = $("input[name='listGroupRadio']:checked").next('label').text();
+                        if (selectedTitle === "") {
+                            loadTitles();
+                        }
+                    
                     wizard.unlock();
                 } else {
                     e.preventDefault();  // Prevent from proceeding if validation fails
                 }
-            } 
-            else if (wizard.current_step === 3) {
+            } else if (wizard.current_step === 2) {
                 wizard.lock();
-                $("#images-container").empty()
-                $("#images-container").hide()
-                showLoader('#loading-images', [
-                    'در حال بارگذاری تصاویر...',
-                    'در حال یافتن بهترین تصاویر مرتبط...',
-                    'لطفا صبور باشید، تصاویر بیشتر در راهند...',
-                    'در حال دریافت اطلاعات تصاویر...',
-                    'در حال پردازش تصاویر...'
-                ]);
-                $("#form-container").find("input, button, textarea, select").prop("disabled", false);
-                $('.btn-outline-primary').hide();
-                $('.btn-outline-dark').hide();
-                $('.finish-button').hide();
-                loadBtnLoader()
-                
-                // Modify the function to integrate the click event for replacing the image
-                function loadImageForOutline(outline, outlineIndex) {
-                    return new Promise((resolve, reject) => {
-                        let mainOutlineCounter = outlineIndex + 1;
-                        let mainOutlineId = `image-${mainOutlineCounter}`;
-                        let mainHead = outline.head;
-
-                        $.ajax({
-                            type: 'POST',
-                            url: "{{ url_for('dashboard.get_images') }}",  // Replace with correct endpoint
-                            data: JSON.stringify({ title: mainHead }),
-                            contentType: "application/json",
-                            processData: false,
-                            success: function (response) {
-                                let image = response[0].img_src;
-                                let outlineHTML = `<div class="mb-3 outline-item" id="image-${mainOutlineId}">
-                    <div class="d-flex mb-2">
-                        <div class="row">
-                            <div class="col-12">
-                                <input type="text" class="form-control main-outline-input bg-white border-0 fs-5" disabled id="${mainOutlineId}-input" value="${mainHead}" />    
-                            </div>
-                            <div class="col-12"> 
-                                <img src="${image}" class="img-fluid rounded mx-auto d-block mt-3 mb-3 outline-image" id="img-${mainOutlineId}" />
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-link text-primary fs-5 ms-2 add-image" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom-${mainOutlineCounter}" aria-controls="offcanvasBottom-${mainOutlineCounter}" title="${mainHead}">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </button>
-                    </div>
-
-                    <div class="offcanvas  offcanvas-bottom" tabindex="-1"  id="offcanvasBottom-${mainOutlineCounter}" aria-labelledby="offcanvasBottomLabel-${mainOutlineCounter}">
-                        <div class="offcanvas-header">
-                            <h5 class="offcanvas-title" id="offcanvasBottomLabel-${mainOutlineCounter}"> جستجو در تصاویر</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                        </div>
-                        <div class="offcanvas-body small image-search-container d-flex p-2" id="image-search-container-${mainOutlineCounter}">
-                            در حال بارگزاری موتور جستجو...
-                        </div>
-                    </div>
-                </div>`;
-
-                                $('#images-container').append(outlineHTML);
-
-                                // Event listener to load images when the offcanvas is shown
-                                $(`#offcanvasBottom-${mainOutlineCounter}`).on('show.bs.offcanvas', function () {
-                                    const containerId = `#image-search-container-${mainOutlineCounter}`;
-                                    loadImageSearch(containerId, mainHead, mainOutlineCounter);
-                                });
-
-                                resolve();  // Resolve the promise
-                            },
-                            error: function (error) {
-                                console.log('Error:', error);
-                                reject(error);  // Reject the promise
-                            }
-                        });
-                    });
-                }
-
-                // Function to load images in the search container and handle image click
-                function loadImageSearch(containerId, mainHead, id) {
-                    $.ajax({
-                        type: 'POST',
-                        url: "{{ url_for('dashboard.search_images') }}",  // Replace with correct endpoint
-                        data: JSON.stringify({ title: mainHead }),
-                        contentType: "application/json",
-                        processData: false,
-                        success: function (response) {
-                            $(containerId).empty();
-                            $.each(response, function (index, imageDetails) {
-                                console.log(imageDetails)
-                                if(imageDetails && imageDetails.img_src && imageDetails.source){
-                                    const imageHTML = `<div class="image-result m-3 d-block" data-image-src="${imageDetails.img_src}">
-                                        <img src="${imageDetails.thumbnail_src}" alt="${imageDetails.title}" class="img-thumbnail image-result-item" style="max-width: 150px;">
-                                        <div class="w-100 text-center">
-                                            <span class="badge text-bg-primary">${imageDetails.source}</span>
-                                        </div>
-                                    </div>`;
-                                  $(containerId).append(imageHTML);
-                    
-                                }
-                            });
-
-                            $(containerId).find('.image-result').on('click', function () {
-                                const imageUrl = $(this).data('image-src');
-                                console.log(imageUrl)
-                                //const relatedOutlineId = $(this).closest('.offcanvas').attr('id').replace('offcanvasBottom-', 'image-');
-                                //console.log(relatedOutlineId)
-                                console.log(containerId)
-                                $(`#img-image-${id}`).attr('src', imageUrl);
-                            });
-                        },
-                        error: function (error) {
-                            console.log('Error:', error);
-                        }
-                    });
-                }
-                // Sequentially load images for each outline
-                (async function loadAllImages() {
-                    for (let outlineIndex = 0; outlineIndex < selected_list.length; outlineIndex++) {
-                        try {
-                            if(outlineIndex == 0)
-                                continue
-                            if(outlineIndex == selected_list.length)
-                                continue
-                            else
-                                await loadImageForOutline(selected_list[outlineIndex], outlineIndex);
-                        } catch (error) {
-                            // Handle the error case if needed
-                        }
-                    }
-                    $('.btn-outline-primary').show();
-                    $('.btn-outline-dark').show();
-                    $('#btn-spinner').remove();
-                    $("#images-container").show()
-                    $("#loading-images").hide()
-                    $('.finish-button').show();
-
-                    wizard.unlock();
-                })();
-
-
-
-
-                // Handler for adding images on button click
-                //$('#images-container').on('click', '.add-image', function () {
-                //    let mainHead = $(this).attr('title');
-                //    console.log("Adding image for main head:", mainHead);
-//
-                //    $.ajax({
-                //        type: 'POST',
-                //        url: "{{ url_for('dashboard.get_images') }}",  // Replace with correct endpoint
-                //        data: JSON.stringify({ title: mainHead }),
-                //        contentType: "application/json",
-                //        processData: false,
-                //        success: function (response) {
-                //            let imageHtml = `<div class="mb-3 image-item" id="image-${response.index}">
-                //                    <div class="d-flex mb-2">
-                //                        <img src="${response.thumbnail_src}" alt="image" class="img-thumbnail" style="max-width: 2560px;">
-                //                        <button type="button" class="btn btn-link text-primary ms-2 remove-add" title="Add Image"><i class="fas fa-plus"></i></button>
-                //                    </div>
-                //                </div>`;
-                //            $('#images-container').append(imageHtml);
-                //            //attachImageRemoveHandler();  // Reattach the remove handler for new images
-                //        },
-                //        error: function (error) {
-                //            console.log('Error:', error);
-                //        }
-                //    });
-                //});
+                loadOutlines();
+                wizard.unlock();
+            } else if (wizard.current_step === 3) {
+                wizard.lock();
+                loadImages();
+                wizard.unlock();
             }
         });
+        $("#refresh-suggest-titles").click(function () {
+            loadTitles()
+        });
 
-
+        $("#user-title-input").click(function () {
+            $("#titles-user-input-radio").prop('checked', true)
+        });
 
         function validateSecondStep() {
-            // Get all the suggested titles radio inputs
-            const suggestedTitles = document.querySelectorAll('#suggest-titles input[type="radio"]');
-            // Get the user input radio and text input
-            const userInputRadio = document.getElementById('titles-user-input-radio');
-            const userInput = document.getElementById('user-title-input');
+            let isValid = true;
 
-            // Check if any suggested title is selected
-            for (let i = 0; i < suggestedTitles.length; i++) {
-                if (suggestedTitles[i].checked) {
-                    return true;
-                }
+            if (resources.length < 1) {
+                isValid = false;
+                alert('Please select at least one resource.');
             }
 
-            // Check if user input radio is selected
-            if (userInputRadio.checked) {
-                // Check if the user input text length is more than 5 characters
-                if (userInput.value.length > 5) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-            // If neither suggested titles nor valid user input is selected
-            return false;
-
+            return isValid;
         }
 
         function validateFirstStep() {
@@ -830,7 +651,6 @@
             });
         }
 
-
         $("#search-resource-btn").click(function () {
             loadResources(true)
         });
@@ -872,7 +692,7 @@
 
                     $.each(response, function (key, value) {
                         let row = `<li class="list-group-item mt-2 mb-2 p-2 text-bg-light rounded" id="titles-${key}">
-                            <input class="form-check-input me-1" required="true" type="radio" name="listGroupRadio" onclick="$('#titles-user-input-radio').prop('checked', false);$('#user-title-input').prop('required', false);" id="titles-checkbox-${key}">
+                            <input class="form-check-input me-1" type="radio" name="listGroupRadio" id="titles-checkbox-${key}">
                             <label class="form-check-label" for="titles-checkbox-${key}">${value}</label>
                         </li>`;
                         $("#suggest-titles").append(row);
@@ -887,7 +707,6 @@
         }
 
         function loadOutlines() {
-            $("#outlines-container").hide();
             showLoader('#loading-outlines', [
                 'در حال دریافت عناوین...',
                 'در حال پردازش اطلاعات عناوین...',
@@ -896,7 +715,7 @@
                 'در حال بررسی بهترین عناوین...'
             ]);
 
-            let selectedTitle = $("input[name='listGroupRadio']:checked").attr('id') === 'titles-user-input-radio'
+            selectedTitle = $("input[name='listGroupRadio']:checked").attr('id') === 'titles-user-input-radio'
                 ? $("#user-title-input").val()
                 : $("input[name='listGroupRadio']:checked").next('label').text();
 
@@ -985,10 +804,7 @@
             let request = { "main_topic": main_tagify.value[0]['value'], 'list': selected_list };
 
             $("input[name='search_in_resource']").val(main_tagify.value[0]['value']);
-            $("#form-container").find("input, button, textarea, select").prop("disabled", true);
-            $('.btn-outline-primary').hide();
-            $('.btn-outline-dark').hide();
-            loadBtnLoader()
+
             $.ajax({
                 type: 'POST',
                 url: "{{ url_for('dashboard.get_images') }}",
@@ -1004,36 +820,6 @@
             });
         }
 
-
-
-        $("#refresh-suggest-titles").click(function () {
-            loadTitles()
-        });
-
-
-
-        $("#user-title-input").click(function () {
-            $("#titles-user-input-radio").prop('checked', true)
-            $('#user-title-input').prop('required', true);
-            for (let i = 0; i <= 5; i++) {
-                let selector = `#titles-checkbox-${i}`;
-                let element = $(selector);
-                element.prop('required', false);
-
-            }
-        });
-
-
-        // Handle click on user-input radio button
-        $('#titles-user-input-radio').on('click', function () {
-            $('#suggest-titles input[type="radio"]').prop('required', false);
-            $('#user-title-input').prop('required', true);
-            for (let i = 0; i <= 5; i++) {
-                let selector = `#titles-checkbox-${i}`;
-                let element = $(selector);
-                element.prop('required', false);
-            }
-        });
 
 
         $("#tab-1-tab").click(function () {
@@ -1129,7 +915,7 @@
             const mainTag = main_tagify.value[0]['value'];
             const tags = tagify.value.map(tag => tag.value);
 
-            let selectedTitle = $("input[name='listGroupRadio']:checked").attr('id') === 'titles-user-input-radio'
+            selectedTitle = $("input[name='listGroupRadio']:checked").attr('id') === 'titles-user-input-radio'
                 ? $("#user-title-input").val()
                 : $("input[name='listGroupRadio']:checked").next('label').text();
 
