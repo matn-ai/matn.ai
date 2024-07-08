@@ -185,6 +185,8 @@ def update_article_pro_route(content_id):
 def get_docx():
     try:
         data = request.get_json()
+        print("*"*100)
+        print(data)
         content = get_content_by_id(data['content_id'])
         docx_buffer = html_to_docx(content.body)
 

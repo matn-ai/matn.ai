@@ -7,7 +7,8 @@ from bson import ObjectId
 import json, requests, os, random, time
 from openai import OpenAI
 from bs4 import BeautifulSoup
-import re
+from docx.shared import Inches
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from io import BytesIO
 from docx import Document
 from html2docx import html2docx
@@ -24,14 +25,24 @@ OPENROUTER_API = os.getenv("OPENROUTER_API")
 # Initialize OpenAI client
 openai_client = OpenAI(base_url=OPENROUTER_API, api_key=API_KEY)
 
+# def set_paragraph_rtl(paragraph):
+#     # Set paragraph RTL formatting
+#     paragraph.paragraph_format.right_to_left = True
+#     p = paragraph._element
+#     pProperties = p.get_or_add_pPr()
+#     bidi = OxmlElement('w:bidi')
+#     bidi.set(qn('w:val'), '1')
+#     pProperties.append(bidi)
+
+
 def set_paragraph_rtl(paragraph):
-    # Set paragraph RTL formatting
-    paragraph.paragraph_format.right_to_left = True
-    p = paragraph._element
-    pProperties = p.get_or_add_pPr()
-    bidi = OxmlElement('w:bidi')
-    bidi.set(qn('w:val'), '1')
-    pProperties.append(bidi)
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    paragraph.paragraph_format.rtl = True
+
+def set_paragraph_rtl_and_center(paragraph):
+    paragraph.paragraph_format.rtl = True
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
 
 def html_to_docx(html_string):
     try:
@@ -66,6 +77,16 @@ def html_to_docx(html_string):
                 run = doc.add_paragraph().add_run(elem.get_text())
                 run.italic = True
                 paragraph = run.paragraph
+            elif elem.name == "img":
+                img_url = elem.get('src')
+                try:
+                    response = requests.get(img_url)
+                    img_bytes = response.content
+                    paragraph = doc.add_paragraph()
+                    paragraph.add_run().add_picture(BytesIO(img_bytes), width=Inches(6))
+                    set_paragraph_rtl_and_center(paragraph)
+                except Exception as e:
+                    logger.error(f"Error adding image: {e}")
             if paragraph:
                 set_paragraph_rtl(paragraph)
 
@@ -76,6 +97,7 @@ def html_to_docx(html_string):
     except Exception as e:
         logger.error(f"Error converting HTML to DOCX: {e}")
         raise e
+    
 
 def suggest_outline_images(selected_outline, llm_type="gpt-3.5-turbo"):
     return get_search_images(selected_outline, 1)

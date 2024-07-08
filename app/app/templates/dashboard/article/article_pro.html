@@ -1100,66 +1100,6 @@
             resourceItem.remove();
         });
 
-        // Finish button click handler
-        $(".finish-button").on("click", function (e) {
-            e.preventDefault();
-
-            // Gather data from all steps
-            const userTopic = $("#form_user_topic").val();
-            const mainTag = main_tagify.value[0]['value'];
-            const tags = tagify.value.map(tag => tag.value);
-
-            let selectedTitle = $("input[name='listGroupRadio']:checked").attr('id') === 'titles-user-input-radio'
-                ? $("#user-title-input").val()
-                : $("input[name='listGroupRadio']:checked").next('label').text();
-
-            const selectedResources = [];
-            $("#selected-resources .row").each(function () {
-                const resourceType = $(this).find(".badge").hasClass("text-bg-secondary") ? "file" : "web";
-                const resourceUrl = $(this).find("a.link-primary").attr("href");
-                selectedResources.push({ type: resourceType, url: resourceUrl });
-            });
-
-            const requestData = {
-                user_topic: userTopic,
-                main_tag: mainTag,
-                language_model: $("input[name='language_model']").val(),
-                tags: tags,
-                point_ofview: $("#point_ofview").val(),
-                target_audience: $("#target_audience").val(),
-                voice_tune: $("#voice_tune").val(),
-                article_length: $("#article_length").val(),
-                lang: $('input[name="language"]:checked').val(),
-                selected_resources: selectedResources,
-                selected_title: selectedTitle,
-                outlines: selected_list,
-                content_type: 1
-            };
-            //console.log(requestData)
-
-            $.ajax({
-                type: 'POST',
-                url: "{{ url_for('dashboard.create_article_pro') }}",
-                data: JSON.stringify(requestData),
-                contentType: "application/json",
-                processData: false,
-                success: function (data) {
-                    // alert("Successfully submitted!");
-                    $('#form-container').hide()
-                    $('#content-container').show()
-                    $('#loading-content').show()
-                    $('#article-container-timer').show()
-                    const jobId = data.job_id;
-                    const contentId = data.content_id;
-
-                    startTimer()
-                    checkJobStatus(jobId, contentId);
-                },
-                error: function (error) {
-                    console.error("Submission error:", error);
-                }
-            });
-        });
 
         $('#upload-button').on('click', function (e) {
             e.preventDefault();
@@ -1235,6 +1175,69 @@
                 $(".wizard .btn-next").prop("disabled", !isFormValid);
             }
         }
+
+        // Finish button click handler
+        $(".finish-button").on("click", function (e) {
+            e.preventDefault();
+
+            // Gather data from all steps
+            const userTopic = $("#form_user_topic").val();
+            const mainTag = main_tagify.value[0]['value'];
+            const tags = tagify.value.map(tag => tag.value);
+
+            let selectedTitle = $("input[name='listGroupRadio']:checked").attr('id') === 'titles-user-input-radio'
+                ? $("#user-title-input").val()
+                : $("input[name='listGroupRadio']:checked").next('label').text();
+
+            const selectedResources = [];
+            $("#selected-resources .row").each(function () {
+                const resourceType = $(this).find(".badge").hasClass("text-bg-secondary") ? "file" : "web";
+                const resourceUrl = $(this).find("a.link-primary").attr("href");
+                selectedResources.push({ type: resourceType, url: resourceUrl });
+            });
+
+            const requestData = {
+                user_topic: userTopic,
+                main_tag: mainTag,
+                language_model: $("input[name='language_model']").val(),
+                tags: tags,
+                point_ofview: $("#point_ofview").val(),
+                target_audience: $("#target_audience").val(),
+                voice_tune: $("#voice_tune").val(),
+                article_length: $("#article_length").val(),
+                lang: $('input[name="language"]:checked').val(),
+                selected_resources: selectedResources,
+                selected_title: selectedTitle,
+                outlines: selected_list,
+                content_type: 1
+            };
+            //console.log(requestData)
+            console.log(requestData)
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url_for('dashboard.create_article_pro') }}",
+                data: JSON.stringify(requestData),
+                contentType: "application/json",
+                processData: false,
+                success: function (data) {
+                    // alert("Successfully submitted!");
+                    $('#form-container').hide()
+                    $('#content-container').show()
+                    $('#loading-content').show()
+                    $('#article-container-timer').show()
+                    const jobId = data.job_id;
+                    const contentId = data.content_id;
+
+                    startTimer()
+                    checkJobStatus(jobId, contentId);
+                },
+                error: function (error) {
+                    console.error("Submission error:", error);
+                }
+            });
+        });
+
 
         $("#form input, #form select").on("change input", checkValidation);
 

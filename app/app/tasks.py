@@ -292,11 +292,26 @@ def generate_article_pro_body(
     for outline in outlines:
         head = outline.get("head")
         subs = outline.get("subs", [])
+        image = outline.get("image")
 
-        body += f"<h2>{head}</h2>"
+        body += f"<br/><br/><h2>{head}</h2>"
+
+        body += generate_sections_article_pro(
+            head,
+            main_tag,
+            keywords,
+            lang,
+            language_model,
+            point_ofview,
+            target_audience,
+            voice_tune,
+        )
+        
+        body += f"<img src='{image}' class='ratio ratio-1x1 image-fluid' />" 
+
 
         for sub in subs:
-            body += f"<h3>{sub}</h3>"
+            body += f"<br/><h3>{sub}</h3>"
             section_content = generate_sections_article_pro(
                 sub,
                 main_tag,
@@ -308,6 +323,7 @@ def generate_article_pro_body(
                 voice_tune,
             )
             body += section_content
+            body += "<br/>"
 
     return body
 
@@ -448,7 +464,7 @@ def generate_pro_article(content_id, user_input):
     # language_model = user_input["language_model"]
     language_model = 'gpt-4o'
     keywords = user_input["tags"]
-    lang = "فارسی" if user_input["lang"] == "fa" else "English"
+    lang = "فارسی" if user_input["lang"] == "fa" else user_input["lang"]
     # llm = "gpt-4o"
     llm = user_input["language_model"]
     outlines = user_input["outlines"]
