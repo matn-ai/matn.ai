@@ -221,8 +221,9 @@ class User(UserMixin, db.Model):
 
     @property
     def remain_charge(self):
-        return Charge.get_user_charge(user_id=self.id)
-
+        with db.session() as session:
+            user = session.query(User).get(self.id)
+            return Charge.get_user_charge(user_id=user.id)
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
@@ -243,6 +244,7 @@ class Content(db.Model):
     user_input = db.Column(db.Text)
     system_title = db.Column(db.Text)
     outlines = db.Column(db.Text)
+    llm = db.Column(db.String(64))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     flow_id = db.Column(db.Integer, db.ForeignKey('flows.id'))
@@ -253,6 +255,13 @@ class Content(db.Model):
     def get_input(self, idx):
         _inputs = json.loads(self.user_input)
         return _inputs[idx]
+    
+    def set_input(self, update_dict):
+        _inputs = json.loads(self.user_input)
+        _inputs.update(update_dict)
+        self.user_input = json.dumps(_inputs)
+        db.session.commit()
+        return _inputs
     
     def body(self):
         return self.get_body_from_mongo()

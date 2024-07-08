@@ -1,6 +1,7 @@
-content_type_map = {0: "مقاله بلاگ", 1: "مقاله حرفه‌ای"}
+content_type_map = {0: "مقاله بلاگ", 1: "مقاله حرفه‌ای", 2: 'ترجمه فایل'}
 ARTICLE_BLOG_POST = 0
 ARTICLE_PRO = 1
+FILE_TRANSLATION = 2
 # ARTICLE_BLOG_POST = "ARTICLE_BLOG_POST"
 # ARTICLE_PRO = "ARTICLE_PRO"
 

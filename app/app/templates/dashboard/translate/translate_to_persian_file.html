@@ -1,0 +1,81 @@
+{% extends "dashboard/dashboard.html" %}
+{% block dashboard %}
+
+<div class="container mt-5">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="list-unstyled text-center mt-4">
+                {% for message in messages %}
+                    <li class="alert alert-info">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <h1 class="mb-4">فایل مورد نظر را انتخاب کنید</h1>
+    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate id="translateForm">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            <label for="llm_model" class="form-label">{{ form.llm_model.label }}</label>
+            {{ form.llm_model(class="form-select", id="llm_model") }}
+            <div class="invalid-feedback">
+                Please select a translation model.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="file" class="form-label">{{ form.file.label }}</label>
+            {{ form.file(class="form-control", id="file") }}
+            <div class="invalid-feedback">
+                فایل مورد نظر: pdf, word, docx, srt
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" id="estimateCostBtn">{{ form.submit.label }}</button>
+        <div id="costContainer" style="display: none;">
+            <p>تخمین هزینه تعداد کلمه مورد نیاز: <span id="estimatedCost"></span> کلمه</p>
+            {{ form.start_translation(class="btn btn-success") }}
+        </div>
+    </form>
+    {% if translated_text %}
+        <div class="mt-4">
+            <h2>متن ترجمه شده</h2>
+            <p style="white-space: pre-wrap;">{{ translated_text }}</p>
+        </div>
+    {% endif %}
+
+</div>
+
+<script>
+    document.getElementById('estimateCostBtn').addEventListener('click', function() {
+        var form = document.getElementById('translateForm');
+        var formData = new FormData(form);
+
+        fetch('estimate-cost', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('estimatedCost').innerText = data.estimated_cost;
+            document.getElementById('costContainer').style.display = 'block';
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+{% endblock %}
