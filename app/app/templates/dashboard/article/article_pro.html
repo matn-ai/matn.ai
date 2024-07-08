@@ -526,7 +526,7 @@
                 } else {
                     e.preventDefault();  // Prevent from proceeding if validation fails
                 }
-            } 
+            }
             else if (wizard.current_step === 3) {
                 wizard.lock();
                 $("#images-container").empty()
@@ -541,9 +541,9 @@
                 $("#form-container").find("input, button, textarea, select").prop("disabled", false);
                 $('.btn-outline-primary').hide();
                 $('.btn-outline-dark').hide();
-                $('.finish-button').hide();
+                $('.finish-button').css("display: none");
                 loadBtnLoader()
-                
+
                 // Modify the function to integrate the click event for replacing the image
                 function loadImageForOutline(outline, outlineIndex) {
                     return new Promise((resolve, reject) => {
@@ -559,6 +559,8 @@
                             processData: false,
                             success: function (response) {
                                 let image = response[0].img_src;
+                                selected_list[outlineIndex]['image'] = image
+
                                 let outlineHTML = `<div class="mb-3 outline-item" id="image-${mainOutlineId}">
                     <div class="d-flex mb-2">
                         <div class="row">
@@ -566,20 +568,23 @@
                                 <input type="text" class="form-control main-outline-input bg-white border-0 fs-5" disabled id="${mainOutlineId}-input" value="${mainHead}" />    
                             </div>
                             <div class="col-12"> 
-                                <img src="${image}" class="img-fluid rounded mx-auto d-block mt-3 mb-3 outline-image" id="img-${mainOutlineId}" />
+                                <img src="${image}" class="img-thumbnail rounded ratio ratio-1x1 mx-auto d-block mt-3 mb-3 outline-image" id="img-${mainOutlineId}" />
                             </div>
                         </div>
                         <button type="button" class="btn btn-link text-primary fs-5 ms-2 add-image" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom-${mainOutlineCounter}" aria-controls="offcanvasBottom-${mainOutlineCounter}" title="${mainHead}">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
+                        <button type="button" class="btn btn-link text-secondary fs-5 ms-2 remove-image" data-main-outline-id="${mainOutlineId}">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
 
-                    <div class="offcanvas  offcanvas-bottom" tabindex="-1"  id="offcanvasBottom-${mainOutlineCounter}" aria-labelledby="offcanvasBottomLabel-${mainOutlineCounter}">
+                    <div class="offcanvas  offcanvas-start" tabindex="-1" data-bs-scroll="true" data-bs-backdrop="false" id="offcanvasBottom-${mainOutlineCounter}" aria-labelledby="offcanvasBottomLabel-${mainOutlineCounter}">
                         <div class="offcanvas-header">
-                            <h5 class="offcanvas-title" id="offcanvasBottomLabel-${mainOutlineCounter}"> جستجو در تصاویر</h5>
+                            <div class="offcanvas-title" id="offcanvasBottomLabel-${mainOutlineCounter}"> جستجو در تصاویر</div>
                             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
-                        <div class="offcanvas-body small image-search-container d-flex p-2" id="image-search-container-${mainOutlineCounter}">
+                        <div class="offcanvas-body small image-search-container text-center p-2" id="image-search-container-${mainOutlineCounter}">
                             در حال بارگزاری موتور جستجو...
                         </div>
                     </div>
@@ -590,7 +595,8 @@
                                 // Event listener to load images when the offcanvas is shown
                                 $(`#offcanvasBottom-${mainOutlineCounter}`).on('show.bs.offcanvas', function () {
                                     const containerId = `#image-search-container-${mainOutlineCounter}`;
-                                    loadImageSearch(containerId, mainHead, mainOutlineCounter);
+                                    $(`#offcanvasBottomLabel-${mainOutlineCounter}`).html(`<span class="badge text-bg-secondary small">جستجو برای</span> <div class="badge d-block p-3 fs-5 text-bg-light mb-4 mt-2">${mainHead}</div>`)
+                                    loadImageSearch(containerId, mainHead, outlineIndex);
                                 });
 
                                 resolve();  // Resolve the promise
@@ -615,24 +621,24 @@
                             $(containerId).empty();
                             $.each(response, function (index, imageDetails) {
                                 console.log(imageDetails)
-                                if(imageDetails && imageDetails.img_src && imageDetails.source){
-                                    const imageHTML = `<div class="image-result m-3 d-block" data-image-src="${imageDetails.img_src}">
-                                        <img src="${imageDetails.thumbnail_src}" alt="${imageDetails.title}" class="img-thumbnail image-result-item" style="max-width: 150px;">
+                                if (imageDetails && imageDetails.img_src && imageDetails.source) {
+                                    const imageHTML = `<div class="image-result p-3 bg-light" data-image-src="${imageDetails.img_src}" data-main-outline-id="image-${id}">
+                                        <img src="${imageDetails.thumbnail_src}" alt="${imageDetails.title}" class="img-thumbnail ratio ratio-1x1 image-result-item "">
                                         <div class="w-100 text-center">
                                             <span class="badge text-bg-primary">${imageDetails.source}</span>
+                                            <span class="badge text-bg-primary">${imageDetails.engine}</span>
+                                            <span class="badge text-bg-primary"><a class="text-bg-primary" href="${imageDetails.url}" target=_blank><i class="fa-solid fa-arrow-up-right-from-square"></i></a></span>
                                         </div>
                                     </div>`;
-                                  $(containerId).append(imageHTML);
-                    
+                                    $(containerId).append(imageHTML);
+
                                 }
                             });
 
                             $(containerId).find('.image-result').on('click', function () {
                                 const imageUrl = $(this).data('image-src');
-                                console.log(imageUrl)
-                                //const relatedOutlineId = $(this).closest('.offcanvas').attr('id').replace('offcanvasBottom-', 'image-');
-                                //console.log(relatedOutlineId)
-                                console.log(containerId)
+                                selected_list[id]['image'] = imageUrl
+                                console.log(selected_list)
                                 $(`#img-image-${id}`).attr('src', imageUrl);
                             });
                         },
@@ -645,9 +651,9 @@
                 (async function loadAllImages() {
                     for (let outlineIndex = 0; outlineIndex < selected_list.length; outlineIndex++) {
                         try {
-                            if(outlineIndex == 0)
+                            if (outlineIndex == 0)
                                 continue
-                            if(outlineIndex == selected_list.length)
+                            if (outlineIndex == selected_list.length)
                                 continue
                             else
                                 await loadImageForOutline(selected_list[outlineIndex], outlineIndex);
@@ -665,39 +671,13 @@
                     wizard.unlock();
                 })();
 
-
-
-
-                // Handler for adding images on button click
-                //$('#images-container').on('click', '.add-image', function () {
-                //    let mainHead = $(this).attr('title');
-                //    console.log("Adding image for main head:", mainHead);
-//
-                //    $.ajax({
-                //        type: 'POST',
-                //        url: "{{ url_for('dashboard.get_images') }}",  // Replace with correct endpoint
-                //        data: JSON.stringify({ title: mainHead }),
-                //        contentType: "application/json",
-                //        processData: false,
-                //        success: function (response) {
-                //            let imageHtml = `<div class="mb-3 image-item" id="image-${response.index}">
-                //                    <div class="d-flex mb-2">
-                //                        <img src="${response.thumbnail_src}" alt="image" class="img-thumbnail" style="max-width: 2560px;">
-                //                        <button type="button" class="btn btn-link text-primary ms-2 remove-add" title="Add Image"><i class="fas fa-plus"></i></button>
-                //                    </div>
-                //                </div>`;
-                //            $('#images-container').append(imageHtml);
-                //            //attachImageRemoveHandler();  // Reattach the remove handler for new images
-                //        },
-                //        error: function (error) {
-                //            console.log('Error:', error);
-                //        }
-                //    });
-                //});
             }
         });
 
-
+        $('#images-container').on('click', '.remove-image', function () {
+            const mainOutlineId = $(this).data('main-outline-id');
+            $(`#img-${mainOutlineId}`).attr('src', '/static/images/no-image.jpeg');
+        });
 
         function validateSecondStep() {
             // Get all the suggested titles radio inputs
@@ -1071,7 +1051,7 @@
                 let mainOutlineHTML = `<div class="mb-3 outline-item" id="${mainOutlineId}">
                     <div class="d-flex mb-2">
                         <input type="text" class="form-control main-outline-input" id="${mainOutlineId}-input" value="" />
-                        <button type="button" class="btn btn-outline-danger ms-2 remove-main-outline" id="${mainOutlineId}-remove"><i class="fas fa-trash"></i></button>
+                        <button type="button" class="btn btn-outline-danger ms-2 remove-main-outline" id="${mainOutlineId}-remove"><i class="fas fa-minus"></i></button>
                         <button type="button" class="btn btn-outline-success ms-2 add-sub-outline" id="${mainOutlineId}-add-sub"><i class="fas fa-plus"></i></button>
                     </div>
                     <div class="ms-3 sub-outline-container" id="${mainOutlineId}-subs"></div>
