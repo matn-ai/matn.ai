@@ -307,7 +307,7 @@ def generate_article_pro_body(
             voice_tune,
         )
         
-        body += f"<img src='{image}' class='ratio ratio-1x1 image-fluid' />" 
+        body += f"<img src='{image}' style='width: 75%; padding: 10px; border-radius: 5px' />" 
 
 
         for sub in subs:
