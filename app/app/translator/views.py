@@ -13,7 +13,7 @@ from ..finance.models import Charge
 from ..models import Job
 from ..dashboard.repository import create_content, create_job_record, update_article_pro
 from .business import persian_translator
-from ..const import FILE_TRANSLATION, TEXT_TRANSACTION
+from ..const import FILE_TRANSLATION, TEXT_TRANSLATION
 
 from .tasks import translate_file, calculate_estimated_cost
 
@@ -32,7 +32,7 @@ def translate_to_persian():
         form_data['body'] = form_data['text_to_translate'][:100]
         form_data['user_topic'] = form_data['text_to_translate'][:100]
         form_data['system_title'] = form_data['text_to_translate'][:100]
-        form_data['content_type'] = TEXT_TRANSACTION
+        form_data['content_type'] = TEXT_TRANSLATION
         content = create_content(user_input=form_data, author=current_user, llm=llm_model)
         job = create_job_record(job_id=uuid.uuid4(), content=content)
         translated_text, usage = persian_translator(text=form_data['text_to_translate'], 
