@@ -88,6 +88,7 @@ def calculate_estimated_cost(file_path, llm_model, file_type='pdf'):
 
 @celery.task
 def translate_file(content_id, user_input=None):
+    logger.info(f'Going to translate {content_id}')
     start_time = time.time()
     content = db.session.query(Content).get(content_id)
     file_path = content.get_input('file_path')
@@ -134,6 +135,7 @@ def translate_file(content_id, user_input=None):
                               model=llm_model,
                               content_id=content.id)
     content.word_count = usage if usage > 0 else usage * -1
+    content.system_title = 'ترجمه فایل: ' + file_name
     content.job
     db.session.commit()
     logger.info(f'For [{content.id}], Charge reduced {user.id} amount {charge.word_count}')

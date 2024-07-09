@@ -14,7 +14,7 @@
                     {{ form.llm_model.label(class="form-label font-weight-bold") }}
                     {{ form.llm_model(class="form-control") }}
                     <div class="form-group text-center mt-3">
-                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                        {{ form.submit(class="btn btn-primary btn-lg", disabled="disabled" if just_view else "") }}
                     </div>
                 </div>
 

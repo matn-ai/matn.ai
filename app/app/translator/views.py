@@ -10,8 +10,8 @@ from ..utils import utils_gre2jalali
 from .. import app, db
 
 from ..finance.models import Charge
-from ..models import Job
-from ..dashboard.repository import create_content, create_job_record, update_article_pro
+from ..file_management.models import File, ContentFile
+from ..dashboard.repository import create_content, create_job_record, update_article_pro, get_content_by_id
 from .business import persian_translator
 from ..const import FILE_TRANSLATION, TEXT_TRANSLATION
 
@@ -20,11 +20,13 @@ from .tasks import translate_file, calculate_estimated_cost
 logger = logging.getLogger(__name__)
 
 @dashboard.route("/translate/to-persian", methods=["GET", "POST"])
+@dashboard.route("/translate/to-persian/<id>", methods=["GET", "POST"])
 @login_required
-def translate_to_persian():
+def translate_to_persian(id=None):
     form = TranslateForm()
     content = None
     translated_text = None
+    just_view = False
     if form.validate_on_submit():
         form_data = request.form.to_dict()
         user = current_user
@@ -39,8 +41,11 @@ def translate_to_persian():
                                                     llm=llm_model)
         update_article_pro(content_id=content.id, body=translated_text)
         total_words = len(translated_text.split())
+        content.body = translated_text
         form.body.data = translated_text
+        content.user_input = form_data['text_to_translate']
         content.word_count = total_words
+        content.system_title = form_data['text_to_translate'][:100] + '...'
         job.job_status = 'SUCCESS'
         job.running_duration = 1
         db.session.add(job)
@@ -50,22 +55,32 @@ def translate_to_persian():
                                   model=llm_model,
                                   content_id=content.id)
 
-    else:
-        flash('داده‌ها ولید نیستند', 'danger')
+
+    if request.method == "GET" and id:
+        logger.info('going to show translation file page')
+        content = get_content_by_id(id)
+        if not content and content.content_type != TEXT_TRANSLATION:
+            return abort(404)
+        form.body.data = content.body
+        form.text_to_translate.data = content.get_input('text_to_translate')
+        just_view = True
+
 
     return render_template(
         "dashboard/translate/translate_to_persian.html", 
         form=form, 
         content=content, 
-        translated_text=translated_text
+        translated_text=translated_text,
+        just_view=just_view
     )
 
 
 @dashboard.route("/translate/to-persian-file", methods=["GET", "POST"])
+@dashboard.route("/translate/to-persian-file/<id>", methods=["GET", "POST"])
 @login_required
-def translate_to_persian_file():
+def translate_to_persian_file(id=None):
     form = FileTranslateForm()
-    translated_text = None
+    translated_data = None
     if form.validate_on_submit():
         form_data = request.form.to_dict()
         user = current_user
@@ -92,18 +107,30 @@ def translate_to_persian_file():
             job = func.delay(content.id, form_data)
             create_job_record(job_id=job.id, content=content)
             # j_date = utils_gre2jalali(content.job.created_at)
-            translated_text = 'فایل شما در حال بررسی و ترجمه می‌باشد'
             flash('فایل‌ شما در حال اماده سازیست. بعد از اتمام به شما خبر میدیم')
             # return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
-        else:
-            pass
+
+    if request.method == "GET" and id:
+        logger.info('going to show translation file page')
+        content = get_content_by_id(id)
+        translated_data = []
+        if not content and content.content_type != FILE_TRANSLATION:
+            return abort(404)
+        content_files = ContentFile.get_files_for_content(content.id)
+        if not content_files:
+            flash('فایل‌ شما هنوز در حال ترجمه میباشد. لطفا کمی بعدتر این صفحه را به روز کنید')
+        for cf in content_files:
+            translated_data.append({
+                'file_name': cf.file.file_name,
+                'url': cf.file.get_file_url()
+            })
             
         
         # translated_text = '\n\n'.join([txt[1] for txt in translated_texts])
-            
+    print(translated_data)
     return render_template("dashboard/translate/translate_to_persian_file.html",
                            form=form, 
-                           translated_text=translated_text,
+                           translated_data=translated_data,
                            )
     
 
