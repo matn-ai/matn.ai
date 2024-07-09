@@ -2,7 +2,7 @@ from datetime import datetime
 import hashlib, json
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
-from sqlalchemy.dialects.mysql import LONGTEXT
+from sqlalchemy.dialects.postgresql import TEXT
 from flask import current_app, url_for
 from flask_login import UserMixin, AnonymousUserMixin
 from app.exceptions import ValidationError
@@ -221,8 +221,9 @@ class User(UserMixin, db.Model):
 
     @property
     def remain_charge(self):
-        return Charge.get_user_charge(user_id=self.id)
-
+        with db.session() as session:
+            user = session.query(User).get(self.id)
+            return Charge.get_user_charge(user_id=user.id)
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
@@ -238,11 +239,12 @@ login_manager.anonymous_user = AnonymousUser
 class Content(db.Model):
     __tablename__ = 'contents'
     id = db.Column(db.Integer, primary_key=True)
-    # body = db.Column(LONGTEXT)
+    body = db.Column(TEXT)
     mongo_id = db.Column(db.String(24))
     user_input = db.Column(db.Text)
     system_title = db.Column(db.Text)
     outlines = db.Column(db.Text)
+    llm = db.Column(db.String(64))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     flow_id = db.Column(db.Integer, db.ForeignKey('flows.id'))
@@ -252,7 +254,14 @@ class Content(db.Model):
     
     def get_input(self, idx):
         _inputs = json.loads(self.user_input)
-        return _inputs[idx]
+        return _inputs.get(idx)
+    
+    def set_input(self, update_dict):
+        _inputs = json.loads(self.user_input)
+        _inputs.update(update_dict)
+        self.user_input = json.dumps(_inputs)
+        db.session.commit()
+        return _inputs
     
     def body(self):
         return self.get_body_from_mongo()

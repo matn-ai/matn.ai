@@ -90,6 +90,11 @@ def html_to_docx(html_string):
 
     return buffer
 
+def save_html_to_docx(html_string, file_path):
+    buffer = html_to_docx(html_string)
+    with open(file_path, 'wb') as f:
+        f.write(buffer.read())
+
 def suggest_outlines(user_title, lang, llm_type="gpt-4o"):
 
     user_prompt = f"The content language is {lang}\n"
@@ -280,9 +285,13 @@ def delete_article_pro(content_id):
         raise e
 
 
-def create_content(user_input, author):
+def create_content(user_input, author, llm=None):
     # Extract body from user input
     body = user_input.get("body")
+    if user_input.get('llm') and not llm:
+        llm = user_input.get('llm')
+    if user_input.get('language_model') and not llm:
+        llm = user_input.get('llm')
     # Store body in MongoDB
     result = contents_collection.insert_one({"body": body})
     mongo_id = str(result.inserted_id)
@@ -295,6 +304,7 @@ def create_content(user_input, author):
         author=author,
         mongo_id=mongo_id,
         content_type=content_type,
+        llm=llm
     )
     db.session.add(content)
     db.session.commit()
