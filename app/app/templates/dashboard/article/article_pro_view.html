@@ -104,16 +104,46 @@
     let editor;
 
     ClassicEditor
-        .create(document.querySelector('#text-editor'), {
-            language: "fa",
-            height: 500,
-        })
-        .then(newEditor => {
-            editor = newEditor;
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    .create(document.querySelector('#text-editor'), {
+        language: "fa",
+        height: 500,
+        toolbar: {
+            items: [
+                'heading', '|',
+                'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|',
+                'insertTable', 'tableColumn', 'tableRow', 'mergeTableCells', '|',
+                'mediaEmbed', 'undo', 'redo', '|',
+                'imageUpload', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight', '|',
+                'imageTextAlternative', 'imageStyle:alignCenter', '|',
+                'styles'
+            ]
+        },
+        image: {
+            styles: [
+                'alignLeft', 'full', 'alignRight', 'alignCenter'
+            ],
+            toolbar: [
+                'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight', 'imageStyle:alignCenter', '|',
+                'imageTextAlternative'
+            ]
+        },
+        style: {
+            definitions: [
+                {
+                    name: 'Centered image',
+                    element: 'img',
+                    classes: ['center-image']
+                }
+            ]
+        }
+    })
+    .then(newEditor => {
+        editor = newEditor;
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
 
     $(function () {
         {% if content %}

@@ -217,7 +217,8 @@ def search_resources(topic):
 def get_search_images(topic, num):
     try:
         base_url = os.getenv("WEB_SEARCH_API")
-        search = f"{base_url}?q={topic}&format=json&categories=images"
+        #search = f"{base_url}?q={topic}&format=json&categories=images"
+        search = f"{base_url}?q={topic}&format=json&categories=images&engine=!bi"        
         response = requests.get(search)
         result = response.json()
 

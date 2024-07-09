@@ -46,7 +46,7 @@ def chat(llm_type, messages):
     # print(API_KEY)
     try:
         response = openai_client.chat.completions.create(
-            model=llm_type, messages=messages, temperature=0.8
+            model=llm_type, messages=messages, temperature=0.8,  response_format={ "type": "json_object" }
         )
         result = response.choices[0].message.content
         return result
@@ -307,7 +307,7 @@ def generate_article_pro_body(
             voice_tune,
         )
         
-        body += f"<img src='{image}' style='width: 75%; padding: 10px; border-radius: 5px' />" 
+        body += f"<img src='{image}' width=512 />" 
 
 
         for sub in subs:
@@ -446,7 +446,7 @@ def generate_blog_simple(content_id, user_input):
     task_status = "SUCCESS" if content_id else "FAILURE"
     end_time = datetime.now()
     duration = end_time - start_time
-    logger.info(f'<Content:{content_id}> elapsed time {duration}')
+    logger.info(f'<Content:{content_id}> elapsed time {duration}')  
 
 
     update_job_status(generate_blog_simple.request.id, task_status, duration.seconds)

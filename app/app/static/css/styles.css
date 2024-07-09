@@ -1158,3 +1158,8 @@
 .image-result-item :hover{
 	border: 2px solid rgba(39, 138, 245, 0.51);
 }
+.center-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
