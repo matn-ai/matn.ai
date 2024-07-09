@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy import JSON
-from .. import db, mdb, login_manager, contents_collection
+from .. import db, login_manager
 
 from .business import calculate_charge_rule, calculate_reduce_charge
 

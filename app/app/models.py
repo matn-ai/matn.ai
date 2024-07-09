@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import TEXT
 from flask import current_app, url_for
 from flask_login import UserMixin, AnonymousUserMixin
 from app.exceptions import ValidationError
-from . import db, mdb, login_manager, contents_collection
+from . import db, login_manager
 from markdown import markdown
 from bson import ObjectId
 from .const import content_type_map
@@ -239,7 +239,7 @@ login_manager.anonymous_user = AnonymousUser
 class Content(db.Model):
     __tablename__ = 'contents'
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(TEXT)
+    body = db.Column(db.Text)
     mongo_id = db.Column(db.String(24))
     user_input = db.Column(db.Text)
     system_title = db.Column(db.Text)
@@ -263,8 +263,6 @@ class Content(db.Model):
         db.session.commit()
         return _inputs
     
-    def body(self):
-        return self.get_body_from_mongo()
 
     def get_info(self):
         _inputs = json.loads(self.user_input)
@@ -276,8 +274,6 @@ class Content(db.Model):
             'word_count': to_persian_numerals(self.word_count),
             'content_type': content_type_map[int(_inputs['content_type'])],
             'inputs': self.user_input,
-            # 'body': self.get_body_from_mongo(),
-            # 'outlines': self.outlines,
             'timestamp': created_date,
         }
         return json_content
@@ -285,7 +281,7 @@ class Content(db.Model):
     def to_json(self):
         json_content = {
             'url': url_for('api.get_content', id=self.id),
-            'body': self.get_body_from_mongo(),
+            'body': self.body,
             'outlines': self.outlines,
             'timestamp': self.timestamp,
             'author_url': url_for('api.get_user', id=self.author_id),
@@ -295,10 +291,7 @@ class Content(db.Model):
         return json_content
 
     def get_body_from_mongo(self):
-        if self.mongo_id:
-            document = contents_collection.find_one({'_id': ObjectId(self.mongo_id)})
-            return document['body'] if document else None
-        return None
+        return self.body
 
     @staticmethod
     def from_json(json_content):

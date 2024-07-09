@@ -7,7 +7,7 @@ from redis import StrictRedis
 from openai import OpenAI
 from flask import current_app
 
-from . import app as flask_app, celery_app as celery, db, contents_collection
+from . import app as flask_app, celery_app as celery, db
 from .models import Content, Job
 
 from .finance.models import Charge
@@ -46,9 +46,10 @@ def chat(llm_type, messages):
     # print(API_KEY)
     try:
         response = openai_client.chat.completions.create(
-            model=llm_type, messages=messages, temperature=0.8,  response_format={ "type": "json_object" }
+            model=llm_type, messages=messages, temperature=0.8, response_format={ "type": "json_object" }
         )
         result = response.choices[0].message.content
+        print(response)
         return result
     except Exception as e:
         print(f"Error calling OpenAI API: {str(e)}")
@@ -385,14 +386,11 @@ def generate_article_body(title, outlines, keywords, lang, llm_type):
 
 def save_article_to_db(content_id, body, title, outlines, content_length, model='gpt-4o'):
     with flask_app.app_context():
-        body_document = {"body": body}
-        mongo_result = contents_collection.insert_one(body_document)
-        mongo_id = str(mongo_result.inserted_id)
-
         content = Content.query.get(content_id)
+        
         if content:
             content.word_count = content_length
-            content.mongo_id = mongo_id
+            content.body=body
             content.system_title = title
             content.outlines = str(outlines)
             db.session.add(content)
@@ -425,14 +423,13 @@ def update_job_status(task_id, status, duration=None):
 @celery.task
 def generate_blog_simple(content_id, user_input):
     start_time = datetime.now()
-    logger.info(f'Goint to create blog post for {content_id}')
+    logger.info(f'Going to create blog post for <{content_id}>')
     title = user_input["user_topic"]
     keywords = user_input["tags"].split(",")
     lang = "فارسی" if user_input["lang"] else "English"
     llm = "gpt-3.5-turbo"
     logger.info(f'The LLM is {llm}')
     article_length = user_input["article_length"]
-
     title = generate_title_blog_post(title, lang, article_length, llm)
     logger.info(f'Generated Title: {title}')
     outlines = generate_outlines_blog_post(title, lang, article_length, llm)
