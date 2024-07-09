@@ -8,7 +8,7 @@ from openai import OpenAI
 from flask import current_app
 import docx
 
-from .. import celery_app as celery, db, contents_collection
+from .. import celery_app as celery, db
 
 from ..finance.models import Charge
 from ..finance.business import calculate_reduce_charge

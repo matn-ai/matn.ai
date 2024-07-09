@@ -11,31 +11,12 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_pagedown import PageDown
 from flask_sqlalchemy import SQLAlchemy
-from pymongo import MongoClient
 
 load_dotenv()
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 
-
-mongodb_uri = "mongodb://%s:%s@%s:%s/" % (
-    getenv("MONGO_USER"),
-    getenv("MONGO_PASSWORD"),
-    getenv("MONGO_HOST"),
-    getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
-)
-
-if getenv("USE_LOCAL_MONGO"):
-    mongodb_uri = "mongodb://%s:%s/" % (
-        getenv("MONGO_HOST") if getenv("MONGO_HOST") else 'localhost' ,
-        getenv("MONGO_PORT") if getenv("MONGO_PORT") else '27017',
-    )
-
-
-client = MongoClient(mongodb_uri)
-mdb = client[getenv("MONGO_DB") if getenv("MONGO_DB") else 'app']
-contents_collection = mdb["contents"]
 
 # # Ensure the collection is created (if not exists)
 # if "contents" not in mdb.list_collection_names():

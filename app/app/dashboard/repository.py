@@ -1,7 +1,8 @@
 from flask import send_file
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm import joinedload
 from sqlalchemy import or_
-from .. import db, contents_collection
+from .. import db
 from app.models import Content, Job
 from bson import ObjectId
 import json, requests, os, random, time
@@ -253,12 +254,9 @@ def get_user_contents(user, search_query="", sort_order="desc", page=1, per_page
 def update_content(content_id, user_input):
     try:
         content = Content.query.get_or_404(content_id)
-        mongo_id = content.mongo_id
 
         body = user_input.get("body")
-        contents_collection.update_one(
-            {"_id": ObjectId(mongo_id)}, {"$set": {"body": body}}
-        )
+        content.body = body
 
         content.user_input = json.dumps(user_input)
         content.content_type = user_input.get("content_type")
@@ -279,11 +277,7 @@ def update_content(content_id, user_input):
 def update_article_pro(content_id, body):
     try:
         content = Content.query.get_or_404(content_id)
-        mongo_id = content.mongo_id
-        
-        contents_collection.update_one(
-            {"_id": ObjectId(mongo_id)}, {"$set": {"body": body}}
-        )
+        content.body = body
         db.session.commit()
         
         logger.info(f"Updated pro article content ID {content_id}")
@@ -299,9 +293,6 @@ def update_article_pro(content_id, body):
 def delete_article_pro(content_id):
     try:
         content = Content.query.get_or_404(content_id)
-        mongo_id = content.mongo_id
-
-        contents_collection.delete_one({"_id": ObjectId(mongo_id)})
         db.session.delete(content)
         db.session.commit()
 
@@ -324,29 +315,21 @@ def create_content(user_input, author, llm=None):
     if user_input.get('language_model') and not llm:
         llm = user_input.get('llm')
     # Store body in MongoDB
-    result = contents_collection.insert_one({"body": body})
-    mongo_id = str(result.inserted_id)
-
+    
     content_type = user_input.get("content_type")
 
     # Create SQL content instance
     content = Content(
         user_input=json.dumps(user_input),
         author=author,
-        mongo_id=mongo_id,
         content_type=content_type,
-        llm=llm
+        llm=llm,
+        body=body
     )
     db.session.add(content)
     db.session.commit()
     return content
 
-        logger.info(f"Created new content with ID {content.id}")
-        return content
-    except Exception as e:
-        db.session.rollback()
-        logger.error(f"Error creating new content: {e}")
-        raise e
 
 def create_job_record(job_id, content):
     try:
@@ -363,6 +346,8 @@ def create_job_record(job_id, content):
 
 def get_job_by_id(id):
     try:
+        if not id.isdigit():
+            return None
         job = Job.query.filter_by(id=id).first()
         if job:
             logger.info(f"Fetched job ID: {id}")
@@ -392,11 +377,7 @@ def get_content_info(content_id):
 
 def get_content_by_id(content_id):
     try:
-        content = Content.query.get_or_404(content_id)
-        if content:
-            body_doc = contents_collection.find_one({"_id": ObjectId(content.mongo_id)})
-            content.body = body_doc["body"] if body_doc else None
-            logger.info(f"Fetched content by ID: {content_id}")
+        content = db.session.query(Content).options(joinedload(Content.job)).get(content_id)
         return content
     except Exception as e:
         logger.error(f"Error fetching content by ID {content_id}: {e}")

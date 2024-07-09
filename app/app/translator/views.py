@@ -26,14 +26,13 @@ def translate_to_persian(id=None):
     form = TranslateForm()
     content = None
     translated_text = None
-    just_view = False
+    just_view = None
     if form.validate_on_submit():
         form_data = request.form.to_dict()
         user = current_user
         llm_model = form_data['llm_model']
-        form_data['body'] = form_data['text_to_translate'][:100]
-        form_data['user_topic'] = form_data['text_to_translate'][:100]
-        form_data['system_title'] = form_data['text_to_translate'][:100]
+        form_data['user_topic'] = form_data['text_to_translate']
+        form_data['system_title'] = form_data['text_to_translate']
         form_data['content_type'] = TEXT_TRANSLATION
         content = create_content(user_input=form_data, author=current_user, llm=llm_model)
         job = create_job_record(job_id=uuid.uuid4(), content=content)
@@ -43,11 +42,11 @@ def translate_to_persian(id=None):
         total_words = len(translated_text.split())
         content.body = translated_text
         form.body.data = translated_text
-        content.user_input = form_data['text_to_translate']
         content.word_count = total_words
         content.system_title = form_data['text_to_translate'][:100] + '...'
         job.job_status = 'SUCCESS'
         job.running_duration = 1
+        db.session.add(content)
         db.session.add(job)
         db.session.commit()
         Charge.reduce_user_charge(user_id=user.id,
@@ -63,7 +62,7 @@ def translate_to_persian(id=None):
             return abort(404)
         form.body.data = content.body
         form.text_to_translate.data = content.get_input('text_to_translate')
-        just_view = True
+        just_view = 'True'
 
 
     return render_template(
