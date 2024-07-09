@@ -9,11 +9,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 SECRET_KEY = os.environ.get('SECRET_KEY') or "MBqRysyAhUUETgFTc5XOTPrKYKZTJ0oi"
 
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-    'mysql+pymysql://{username}:{password}@{hostname}:{port}/{databasename}'.format(
+    'postgresql+psycopg2://{username}:{password}@{hostname}:{port}/{databasename}'.format(
         username=os.environ.get('DB_USERNAME', 'root'),
         password=os.environ.get('DB_PASSWORD', '123qwer'),
         hostname=os.environ.get('DB_HOSTNAME', 'localhost'),
-        port=os.environ.get('DB_PORT', '3306'),
+        port=os.environ.get('DB_PORT', '5432'),
         databasename=os.environ.get('DB_NAME', 'app')
     )
 

@@ -2,7 +2,7 @@ from datetime import datetime
 import hashlib, json
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
-from sqlalchemy.dialects.mysql import LONGTEXT
+from sqlalchemy.dialects.postgresql import TEXT
 from flask import current_app, url_for
 from flask_login import UserMixin, AnonymousUserMixin
 from app.exceptions import ValidationError
@@ -239,7 +239,7 @@ login_manager.anonymous_user = AnonymousUser
 class Content(db.Model):
     __tablename__ = 'contents'
     id = db.Column(db.Integer, primary_key=True)
-    # body = db.Column(LONGTEXT)
+    body = db.Column(TEXT)
     mongo_id = db.Column(db.String(24))
     user_input = db.Column(db.Text)
     system_title = db.Column(db.Text)
@@ -254,7 +254,7 @@ class Content(db.Model):
     
     def get_input(self, idx):
         _inputs = json.loads(self.user_input)
-        return _inputs[idx]
+        return _inputs.get(idx)
     
     def set_input(self, update_dict):
         _inputs = json.loads(self.user_input)
