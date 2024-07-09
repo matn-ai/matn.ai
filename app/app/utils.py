@@ -20,7 +20,7 @@ def to_persian_numerals(number):
 
 
 def utils_gre2jalali(date):
-    gregorian_date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S")
+    gregorian_date = date
     jalali_date = jdatetime.datetime.fromgregorian(datetime=gregorian_date)
     # Load Persian month names from jdatetime
     months = jdatetime.datetime.j_months_fa

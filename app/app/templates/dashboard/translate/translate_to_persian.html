@@ -1,1 +1,76 @@
-to-persian
+{% extends "dashboard/dashboard.html" %}
+{% block dashboard %}
+<div class="container centered-form">
+    <div class="form-container shadow p-5 bg-white rounded">
+        <h1 class="text-center mb-4">ترجمه به فارسی</h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    {{ form.text_to_translate.label(class="form-label font-weight-bold") }}
+                    {{ form.text_to_translate(class="form-control") }}
+                </div>
+                <div class="col-md-6 form-group">
+                    {{ form.llm_model.label(class="form-label font-weight-bold") }}
+                    {{ form.llm_model(class="form-control") }}
+                    <div class="form-group text-center mt-3">
+                        {{ form.submit(class="btn btn-primary btn-lg", disabled="disabled" if just_view else "") }}
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+        <div class="rounded card-shadow position-relative p-1 mt-4">
+            <div id="loading-content" class="text-center mr-auto mx-auto"
+                style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
+                <div style="width: 320px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
+                    <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
+                        background="transparent" speed="1" loop autoplay></lottie-player>
+                </div>
+            </div>
+            <div id="text-editor-area">
+                {{ form.body(id="text-editor", class="form-control") }}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class="list-unstyled text-center mt-4">
+            {% for message in messages %}
+                <li class="alert alert-info">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ckeditor.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tagify.min.js') }}"></script>
+
+<script>
+    let editor;
+
+    ClassicEditor
+        .create(document.querySelector('#text-editor'), {
+            language: "fa",
+            height: 500
+        })
+        .then(newEditor => {
+            editor = newEditor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    // Initialize Tagify
+    var input = document.getElementById('tags-input');
+    var tagify = new Tagify(input);
+</script>
+
+{% endblock %}

@@ -99,13 +99,13 @@
       <div class="collapse {{ 'show' if 'translate' in request.path else '' }}" id="ترجمهCollapse">
         <ul class="nav flex-column ms-3">
           <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'dashboard.translate_from_persian' %}active-nav{% endif %}" id="از فارسیLink" href="{{ url_for('dashboard.translate_from_persian') }}">
-              <i class="fas fa-language me-2"></i>از فارسی
+            <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian_file' %}active-nav{% endif %}" id="از فارسیLink" href="{{ url_for('dashboard.translate_to_persian_file') }}">
+              <i class="fas fa-language me-2"></i>ترجمه فایل به فارسی
             </a>
           </li>
           <li class="nav-item">
             <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian' %}active-nav{% endif %}" id="به فارسیLink" href="{{ url_for('dashboard.translate_to_persian') }}">
-              <i class="fas fa-language me-2"></i>به فارسی
+              <i class="fas fa-language me-2"></i>ترجمه متن به فارسی
             </a>
           </li>
         </ul>

@@ -132,6 +132,12 @@ app.jinja_env.filters['convert_seconds_to_min_sec'] = convert_seconds_to_min_sec
 app.jinja_env.filters['to_persian_num'] = to_persian_num
 
 
+app.config['S3_ENDPOINT_URL'] = getenv('S3_ENDPOINT_URL')
+app.config['S3_ACCESS_KEY'] = getenv('S3_ACCESS_KEY')
+app.config['S3_SECRET_KEY'] = getenv('S3_SECRET_KEY')
+app.config['S3_DEFAULT_CONTENT_TYPE'] = getenv('S3_DEFAULT_CONTENT_TYPE', 'application/octet-stream')
+app.config['S3_PRESIGNED_URL_EXPIRATION'] = int(getenv('S3_PRESIGNED_URL_EXPIRATION', 3600))
+
 
 
 

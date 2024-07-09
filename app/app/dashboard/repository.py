@@ -106,6 +106,11 @@ def suggest_outline_images(selected_outline, llm_type="gpt-3.5-turbo"):
         item['head']['images'] = search_images(item['head'])
         
 
+def save_html_to_docx(html_string, file_path):
+    buffer = html_to_docx(html_string)
+    with open(file_path, 'wb') as f:
+        f.write(buffer.read())
+
 def suggest_outlines(user_title, lang, llm_type="gpt-4o"):
     try:
         user_prompt = f"The content language is {lang}\n"
@@ -310,22 +315,31 @@ def delete_article_pro(content_id):
         logger.error(f"Error deleting pro article content ID {content_id}: {e}")
         raise e
 
-def create_content(user_input, author):
-    try:
-        body = user_input.get("body")
-        result = contents_collection.insert_one({"body": body})
-        mongo_id = str(result.inserted_id)
 
-        content_type = user_input.get("content_type")
-        
-        content = Content(
-            user_input=json.dumps(user_input),
-            author=author,
-            mongo_id=mongo_id,
-            content_type=content_type,
-        )
-        db.session.add(content)
-        db.session.commit()
+def create_content(user_input, author, llm=None):
+    # Extract body from user input
+    body = user_input.get("body")
+    if user_input.get('llm') and not llm:
+        llm = user_input.get('llm')
+    if user_input.get('language_model') and not llm:
+        llm = user_input.get('llm')
+    # Store body in MongoDB
+    result = contents_collection.insert_one({"body": body})
+    mongo_id = str(result.inserted_id)
+
+    content_type = user_input.get("content_type")
+
+    # Create SQL content instance
+    content = Content(
+        user_input=json.dumps(user_input),
+        author=author,
+        mongo_id=mongo_id,
+        content_type=content_type,
+        llm=llm
+    )
+    db.session.add(content)
+    db.session.commit()
+    return content
 
         logger.info(f"Created new content with ID {content.id}")
         return content

@@ -26,9 +26,10 @@ import uuid
 from ..utils import utils_gre2jalali
 from .. import app
 
-from logging import getLogger
 
-logger = getLogger(__name__)
+from ..translator.views import *
+
+
 
 @dashboard.route("/", methods=["GET"])
 @login_required
@@ -438,22 +439,14 @@ def idea_brainstorming():
 
 ### TRANSLATE
 
-@dashboard.route("/translate/to-persian", methods=["GET", "POST"])
-@login_required
-def translate_to_persian():
-    try:
-        logger.info(f"User {current_user.id} accessed translate to Persian.")
-        return render_template("dashboard/translate/translate_to_persian.html")
-    except Exception as e:
-        logger.error(f"Error in translate_to_persian route for user {current_user.id}: {e}")
-        return abort(500)
 
-@dashboard.route("/translate/from-persian", methods=["GET", "POST"])
-@login_required
-def translate_from_persian():
-    try:
-        logger.info(f"User {current_user.id} accessed translate from Persian.")
-        return render_template("dashboard/translate/translate_from_persian.html")
-    except Exception as e:
-        logger.error(f"Error in translate_from_persian route for user {current_user.id}: {e}")
-        return abort(500)
+# @dashboard.route("/translate/to-persian", methods=["GET", "POST"])
+# @login_required
+# def translate_to_persian():
+#     return render_template("dashboard/translate/translate_to_persian.html")
+
+
+# @dashboard.route("/translate/from-persian", methods=["GET", "POST"])
+# @login_required
+# def translate_from_persian():
+#     return render_template("dashboard/translate/translate_from_persian.html")

@@ -122,14 +122,15 @@ class Charge(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    content_id = db.Column(db.Integer, db.ForeignKey('contents.id'))
     word_count = db.Column(db.Integer)
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, index=True, default=datetime.now)
     
     
     @classmethod
-    def add_user_charge(cls, user_id, amount):
-        total_words = calculate_charge_rule(amount)
+    def add_user_charge(cls, user_id, toman_amount):
+        total_words = calculate_charge_rule(toman_amount)
         obj = cls(user_id=user_id,
                   word_count=total_words)
         db.session.add(obj)
@@ -137,12 +138,13 @@ class Charge(db.Model):
         return obj
 
     @classmethod
-    def reduce_user_charge(cls, user_id, total_words, model='gpt-3.5'):
+    def reduce_user_charge(cls, user_id, total_words, model='gpt-3.5', content_id=None):
         if total_words < 0:
             total_words = -1 * total_words
         total_words = calculate_reduce_charge(total_words, model=model)
         obj = cls(user_id=user_id,
-                  word_count=total_words * -1)
+                  word_count=total_words * -1,
+                  content_id=content_id)
         db.session.add(obj)
         db.session.commit()
         return obj

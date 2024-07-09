@@ -115,7 +115,15 @@
       case '0':
         url = "{{ url_for('dashboard.article_blog', id='') }}" + contentId;
         break;
+      case '1':
+        url = "{{ url_for('dashboard.article_pro_View', id='') }}" + contentId;
+        break;
       case '2':
+        url = "{{ url_for('dashboard.translate_to_persian_file', id='') }}" + contentId;
+        break;
+      case '3':
+        url = "{{ url_for('dashboard.translate_to_persian', id='') }}" + contentId;
+        break;
       default:
         url = "{{ url_for('dashboard.article_pro_View', id='') }}" + contentId;
         break;
