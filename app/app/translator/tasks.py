@@ -12,8 +12,10 @@ from .. import celery_app as celery, db, contents_collection
 
 from ..finance.models import Charge
 from ..finance.business import calculate_reduce_charge
-from ..models import User, Content
+from ..models import Content, Job
 from ..dashboard.repository import save_html_to_docx, update_article_pro
+
+from ..file_management.models import File, ContentFile
 
 from logging import getLogger
 
@@ -86,9 +88,19 @@ def calculate_estimated_cost(file_path, llm_model, file_type='pdf'):
 
 @celery.task
 def translate_file(content_id, user_input=None):
+    start_time = time.time()
     content = db.session.query(Content).get(content_id)
     file_path = content.get_input('file_path')
+    
+    file_name = content.get_input('file_path').split('/')[-1]
     mimetype = content.get_input('mimetype')
+    logger.info('Going to upload the main file')
+    file = File.upload_file(local_file_path=file_path,
+                     bucket='local',
+                     file_name=file_name,
+                     content_type=mimetype)
+    ContentFile.add_file_for_content(content_id=content.id, file_id=file.id)
+
     llm_model = content.llm
     reader = get_reader(file_type=mimetype)
     usage = 0
@@ -103,17 +115,37 @@ def translate_file(content_id, user_input=None):
         usage += len(translated_text.split())
     logger.info(content.author)
     logger.info(f'For [{file_path}], total usage is {usage} by model {llm_model}')
-    output_path = '.'.join(file_path.split('.')[:-1]) + 'translated.docx'
+    logger.info(f'For [{file_path}], going to upload the file')
+    
+    output_path = '.'.join(file_path.split('.')[:-1]) + '_translated.docx'
     save_html_to_docx(translated_text, output_path)
+    file = File.upload_file(local_file_path=output_path,
+                     bucket='local',
+                     file_name=output_path.split('/')[-1],
+                     content_type=mimetype)
+    ContentFile.add_file_for_content(content_id=content.id, file_id=file.id)
+    logger.info(f'For [{content.id}], file uploaded {file}')
     user = content.author
     content.set_input({'output_path': output_path})
+    logger.info(f'For [{content.id}], updating the mongo data')
     update_article_pro(content_id=content.id, body=output_path)
     charge = Charge.reduce_user_charge(user_id=user.id, 
                               total_words=usage, 
                               model=llm_model,
                               content_id=content.id)
+    content.word_count = usage if usage > 0 else usage * -1
+    content.job
+    db.session.commit()
+    logger.info(f'For [{content.id}], Charge reduced {user.id} amount {charge.word_count}')
+
+    job = Job.query.filter_by(job_id=translate_file.request.id).first()
+    if job:
+        job.job_status = 'SUCCESS'
+        job.running_duration = (time.time() - start_time)
+        db.session.add(job)
+        db.session.commit()
     
-    return {'status': 'success', 
+    return {'status': 'SUCCESS', 
             'content_id': content.id, 
             'type': 'file_translation',
             'output_path': output_path}

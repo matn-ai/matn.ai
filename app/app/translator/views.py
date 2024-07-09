@@ -13,7 +13,7 @@ from ..finance.models import Charge
 from ..models import Job
 from ..dashboard.repository import create_content, create_job_record, update_article_pro
 from .business import persian_translator
-from ..const import FILE_TRANSLATION
+from ..const import FILE_TRANSLATION, TEXT_TRANSACTION
 
 from .tasks import translate_file, calculate_estimated_cost
 
@@ -29,15 +29,26 @@ def translate_to_persian():
         form_data = request.form.to_dict()
         user = current_user
         llm_model = form_data['llm_model']
+        form_data['body'] = form_data['text_to_translate'][:100]
+        form_data['user_topic'] = form_data['text_to_translate'][:100]
+        form_data['system_title'] = form_data['text_to_translate'][:100]
+        form_data['content_type'] = TEXT_TRANSACTION
         content = create_content(user_input=form_data, author=current_user, llm=llm_model)
+        job = create_job_record(job_id=uuid.uuid4(), content=content)
         translated_text, usage = persian_translator(text=form_data['text_to_translate'], 
                                                     llm=llm_model)
         update_article_pro(content_id=content.id, body=translated_text)
         total_words = len(translated_text.split())
         form.body.data = translated_text
+        content.word_count = total_words
+        job.job_status = 'SUCCESS'
+        job.running_duration = 1
+        db.session.add(job)
+        db.session.commit()
         Charge.reduce_user_charge(user_id=user.id,
                                   total_words=total_words,
-                                  model=llm_model)
+                                  model=llm_model,
+                                  content_id=content.id)
 
     else:
         flash('داده‌ها ولید نیستند', 'danger')
@@ -70,6 +81,8 @@ def translate_to_persian_file():
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': translate_file
         }
         form_data['body'] = filename
+        form_data['user_topic'] = filename
+        form_data['system_title'] = filename
         form_data['content_type'] = FILE_TRANSLATION
         form_data['file_path'] = temp_path
         form_data['mimetype'] = uploaded_file.mimetype.strip()
@@ -78,7 +91,7 @@ def translate_to_persian_file():
             content = create_content(user_input=form_data, author=current_user, llm=llm_model)
             job = func.delay(content.id, form_data)
             create_job_record(job_id=job.id, content=content)
-            j_date = utils_gre2jalali(content.job.created_at)
+            # j_date = utils_gre2jalali(content.job.created_at)
             translated_text = 'فایل شما در حال بررسی و ترجمه می‌باشد'
             flash('فایل‌ شما در حال اماده سازیست. بعد از اتمام به شما خبر میدیم')
             # return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
