@@ -44,38 +44,38 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  mongo:
-    image: mongo
-    restart: always
-    env_file:
-      - .env
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-    volumes:
-      - mongo-data:/data/db
-    networks:
-      - backend
+  # mongo:
+  #   image: mongo
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+  #     - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+  #   volumes:
+  #     - mongo-data:/data/db
+  #   networks:
+  #     - backend
 
-  mongo-express:
-    image: mongo-express
-    restart: always
-    env_file:
-      - .env
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_EXPRESS_ADMIN}
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_EXPRESS_PASSWORD}
-      - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017
-      - ME_CONFIG_BASICAUTH=false
-    networks:
-      - backend
+  # mongo-express:
+  #   image: mongo-express
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_EXPRESS_ADMIN}
+  #     - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_EXPRESS_PASSWORD}
+  #     - ME_CONFIG_MONGODB_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017
+  #     - ME_CONFIG_BASICAUTH=false
+  #   networks:
+  #     - backend
 
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.mongo-express.rule=Host(`nh-mongoexpress.tosiehgar.ir`)"
-      - "traefik.http.routers.mongo-express.entrypoints=websecure"
-      - "traefik.http.routers.mongo-express.tls.certresolver=myresolver"
-      - "traefik.http.routers.mongo-express.middlewares=auth"
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.mongo-express.rule=Host(`nh-mongoexpress.tosiehgar.ir`)"
+  #     - "traefik.http.routers.mongo-express.entrypoints=websecure"
+  #     - "traefik.http.routers.mongo-express.tls.certresolver=myresolver"
+  #     - "traefik.http.routers.mongo-express.middlewares=auth"
 
   redis:
     image: redis:alpine
@@ -83,23 +83,39 @@ services:
     networks:
       - backend
 
-  mysql:
-    image: mariadb:11.4.2
-    restart: always
+  postgresql:
+    container_name: postgres
+    image: docker.io/bitnami/postgresql:15.2.0
     volumes:
-      - mysql-data:/var/lib/mysql
-    env_file:
-      - .env
+      - 'postgresql_data:/bitnami/postgresql'
     environment:
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_DATABASE=${DB_NAME}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - 'POSTGRESQL_PASSWORD={DB_PASSWORD}'
+      - 'POSTGRES_DB=${DB_NAME}'
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
+      
     networks:
       - backend
+
+  # mysql:
+  #   image: mariadb:11.4.2
+  #   restart: always
+  #   volumes:
+  #     - mysql-data:/var/lib/mysql
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+  #     - MYSQL_DATABASE=${DB_NAME}
+  #     - MYSQL_PASSWORD=${DB_PASSWORD}
+  #   networks:
+  #     - backend
 
 volumes:
   mongo-data:
   mysql-data:
+  postgresql_data:
+    driver: local
 
 networks:
   backend:
