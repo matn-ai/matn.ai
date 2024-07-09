@@ -127,6 +127,7 @@ class ContentFile(db.Model):
                 default=uuid.uuid4,
                 primary_key=True)
     
+    file = db.relationship('File', backref='content_file', uselist=False)
     content_id = db.Column(db.Integer, db.ForeignKey('contents.id'))
     file_id = Column(UUID(as_uuid=True), db.ForeignKey('files.id'))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
