@@ -1148,3 +1148,18 @@
 {
 	border: none;
 }
+
+
+.image-result-item{
+	cursor: pointer;
+	border: 2px solid rgba(198, 226, 255, 0.51);
+}
+
+.image-result-item :hover{
+	border: 2px solid rgba(39, 138, 245, 0.51);
+}
+.center-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

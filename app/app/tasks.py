@@ -46,7 +46,7 @@ def chat(llm_type, messages):
     # print(API_KEY)
     try:
         response = openai_client.chat.completions.create(
-            model=llm_type, messages=messages, temperature=0.8
+            model=llm_type, messages=messages, temperature=0.8,  response_format={ "type": "json_object" }
         )
         result = response.choices[0].message.content
         return result
@@ -292,11 +292,26 @@ def generate_article_pro_body(
     for outline in outlines:
         head = outline.get("head")
         subs = outline.get("subs", [])
+        image = outline.get("image")
 
-        body += f"<h2>{head}</h2>"
+        body += f"<br/><br/><h2>{head}</h2>"
+
+        body += generate_sections_article_pro(
+            head,
+            main_tag,
+            keywords,
+            lang,
+            language_model,
+            point_ofview,
+            target_audience,
+            voice_tune,
+        )
+        
+        body += f"<img src='{image}' width=512 />" 
+
 
         for sub in subs:
-            body += f"<h3>{sub}</h3>"
+            body += f"<br/><h3>{sub}</h3>"
             section_content = generate_sections_article_pro(
                 sub,
                 main_tag,
@@ -308,6 +323,7 @@ def generate_article_pro_body(
                 voice_tune,
             )
             body += section_content
+            body += "<br/>"
 
     return body
 
@@ -430,7 +446,7 @@ def generate_blog_simple(content_id, user_input):
     task_status = "SUCCESS" if content_id else "FAILURE"
     end_time = datetime.now()
     duration = end_time - start_time
-    logger.info(f'<Content:{content_id}> elapsed time {duration}')
+    logger.info(f'<Content:{content_id}> elapsed time {duration}')  
 
 
     update_job_status(generate_blog_simple.request.id, task_status, duration.seconds)
@@ -448,7 +464,7 @@ def generate_pro_article(content_id, user_input):
     # language_model = user_input["language_model"]
     language_model = 'gpt-4o'
     keywords = user_input["tags"]
-    lang = "فارسی" if user_input["lang"] == "fa" else "English"
+    lang = "فارسی" if user_input["lang"] == "fa" else user_input["lang"]
     # llm = "gpt-4o"
     llm = user_input["language_model"]
     outlines = user_input["outlines"]
@@ -456,16 +472,6 @@ def generate_pro_article(content_id, user_input):
     target_audience = user_input["target_audience"]
     voice_tune = user_input["voice_tune"]
 
-    print(f"{title}\n")
-    print(f"{main_tag}\n")
-    print(f"{language_model}\n")
-    print(f"{keywords}\n")
-    print(f"{lang}\n")
-    print(f"{llm}\n")
-    print(f"{outlines}\n")
-    print(f"{point_ofview}\n")
-    print(f"{target_audience}\n")
-    print(f"{voice_tune}\n")
 
     body = generate_article_pro_body(
         title,
