@@ -313,7 +313,7 @@ def create_content(user_input, author, llm=None):
     if user_input.get('llm') and not llm:
         llm = user_input.get('llm')
     if user_input.get('language_model') and not llm:
-        llm = user_input.get('llm')
+        llm = user_input.get('language_model')
     # Store body in MongoDB
     
     content_type = user_input.get("content_type")

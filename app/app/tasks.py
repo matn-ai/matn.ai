@@ -41,15 +41,17 @@ openai_client = OpenAI(base_url=OPENROUTER_API, api_key=API_KEY)
 redis_client = StrictRedis(host=REDIS_SERVER, port=REDIS_PORT, db=REDIS_DB)
 
 
-def chat(llm_type, messages):
+def chat(llm_type, messages, json_format=None):
     # print(OPENROUTER_API)
     # print(API_KEY)
     try:
         response = openai_client.chat.completions.create(
-            model=llm_type, messages=messages, temperature=0.8, response_format={ "type": "json_object" }
+            model=llm_type, messages=messages, temperature=0.8,
+            response_format={ "type": "json_object" } if json_format else None
         )
         result = response.choices[0].message.content
-        print(response)
+        if json_format:
+            return json.loads(result.replace('json', ''))
         return result
     except Exception as e:
         print(f"Error calling OpenAI API: {str(e)}")
@@ -98,137 +100,177 @@ def generate_title_blog_post(user_title, lang, article_length, llm_type):
             f"Ensure the title is compelling, accurately reflects the content, and incorporates relevant keywords to attract the target audience.\n"
             f"The title should be concise, attention-grabbing, and encourage readers to click and read the post.\n"
         )
-    user_prompt += f"Only return title. \n"
 
-    assistant_prompt = (
-        "You write SEO-optimized titles for articles. Ensure correct grammar. "
-        "Only return the title.\n"
-    )
+    assistant_prompt = '''
+        You write SEO-optimized titles for articles. Ensure correct grammar
+        Just return the json string! Do not include anything else
+        ```json_schema = {
+			"type": "object",
+			"properties": {
+				"title": {
+					"type": "string", 
+					"description": "SEO-optimized title for articles in correct grammar."
+     			}
+     		}
+     	}```
+    '''
 
     messages = [
         {"role": "assistant", "content": assistant_prompt},
         {"role": "user", "content": user_prompt},
     ]
-    return chat(llm_type, messages)
+    result = chat(llm_type, messages, json_format=True)
+    return result['title']
+
+
+def best_suitable_blog_size(user_title, lang, article_length, llm_type):
+    user_prompt = f"""For the topic ```{user_title}``` in language ```{lang}``` what is the best number of headlines and number of words?
+    I want the article be {article_length} 
+    """
+    assistant_prompt = """
+	You are a professional SEO-optimized blog writer, who knows about the google/bing algorithm.
+    Just return the json string! Do not include anything else
+	```json_schema = {
+		"type": "object",
+		"properties": {
+			"type": "object",
+			"properties": {
+				"total_words": {
+					"type": "number", 
+					"description": "The whole article total words"
+				},
+				"headline_numbers": {
+					"type": "number", 
+					"description": "number of headlines for given topic and number of words"
+					}
+				}
+		}```
+    """
+    messages = [
+        {"role": "assistant", "content": assistant_prompt},
+        {"role": "user", "content": user_prompt},
+    ]
+    result = chat(llm_type, messages, json_format=True)
+    return result
 
 
 def generate_outlines_blog_post(user_title, lang, article_length, llm_type):
     # print(article_length)
     # print("*"*10)
-    user_prompt = f"The content language is {lang}\n"
-    user_prompt += f"Use numbering for list. \n"
-    if article_length == "long":
-        random.seed(int(time.time()))
-        rand = random.randint(13, 15)
-        user_prompt += (
-            f"Generate a detailed outline for a blog post on the following topic: {user_title}.\n"
-            f"The outline should include an introduction, {rand} main headline and no sub headline , and a conclusion.\n"
-            f"Ensure each section flows logically and covers the topic comprehensively.\n"
-        )
-    else:
-        random.seed(int(time.time()))
-        rand = random.randint(3, 5)
-        user_prompt += (
-            f"Generate a concise outline for a short blog post on the following topic: {user_title}\n"
-            f"The outline should include an introduction, {rand} main headline and no sub headline , and a conclusion.\n"
-            f"Ensure each section is relevant to the topic and provides essential information without unnecessary detail. \n"
-        )
+	optimized_numbers = best_suitable_blog_size(user_title, lang, article_length, llm_type)
+	user_prompt = f"The content language is {lang}\n"
+	user_prompt += f"Use numbering for list. \n"
+	headline_numbers = optimized_numbers['headline_numbers']	
+	user_prompt += (
+		f"Generate a concise outline for a short blog post on the following topic: {user_title}\n"
+		f"The outline should include an introduction, {headline_numbers} main headline and no sub headline , and a conclusion.\n"
+		f"Ensure each section is relevant to the topic and provides essential information without unnecessary detail. \n"
+	)
 
-    assistant_prompt = (
-        "You write SEO-optimized blog posts's title. Ensure correct grammar. "
-        "Only return the outlines and in HTML ( h1, h2 , h3 , h4 ) tags.\n"
-    )
+	assistant_prompt = '''You are a professional SEO-optimized blog writer, who knows about the google/bing algorithm.
+ Just return the json string! Do not include anything else
+ ```json_schema = {
+	"type": "object",
+	"properties": {
+		"headlines": {
+			"type": "array",
+			"description": "Headlines for given topic/title. The headlines must cover the topic idea comprehensively.",
+			"items": {
+				"type": "object", 
+				"description": "a headline data",
+				"required": ["html_tag", "text",
+						"level", "ordering"],
+				"properties": {
+					"html_tag": {
+						"type": "string", 
+						"enum": ["h1", "h2" , "h3" , "h4"],
+						"description": "headline html tag based on its level on text"
+					},
+					"text": {
+						"type": "string",
+						"description": "The headline text"
+					},
+					"level": {
+						"type": "number",
+						"description": "The headline level based on its parent. 1 means it is parent"
+					},
+					"ordering": {
+						"type": "number",
+						"description": "The headline order in the text."
+					},
+					"paragraph_words": {
+						"type": "number",
+						"description": "The number of words that can be written in under this headline for this topic"
+					}
+				}
+			}
+		}
+	}
+}```
+ '''
 
-    messages = [
-        {"role": "assistant", "content": assistant_prompt},
-        {"role": "user", "content": user_prompt},
-    ]
-    return chat(llm_type, messages)
-
-
-def generate_outlines(user_title, lang, llm_type):
-    user_prompt = (
-        f"Create a comprehensive outline for a blog post about {user_title}. "
-        "The outline should include a title, a clear introduction with a hook and overview, several main points with subpoints "
-        "for each section, and a strong conclusion that summarizes the post and provides actionable advice or insights. "
-        "Ensure the outline flows logically and is designed to engage and inform readers."
-        f"The content language is {lang}\nUse numbering for list\n"
-    )
-    assistant_prompt = (
-        "You write SEO-optimized blog posts. Ensure correct grammar. "
-        "Only return the outlines and in HTML (h2 and h3).\n"
-    )
-
-    messages = [
-        {"role": "assistant", "content": assistant_prompt},
-        {"role": "user", "content": user_prompt},
-    ]
-    return chat(llm_type, messages)
+	messages = [
+		{"role": "assistant", "content": assistant_prompt},
+		{"role": "user", "content": user_prompt},
+	]
+	return chat(llm_type, messages, json_format=True)
 
 
 def generate_blog_post_sections(
-    headline_text, outlines, keywords, lang, length, llm_type
+    headline, outlines, keywords, lang, length, llm_type
 ):
-    if length == "short":
-        prompt = (
-            f"Write few paragraphs for the section titled '{headline_text}' of a blog post. \n"
-            f"Write a section of a short blog post that provides practical tips for improving productivity.\n"
-            f"The section should be engaging, informative, and concise, suitable for a broad audience. It should include actionable advice and real-life examples to illustrate the points.\n"
-            f"You are writing part of an article with outlines: {outlines}\n"
-            f"Do not include an introduction or conclusion. Focus exclusively on expanding and explaining '{headline_text}'. \n"
-            f"The response should be formatted in HTML using <p> tags for each paragraph. Ensure that the writing is free from stereotypes. \n"
-            f"Use correct grammar and maintain a professional tone suitable for the blog's target audience. \n"
-        )
-    else:
-        prompt = (
-            f"Write detailed paragraphs for the section titled '{headline_text}' of a blog post. \n"
-            f"The content should be well-researched, engaging, and informative. \n"
-            f"You are writing part of an article with outlines: {outlines}\n"
-            f"Do not include an introduction or conclusion. Focus exclusively on expanding and explaining '{headline_text}'. \n"
-            f"The response should be formatted in HTML using <p> tags for each paragraph. Ensure that the writing is free from stereotypes. \n"
-            f"Use correct grammar and maintain a professional tone suitable for the blog's target audience.\n"
-        )
+	headline_text = headline['text']
+	headline_word_count = headline['paragraph_words']
+	avoid_list = [
+		"در نهایت",
+		"به طوری کلی",
+		"بنابراین",
+		"همچنین",
+	]
+	json_schema = '''
+ Just return the json string! Do not include anything else
+	```json_schema = {
+	"type": "object",
+	"properties": {
+		"section_text": {
+			"type": "string", 
+			"description": "The section text in %s words for given outlines with <p> html tag like <p> [text here] </p> <p> [text here] </p><p> [text here] </p>"
+		}
+	}
+}```
+''' % (headline_word_count)
 
-    avoid_list = [
-        "در نهایت",
-        "به طوری کلی",
-        "بنابراین",
-        "همچنین",
-    ]
+	prompt = (
+		f"Write few paragraphs for the section titled '{headline_text}' of a blog post. \n"
+		f"The content should be well-researched, engaging, and informative. \n"
+		f"The section should be engaging, informative, and concise, suitable for a broad audience. It should include actionable advice and real-life examples to illustrate the points.\n"
+		f"You are writing part of an article with outlines: {outlines}\n"
+		f"Do not include an introduction or conclusion. Focus exclusively on expanding and explaining '{headline_text}'. \n"
+		f"Avoid writing a paragraph or sentence related to the summary of the text or words like at the end or similar like below:\n"
+		f"Avoid finish the paragraph with {' and '.join(avoid_list)}\n"
+	)
 
-    prompt += f"The content language is {lang}. \n"
-    prompt += f"Ensure correct grammar. Return the result in HTML with only <p> tags."
-    prompt += f"Avoid writing a paragraph or sentence related to the summary of the text or words like at the end or similar like below:\n"
-    prompt += f"Avoid finish the paragraph with {' and '.join(avoid_list)}\n"
-    prompt += f"\nDo not include the headline title again.\n"
-    prompt += f"Like: <p> [text here] </p> <p> [text here] </p><p> [text here] </p>\n"
-
-    # [{\"value\":\"\u06a9\u0627\u0634\u062a\u0646 \u0628\u0644\u0648\u0628\u0631\u06cc\"},{\"value\":\"\u062f\u0631\u062e\u062a\"},{\"value\":\"\u062a\u0631\"}]
-    # print(keywords)
-    # print(type(keywords))
-    # print("*"*90)
-    if keywords:
-        for item in keywords:
-            item = str(item).replace("[", " ")
-            item = str(item).replace("]", " ")
-            _keywords = json.loads(item.strip())
-            prompt += f"Use the following keyword if relevant: {_keywords['value']}\n"
-
-    assistant_prompt = (
-        f"Your language is {lang}. You are an SEO-optimized blog post writer. "
-        f"Ensure correct grammar. Return the result in HTML with <p> tags."
-        f"Do not include the headline title again.\n"
-    )
-
-    messages = [
-        {"role": "assistant", "content": assistant_prompt},
-        {"role": "user", "content": prompt},
-    ]
-
-    return chat(llm_type, messages)
+	if keywords:
+		for item in keywords:
+			item = str(item).replace("[", " ")
+			item = str(item).replace("]", " ")
+			_keywords = json.loads(item.strip())
+			prompt += f"Use the following keyword if relevant: {_keywords['value']}\n"
 
 
-['[{"value":"کاشت درخت سیب"}', '{"value":"درخت آلبالو"}]']
+	assistant_prompt = (
+		f"Your language is {lang}. You are an SEO-optimized blog post writer. "
+		f"Ensure correct grammar. Return the result in HTML with <p> tags."
+		f"Do not include the headline title again.\n"
+	)
+	assistant_prompt += json_schema
+
+	messages = [
+		{"role": "assistant", "content": assistant_prompt},
+		{"role": "user", "content": prompt},
+	]
+	result = chat(llm_type, messages, json_format=True)
+	return result['section_text']
 
 
 def generate_sections(headline_text, outlines, keywords, lang, llm_type):
@@ -259,21 +301,19 @@ def generate_sections(headline_text, outlines, keywords, lang, llm_type):
 
 
 def generate_blog_post_body(title, outlines, keywords, lang, length, llm_type):
-    soup = BeautifulSoup(outlines, "html.parser")
-    headlines_elements = soup.find_all(["h2", "h3", "h4", "h5", "h6"])
 
-    outlines_text = "\n".join(map(str, headlines_elements))
-    toc = "".join(map(str, headlines_elements))
+	headlines_elements = outlines['headlines']
+	outlines_text = '\n'.join([ot['text'] for ot in headlines_elements])
+	inside = ""
+	for headline_element in headlines_elements:
+		tag = headline_element['html_tag']
+		logger.info('Getting data for {}. {}'.format(headline_element['ordering'], headline_element['text']))
+		inside += f"<br/><{tag}>{headline_element['text']}</{tag}>"
+		inside += generate_blog_post_sections(
+			headline_element, outlines_text, keywords, lang, length, llm_type
+		)
 
-    inside = ""
-    for headline_element in headlines_elements:
-        headline_text = headline_element.get_text()
-        inside += f"<br/>{str(headline_element)}"
-        inside += generate_blog_post_sections(
-            headline_text, outlines_text, keywords, lang, length, llm_type
-        )
-
-    return f"<h1>{title}</h1><br/>{inside}"
+	return f"<h1>{title}</h1><br/>{inside}"
 
 
 def generate_article_pro_body(
@@ -290,12 +330,14 @@ def generate_article_pro_body(
 
     body = f"<h1>{title}</h1>"
 
+
     for outline in outlines:
         head = outline.get("head")
         subs = outline.get("subs", [])
         image = outline.get("image")
 
         body += f"<br/><br/><h2>{head}</h2>"
+        logger.info(f'Creating section body -> {head} [{main_tag}] ({point_ofview})/{target_audience} [{voice_tune}]')
 
         body += generate_sections_article_pro(
             head,
@@ -313,6 +355,7 @@ def generate_article_pro_body(
 
         for sub in subs:
             body += f"<br/><h3>{sub}</h3>"
+            logger.info(f'Creating section body -> {sub}')
             section_content = generate_sections_article_pro(
                 sub,
                 main_tag,
@@ -343,7 +386,7 @@ def generate_sections_article_pro(
         f"Write detailed paragraphs for the section titled '{sub_heading}' of a professional article. "
         f"The content should be well-researched, engaging, and informative. "
         f"The content language is {lang}. Use the '{point_ofview}' point of view, and target audience as '{target_audience}'. "
-        f"Make sure to maintain a '{voice_tune}' tone throughout the text.\n"
+        f"Make sure to maintain a '{voice_tune}' tune throughout the text.\n"
     )
 
     if keywords:
@@ -352,17 +395,35 @@ def generate_sections_article_pro(
     if main_tag:
         prompt += f"Make sure to include the main tag: {main_tag}.\n"
 
+    json_schema = '''
+    ** Just return the json string! Do not include anything else! Do not write json **
+    return result in json without any text around it:
+        ```json_schema = {
+        "type": "object",
+        "properties": {
+            "text": {
+                "type": "string", 
+                "description": "The paragraphs text for given title, point of view and tune with <p> html tag like <p> [text here] </p> <p> [text here] </p><p> [text here] </p>"
+            }
+        }
+        }```
+'''
+
     assistant_prompt = (
         f"You are an SEO-optimized professional article writer. Ensure correct grammar. "
         f"Return the result in HTML with <p> tags. Do not include the heading title again.\n"
     )
+    assistant_prompt += json_schema
 
     messages = [
         {"role": "assistant", "content": assistant_prompt},
         {"role": "user", "content": prompt},
     ]
-
-    return chat(language_model, messages)
+    print(language_model)
+    print(messages)
+    result = chat(language_model, messages, json_format=True)
+    logger.info(f'Result of generate_sections_article_pro text {result}')
+    return result['text']
 
 
 def generate_article_body(title, outlines, keywords, lang, llm_type):
@@ -393,6 +454,7 @@ def save_article_to_db(content_id, body, title, outlines, content_length, model=
             content.body=body
             content.system_title = title
             content.outlines = str(outlines)
+            content.llm = model
             db.session.add(content)
             db.session.commit()
             
@@ -420,7 +482,7 @@ def update_job_status(task_id, status, duration=None):
         db.session.commit()
 
 
-@celery.task
+@celery.task(retry_kwargs={'max_retries': 2})
 def generate_blog_simple(content_id, user_input):
     start_time = datetime.now()
     logger.info(f'Going to create blog post for <{content_id}>')
@@ -451,7 +513,7 @@ def generate_blog_simple(content_id, user_input):
     return content_id
 
 
-@celery.task
+@celery.task(retry_kwargs={'max_retries': 3})
 def generate_pro_article(content_id, user_input):
     start_time = datetime.now()
 
@@ -459,11 +521,9 @@ def generate_pro_article(content_id, user_input):
 
     main_tag = user_input["main_tag"]
     # language_model = user_input["language_model"]
-    language_model = 'gpt-4o'
+    language_model = user_input["language_model"]
     keywords = user_input["tags"]
     lang = "فارسی" if user_input["lang"] == "fa" else user_input["lang"]
-    # llm = "gpt-4o"
-    llm = user_input["language_model"]
     outlines = user_input["outlines"]
     point_ofview = user_input["point_ofview"]
     target_audience = user_input["target_audience"]
@@ -484,7 +544,7 @@ def generate_pro_article(content_id, user_input):
 
 
     content_length = len(body.split())
-    content_id = save_article_to_db(content_id, body, title, outlines, content_length, model=llm)
+    content_id = save_article_to_db(content_id, body, title, outlines, content_length, model=language_model)
 
     task_status = "SUCCESS" if content_id else "FAILURE"
     end_time = datetime.now()

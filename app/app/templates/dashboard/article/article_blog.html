@@ -20,7 +20,7 @@
                         <input type="radio" class="btn-check" id="{{ subfield.id }}" name="{{ subfield.name }}"
                             value="{{ subfield.data }}" {% if subfield.checked %} checked {% endif %}>
                         <label class="btn btn-outline-primary" for="{{ subfield.id }}" data-toggle="tooltip"
-                            title="{% if subfield.data == 'long' %}۴۰۰۰ تا ۵۰۰۰ کلمه{% else %}تا ۴۰۰۰ کلمه{% endif %}">
+                            title="{% if subfield.data == 'long' %}۱۵۰۰ تا ۲۰۰۰ کلمه{% else %}تا ۱۵۰۰ کلمه{% endif %}">
                             {{ subfield.label.text }}
                         </label>
                         {% endfor %}
@@ -37,6 +37,7 @@
                     {{ form.tags(size=40, id="tags-input", class="form-control") }}
                     <div class="form-text">پس از وارد کردن هر کلمه Enter بزنید.</div>
                 </div>
+                <div class="form-text d-inline-flex mb-3 px-2 py-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2"><p>هزینه استفاده از مقاله بلاگ ۲ کلمه به ازای هر کلمه خروجی است</p></div>
                 <div class="form-group text-center mt-4">
                     {{ form.submit(class="btn btn-primary text-white w-50", id="submit-form") }}
                 </div>
