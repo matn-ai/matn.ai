@@ -88,7 +88,7 @@ def calculate_estimated_cost(file_path, llm_model, file_type='pdf'):
 
 @celery.task
 def translate_file(content_id, user_input=None):
-    logger.info(f'Going to translate {content_id}')
+    logger.info(f'Going to translate <content {content_id}>')
     start_time = time.time()
     content = db.session.query(Content).get(content_id)
     file_path = content.get_input('file_path')
@@ -108,17 +108,22 @@ def translate_file(content_id, user_input=None):
     token_usage = 0
     translated_texts = []
     logger.info(f'Going to translate [{file_path}]')
+    page = 0
     for text in reader(file_path=file_path): 
+        logger.info(f'Going to translate page {page}')
         translated_text, local_usage = persian_translator(text=text, llm=llm_model)
-        # translated_text, local_usage = 'hi', 0
+        logger.info(f'translated text {translated_text}')
         token_usage += local_usage.total_tokens
         translated_texts.append([text, translated_text])
         usage += len(translated_text.split())
+        page += 1
     logger.info(content.author)
     logger.info(f'For [{file_path}], total usage is {usage} by model {llm_model}')
     logger.info(f'For [{file_path}], going to upload the file')
     
     output_path = '.'.join(file_path.split('.')[:-1]) + '_translated.docx'
+    translated_text = '<br>'.join([t[1] for t in translated_texts])
+    print(translated_text)
     save_html_to_docx(translated_text, output_path)
     file = File.upload_file(local_file_path=output_path,
                      bucket='local',
@@ -127,6 +132,7 @@ def translate_file(content_id, user_input=None):
     ContentFile.add_file_for_content(content_id=content.id, file_id=file.id)
     logger.info(f'For [{content.id}], file uploaded {file}')
     user = content.author
+    content.body = translated_text
     content.set_input({'output_path': output_path})
     logger.info(f'For [{content.id}], updating the mongo data')
     update_article_pro(content_id=content.id, body=output_path)
@@ -137,8 +143,11 @@ def translate_file(content_id, user_input=None):
     content.word_count = usage if usage > 0 else usage * -1
     content.system_title = 'ترجمه فایل: ' + file_name
     content.job
+    content.set_input({'token_usage': token_usage})
     db.session.commit()
     logger.info(f'For [{content.id}], Charge reduced {user.id} amount {charge.word_count}')
+    with open(output_path.replace('docx', 'html'), 'w') as f:
+        f.write(translated_text)
 
     job = Job.query.filter_by(job_id=translate_file.request.id).first()
     if job:

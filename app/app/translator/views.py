@@ -93,8 +93,7 @@ def translate_to_persian_file(id=None):
         flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
     if form.validate_on_submit():
         form_data = request.form.to_dict()
-        
-        db.session.expunge(user)
+
         llm_model = form_data['llm_model']
         uploaded_file = request.files['file']
         
