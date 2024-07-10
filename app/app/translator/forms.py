@@ -11,7 +11,7 @@ from ..const import (
 
 LLM_MODEL_CHOICES = [
     ('claude-3-haiku', 'Haiku - مدل ضعیف - هزینه ۱ کلمه'),
-    ('gpt-3.5-turbo', 'GPT 3.5 - مدل معمولی - هزینه ۲ کلمه'),
+    ('gpt-3.5-turbo', 'GPT 3.5 - مدل معمولی - هزینه ۱ کلمه'),
     ('claude-3.5-sonnet', 'Sonnet 3.5 - مدل قدرتمند - هزینه ۴ کلمه'),
     ('gpt-4o', 'GPT 4o - مدل قدرتمند - هزینه ۵ کلمه'),
     

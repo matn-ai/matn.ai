@@ -411,19 +411,19 @@ def generate_sections_article_pro(
 
     assistant_prompt = (
         f"You are an SEO-optimized professional article writer. Ensure correct grammar. "
-        f"Return the result in HTML with <p> tags. Do not include the heading title again.\n"
+        f"Return the result in HTML with <p> tags. Do not include the heading title again or any extra information.\n"
     )
-    assistant_prompt += json_schema
+    # assistant_prompt += json_schema
 
     messages = [
         {"role": "assistant", "content": assistant_prompt},
         {"role": "user", "content": prompt},
     ]
-    print(language_model)
-    print(messages)
-    result = chat(language_model, messages, json_format=True)
+
+    result = chat(language_model, messages, json_format=False)
     logger.info(f'Result of generate_sections_article_pro text {result}')
-    return result['text']
+    # return result['text]
+    return result
 
 
 def generate_article_body(title, outlines, keywords, lang, llm_type):

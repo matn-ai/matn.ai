@@ -38,7 +38,8 @@ def index():
     sort_order = request.args.get("sort", "desc")
     page = request.args.get("page", 1, type=int)
     per_page = 8
-
+    if user.remain_charge < 0:
+        flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
     logger.info(f"User {current_user.id} requested dashboard index with query '{search_query}' and sort order '{sort_order}' on page '{page}'.")
 
     user_contents = get_user_contents(
@@ -98,16 +99,24 @@ def index():
 def article_blog(id=None):
     form = GenerateArticleBlog()
     content = None
-    if form.validate_on_submit():
+    not_enough_charge = False
+    if current_user.remain_charge < 0:
+        flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+        not_enough_charge = True
+    if form.validate_on_submit() and not not_enough_charge:
         form_data = request.form.to_dict()
-        content = create_content(user_input=form_data, author=current_user)
-        job = generate_blog_simple.delay(content.id, form_data)
-        create_job_record(job_id=job.id, content=content)
-        j_date = utils_gre2jalali(content.job.created_at)
+        total_words = 600 if form_data['article_length'] == 'short' else 1300
+        if current_user.remain_charge < total_words:
+            flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید')
+        else:
+            content = create_content(user_input=form_data, author=current_user)
+            job = generate_blog_simple.delay(content.id, form_data)
+            create_job_record(job_id=job.id, content=content)
+            j_date = utils_gre2jalali(content.job.created_at)
 
-        logger.info(f"User {current_user.id} created new blog article with content ID {content.id} and job ID {job.id}.")
+            logger.info(f"User {current_user.id} created new blog article with content ID {content.id} and job ID {job.id}.")
 
-        return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
+            return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
 
     if request.method == "GET" and id:
         content = get_content_by_id(id)
@@ -125,7 +134,7 @@ def article_blog(id=None):
         logger.info(f"User {current_user.id} accessed blog article with content ID {id}.")
 
     return render_template(
-        "dashboard/article/article_blog.html", form=form, content=content
+        "dashboard/article/article_blog.html", form=form, content=content, not_enough_charge=not_enough_charge
     )
 
 @dashboard.route("/article/pro/create", methods=["POST"])
