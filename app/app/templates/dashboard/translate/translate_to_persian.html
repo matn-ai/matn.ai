@@ -1,6 +1,14 @@
 {% extends "dashboard/dashboard.html" %}
 {% block dashboard %}
-<div class="container centered-form">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="list-unstyled text-center mt-4">
+                {% for message in messages %}
+                    <li class="alert alert-info {{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <div class="form-container shadow p-5 bg-white rounded">
         <h1 class="text-center mb-4">ترجمه به فارسی</h1>
         <form method="POST">
@@ -37,15 +45,7 @@
     </div>
 </div>
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul class="list-unstyled text-center mt-4">
-            {% for message in messages %}
-                <li class="alert alert-info">{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
