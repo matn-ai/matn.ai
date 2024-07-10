@@ -19,7 +19,7 @@ LLM_MODEL_CHOICES = [
 
 class TranslateForm(FlaskForm):
     text_to_translate = TextAreaField('متنی که میخواهید به فارسی ترجمه کنید', validators=[DataRequired(), Length(1, 5000)])
-    llm_model = SelectField('مدل انتخابی ترجمه', choices=LLM_MODEL_CHOICES, validators=[DataRequired()])
+    llm_model = SelectField('مدل انتخابی ترجمه', choices=LLM_MODEL_CHOICES,)
     body = TextAreaField('محتوا')
     submit = SubmitField('ترجمه کن!')
     
@@ -28,6 +28,6 @@ class TranslateForm(FlaskForm):
 class FileTranslateForm(FlaskForm):
     file = FileField('فایل مورد نظر: pdf, word, docx, srt', validators=[DataRequired()])
     llm_model = SelectField('مدل انتخابی ترجمه', choices=LLM_MODEL_CHOICES, validators=[DataRequired()])
-    submit = SubmitField('Get Estimate Cost')
-    start_translation = SubmitField('Start Translation')
+    submit = SubmitField('تخمین هزینه')
+    start_translation = SubmitField('شروع ترجمه')
     confirm = HiddenField(default='no')

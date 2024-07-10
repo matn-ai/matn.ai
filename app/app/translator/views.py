@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, abort, request, url_for, send_file, flash
+from flask import render_template, jsonify, abort, request, url_for, send_file, flash, redirect
 from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
 from app.translator.forms import TranslateForm, FileTranslateForm
@@ -30,6 +30,8 @@ def translate_to_persian(id=None):
     just_view = None
     if user.remain_charge < 0:
         flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+        redirect(url_for('finance.create_pay'))
+        
     if form.validate_on_submit():
         form_data = request.form.to_dict()
 
@@ -37,30 +39,25 @@ def translate_to_persian(id=None):
         form_data['user_topic'] = form_data['text_to_translate']
         form_data['system_title'] = form_data['text_to_translate']
         form_data['content_type'] = TEXT_TRANSLATION
-        total_words = calculate_reduce_charge(len(form_data['text_to_translate'].split()), 'gpt-3.5-turbo')
-        if user.remain_charge < total_words * 1.5:
-            flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید')
-            
-        else:
-            content = create_content(user_input=form_data, author=current_user, llm=llm_model)
-            job = create_job_record(job_id=uuid.uuid4(), content=content)
-            translated_text, usage = persian_translator(text=form_data['text_to_translate'], 
-                                                        llm=llm_model)
-            update_article_pro(content_id=content.id, body=translated_text)
-            total_words = len(translated_text.split())
-            content.body = translated_text
-            form.body.data = translated_text
-            content.word_count = total_words
-            content.system_title = form_data['text_to_translate'][:100] + '...'
-            job.job_status = 'SUCCESS'
-            job.running_duration = 1
-            db.session.add(content)
-            db.session.add(job)
-            db.session.commit()
-            Charge.reduce_user_charge(user_id=user.id,
-                                    total_words=total_words,
-                                    model=llm_model,
-                                    content_id=content.id)
+        content = create_content(user_input=form_data, author=current_user, llm=llm_model)
+        job = create_job_record(job_id=uuid.uuid4(), content=content)
+        translated_text, usage = persian_translator(text=form_data['text_to_translate'], 
+                                                    llm=llm_model)
+        update_article_pro(content_id=content.id, body=translated_text)
+        total_words = len(translated_text.split())
+        content.body = translated_text
+        form.body.data = translated_text
+        content.word_count = total_words
+        content.system_title = form_data['text_to_translate'][:100] + '...'
+        job.job_status = 'SUCCESS'
+        job.running_duration = 1
+        db.session.add(content)
+        db.session.add(job)
+        db.session.commit()
+        Charge.reduce_user_charge(user_id=user.id,
+                                  total_words=total_words,
+                                  model=llm_model,
+                                  content_id=content.id)
 
 
     if request.method == "GET" and id:
@@ -88,9 +85,8 @@ def translate_to_persian(id=None):
 def translate_to_persian_file(id=None):
     form = FileTranslateForm()
     user = current_user
+    content = None
     translated_data = None
-    if user.remain_charge < 0:
-        flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
     if form.validate_on_submit():
         form_data = request.form.to_dict()
 
@@ -104,24 +100,20 @@ def translate_to_persian_file(id=None):
             'application/pdf': translate_file,
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': translate_file
         }
-        estimated_cost_value = calculate_estimated_cost(temp_path, llm_model, file_type=uploaded_file.mimetype)
-        if user.remain_charge < estimated_cost_value:
-            flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید')
-        else:
-            form_data['body'] = filename
-            form_data['user_topic'] = filename
-            form_data['system_title'] = filename
-            form_data['content_type'] = FILE_TRANSLATION
-            form_data['file_path'] = temp_path
-            form_data['mimetype'] = uploaded_file.mimetype.strip()
-            if uploaded_file.mimetype.strip() in supported_file_formats:
-                func = supported_file_formats[uploaded_file.mimetype.strip()]
-                content = create_content(user_input=form_data, author=current_user, llm=llm_model)
-                job = func.delay(content.id, form_data)
-                create_job_record(job_id=job.id, content=content)
-                # j_date = utils_gre2jalali(content.job.created_at)
-                flash('فایل‌ شما در حال اماده سازیست. بعد از اتمام به شما خبر میدیم')
-                # return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
+        form_data['body'] = filename
+        form_data['user_topic'] = filename
+        form_data['system_title'] = filename
+        form_data['content_type'] = FILE_TRANSLATION
+        form_data['file_path'] = temp_path
+        form_data['mimetype'] = uploaded_file.mimetype.strip()
+        if uploaded_file.mimetype.strip() in supported_file_formats:
+            func = supported_file_formats[uploaded_file.mimetype.strip()]
+            content = create_content(user_input=form_data, author=current_user, llm=llm_model)
+            job = func.delay(content.id, form_data)
+            create_job_record(job_id=job.id, content=content)
+            # j_date = utils_gre2jalali(content.job.created_at)
+            flash('فایل‌ شما در حال اماده سازیست. بعد از اتمام به شما خبر میدیم')
+            # return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
 
     if request.method == "GET" and id:
         logger.info('going to show translation file page')
@@ -140,10 +132,11 @@ def translate_to_persian_file(id=None):
             
         
         # translated_text = '\n\n'.join([txt[1] for txt in translated_texts])
-    print(translated_data)
+    #print(translated_data)
     return render_template("dashboard/translate/translate_to_persian_file.html",
                            form=form, 
                            translated_data=translated_data,
+                           content=content
                            )
     
 
