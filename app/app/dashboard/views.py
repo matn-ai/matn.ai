@@ -38,7 +38,7 @@ def index():
     sort_order = request.args.get("sort", "desc")
     page = request.args.get("page", 1, type=int)
     per_page = 8
-    if user.remain_charge < 0:
+    if current_user.remain_charge < 0:
         flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
     logger.info(f"User {current_user.id} requested dashboard index with query '{search_query}' and sort order '{sort_order}' on page '{page}'.")
 
