@@ -45,15 +45,39 @@
         }
     </style>
     <div class="row">
-        <div class="col-12 mr-auto mx-auto">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h4>ترجمه متن به فارسی</h4>
+        <div class="col-12 mr-auto mx-auto mb-3">
+            <div class="d-flex">
+                <div class="p-2">
+                    <h4 class="">ترجمه به فارسی</h4>
                 </div>
-                <div class="d-flex">
-                    <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2 me-2"></span>
-                    <span class="d-block mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 me-2"></span>
-                    <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2"></span>
+                <div class="p-2">
+                    <span class="d-block mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
+                        {% if translated_data is not none and content is not none %}
+                        {{ content.word_count | to_persian_num }} کلمه
+                        {% else %}                    
+                        فایل
+                        {% endif %}
+                        
+                    </span>
+                </div>
+                <div class="p-2 ms-auto">
+    
+                        {% if translated_data is not none and content  is not none %}
+                        <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
+                            تاریخ ایجاد: 
+                            {{ content.timestamp | gregorian_to_jalali_detail }}
+                        </span>
+                        {% endif %}
+                </div>
+    
+                <div class="p-2" >
+                    {% if content %}
+                    <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2" >
+                        مدل: 
+                            {{content.get_input('llm_model')}}
+                    </span>
+                    {% else %}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -169,65 +193,93 @@
         </div>
     </div>
 
+    
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ckeditor.js') }}"></script>
+
     <script>
-        function toPersianNumber(number) {
-            var persianMap = {
-                '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴',
-                '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹'
-            };
-            return number.toString().split('').map(char => persianMap[char] || char).join('');
-        }
-        function updateWordCount(textAreaId, countId) {
-            var text = document.getElementById(textAreaId).value;
-            var wordCount = text.trim().split(/\s+/).filter(function(word) {
-                return word.length > 0;
-            }).length;
-            document.getElementById(countId).innerText = "کلمات: " + toPersianNumber(wordCount);
-        }
+        $(document).ready(function() {
+            // Check if the element exists before initializing CKEditor
+            if ($('#output-text-area').length) {
+                ClassicEditor
+                    .create(document.querySelector('#output-text-area'), {
+                        toolbar: ['undo', 'redo', 'bold', 'italic', 'numberedList', 'bulletedList'],
+                        language: "fa",
+                        height: 700
+                    })
+                    .then(newEditor => {
+                        editor = newEditor;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            } else {
+                console.error('Element #output-text-area not found in DOM.');
+            }
 
-        document.getElementById("input-text-area").addEventListener("input", function() {
-            updateWordCount("input-text-area", "input-word-count");
-        });
+            function toPersianNumber(number) {
+                const persianMap = {
+                    '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴',
+                    '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹'
+                };
+                return number.toString().split('').map(char => persianMap[char] || char).join('');
+            }
 
-        document.getElementById("output-text-area").addEventListener("input", function() {
-            updateWordCount("output-text-area", "output-word-count");
-        });
-
-        // Initial word count update
-        updateWordCount("input-text-area", "input-word-count");
-        updateWordCount("output-text-area", "output-word-count");
-
-        function submitFormViaAjax() {
-            var $form = $("#translation-form");
-            $.ajax({
-                type: $form.attr("method"),
-                url: $form.attr("action"),
-                data: $form.serialize(),
-                beforeSend: function() {
-                    $("#input-text-area").prop("disabled", true);
-                    $("#output-text-area").prop("readonly", true);
-                    $(".btn-spinner").show();
-                    $(".btn-text").hide();
-                    $(".loading-overlay").show();
-                },
-                success: function(response) {
-                    // Assuming the response contains the translated text
-                    $("#output-text-area").val(response.translated_text);
-                },
-                complete: function() {
-                    $("#input-text-area").prop("disabled", false);
-                    $("#output-text-area").prop("readonly", false);
-                    $(".btn-spinner").hide();
-                    $(".btn-text").show();
-                    $(".loading-overlay").hide();
-
-                    updateWordCount("output-text-area", "output-word-count");
-                },
-                error: function() {
-                    alert("خطایی رخ داده است. لطفا دوباره تلاش کنید.");
+            function updateWordCount(textAreaId, countId) {
+                try {
+                    var text = $(`#${textAreaId}`).val();
+                    var wordCount = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+                    $(`#${countId}`).text("کلمات: " + toPersianNumber(wordCount));
+                } catch (error) {
+                    console.error(error);
                 }
+            }
+
+            
+            $("#input-text-area").on("input", function() {
+                updateWordCount("input-text-area", "input-word-count");
             });
-        }
+
+            $("#output-text-area").on("input", function() {
+                updateWordCount("output-text-area", "output-word-count");
+            });
+
+            // Initial word count update
+            updateWordCount("input-text-area", "input-word-count");
+            updateWordCount("output-text-area", "output-word-count");
+
+            window.submitFormViaAjax = function() {
+                var $form = $("#translation-form");
+                $.ajax({
+                    type: $form.attr("method"),
+                    url: $form.attr("action"),
+                    data: $form.serialize(),
+                    beforeSend: function() {
+                        $("#input-text-area").prop("disabled", true);
+                        $("#output-text-area").prop("readonly", true);
+                        $(".btn-spinner").show();
+                        $(".btn-text").hide();
+                        $(".loading-overlay").show();
+                    },
+                    success: function(response) {
+                        // Assuming the response contains the translated text
+                        $("#output-text-area").html(response.translated_text);
+                        editor.setData(response.translated_text);
+                    },
+                    complete: function() {
+                        $("#input-text-area").prop("disabled", false);
+                        $("#output-text-area").prop("readonly", false);
+                        $(".btn-spinner").hide();
+                        $(".btn-text").show();
+                        $(".loading-overlay").hide();
+
+                        updateWordCount("output-text-area", "output-word-count");
+                    },
+                    error: function() {
+                        alert("خطایی رخ داده است. لطفا دوباره تلاش کنید.");
+                    }
+                });
+            }
+        });
     </script>
 {% endblock %}
