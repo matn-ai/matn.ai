@@ -235,40 +235,45 @@ def allowed_file(filename):
 
 @dashboard.route("/article/resources/upload", methods=["POST"])
 def upload_resource():
-    try:
-        if 'file' not in request.files:
-            logger.warning(f"User {current_user.id} attempted file upload without file.")
-            return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
+    if 'file' not in request.files:
+        logger.warning(f"User {current_user.id} attempted file upload without file.")
+        return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        logger.warning(f"User {current_user.id} attempted file upload with empty filename.")
+        return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
+    
+    if file and allowed_file(file.filename):
+        file.seek(0, os.SEEK_END)
+        file_size = file.tell()
+        file.seek(0)
         
-        file = request.files['file']
+        if file_size > MAX_FILE_SIZE:
+            logger.warning(f"User {current_user.id} attempted file upload exceeding max size: {file_size} bytes.")
+            return jsonify({'error': 'حجم فایل بیش از حد مجاز است'}), 400
         
-        if file.filename == '':
-            logger.warning(f"User {current_user.id} attempted file upload with empty filename.")
-            return jsonify({'error': 'لطفا یک فایل انتخاب کنید'}), 400
+        filename = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(filepath)
+        mime = file.mimetype.strip()
         
-        if file and allowed_file(file.filename):
-            file.seek(0, os.SEEK_END)
-            file_size = file.tell()
-            file.seek(0)
-            
-            if file_size > MAX_FILE_SIZE:
-                logger.warning(f"User {current_user.id} attempted file upload exceeding max size: {file_size} bytes.")
-                return jsonify({'error': 'حجم فایل بیش از حد مجاز است'}), 400
-            
-            filename = secure_filename(file.filename)
-            unique_filename = f"{uuid.uuid4().hex}_{filename}"
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-            file.save(filepath)
+        file_obj = File.upload_file(
+            local_file_path=filepath,
+            bucket='local',
+            file_name=filepath.split('/')[-1]
+        )
+        
 
-            logger.info(f"User {current_user.id} successfully uploaded file {filename} as {unique_filename}.")
+        logger.info(f"User {current_user.id} successfully uploaded file {filename} as {unique_filename}.")
 
-            return jsonify({'url': file.filename}), 200
-        
-        logger.warning(f"Unallowed file format uploaded by user {current_user.id}.")
-        return jsonify({'error': 'فرمت فایل مجاز نیست'}), 400
-    except Exception as e:
-        logger.error(f"Error in upload_resource route for user {current_user.id}: {e}")
-        return abort(500)
+        return jsonify({'url': file_obj.get_file_url(), 'type': mime, 'file_id': file_obj.id}), 200
+    
+    logger.warning(f"Unallowed file format uploaded by user {current_user.id}.")
+    return jsonify({'error': 'فرمت فایل مجاز نیست'}), 400
+
 
 @dashboard.route("/article/resources", methods=["POST"])
 @login_required

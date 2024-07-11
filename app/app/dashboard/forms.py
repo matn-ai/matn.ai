@@ -13,7 +13,7 @@ class URLFieldForm(FlaskForm):
 
 
 class GenerateArticleBlog(FlaskForm):
-    user_topic = TextAreaField('عنوان', validators=[DataRequired(), Length(1, 500)])
+    user_topic = TextAreaField('شرح مقاله', validators=[DataRequired(), Length(1, 500)])
     tags = StringField('کلمات کلیدی', validators=[DataRequired()])
     lang = SelectField('زبان', choices=LANG_CHOICES)
     body = TextAreaField('محتوا')
@@ -23,10 +23,10 @@ class GenerateArticleBlog(FlaskForm):
 
 
 class GenerateArticlePro(FlaskForm):
-    user_topic = TextAreaField('عنوان', validators=[DataRequired(), Length(1, 500)])
+    user_topic = TextAreaField('شرح مقاله', validators=[DataRequired(), Length(1, 500)])
     urls = FieldList(FormField(URLFieldForm), min_entries=1, max_entries=10)
-    main_tag = StringField('کلمه کلیدی اصلی', validators=[DataRequired()])
-    tags = StringField('کلمات کلیدی')
+    main_tag = StringField('گزاره اصلی (یک گزاره)', validators=[DataRequired()])
+    tags = StringField('گزاره‌های فرعی')
     lang = SelectField('زبان', choices=LANG_CHOICES)
     body = TextAreaField('محتوا')
     content_type = HiddenField(default=ARTICLE_PRO)

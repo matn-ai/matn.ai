@@ -235,9 +235,7 @@
                     <div id="total" class="font-weight-bold fs-4">۴۰٬۰۰۰ تومان</div>
 
                 </div>
-                <div class="text-center mt-4">
-                    <a id="purchaseLink" class="btn btn-primary w-50 text-white">خرید</a>
-                </div>
+
             </div>
         </div>
     </div>
@@ -248,12 +246,16 @@
         const rangeValue = document.getElementById('wordCountSlider').value;
         let pricePerWord;
 
-        if (rangeValue <= 10000) {
-            pricePerWord = 20;
-        } else if (rangeValue <= 80000) {
-            pricePerWord = 18;
+        if (rangeValue <= 19999) {
+            pricePerWord = 15;
+        } else if (rangeValue <= 39999) {
+            pricePerWord = 14;
+        } else if (rangeValue <= 59999) {
+            pricePerWord = 13;
+        } else if (rangeValue <= 79999) {
+            pricePerWord = 12;
         } else {
-            pricePerWord = 17;
+            pricePerWord = 10;
         }
 
         const totalPrice = rangeValue * pricePerWord;
