@@ -358,10 +358,10 @@ def article_info(content_id):
         logger.error(f"Error in article_info route for content ID {content_id}: {e}")
         return abort(500)
 
-@dashboard.route("/article/blog/status/id/<job_id>", methods=["GET"])
-@dashboard.route("/article/blog/status/cid/<job_id>", methods=["GET"])
+@dashboard.route("/article/status/id/<job_id>", methods=["GET"])
+@dashboard.route("/article/status/cid/<job_id>", methods=["GET"])
 @login_required
-def article_blog_status(job_id):
+def content_status(job_id):
     try:
         job_cid = get_job_by_cid(job_id)
         job_id = get_job_by_id(job_id)
@@ -389,7 +389,7 @@ def article_blog_status(job_id):
         logger.warning(f"User {current_user.id} requested non-existing blog job status for job ID {job_id}.")
         return abort(404)
     except Exception as e:
-        logger.error(f"Error in article_blog_status route for job ID {job_id}: {e}")
+        logger.error(f"Error in content_status route for job ID {job_id}: {e}")
         return abort(500)
 
 @dashboard.route("/article/blog/list/<content_id>", methods=["GET"])
@@ -402,6 +402,20 @@ def article_blog_content_list(content_id):
     except Exception as e:
         logger.error(f"Error in article_blog_content_list route for content ID {content_id}: {e}")
         return abort(500)
+
+
+@dashboard.route("/article/content/<content_id>", methods=["GET"])
+@login_required
+def get_content_data(content_id):
+    # try:
+    content = get_content_by_id(content_id)
+    # print(content)
+    # logger.info(f"User {current_user.id} requested blog content for content ID {content_id}.")
+    return jsonify(content)
+    # except Exception as e:
+    #     logger.error(f"Error in article_blog_content route for content ID {content_id}: {e}")
+    #     return abort(500)
+
 
 @dashboard.route("/article/blog/content/<content_id>", methods=["GET"])
 @login_required
