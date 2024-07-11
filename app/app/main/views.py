@@ -49,6 +49,15 @@ def index():
     return render_template('index.html', form=form, contents=contents, pagination=pagination)
 
 
+@main.route('/privacy-policy', methods=['GET'])
+def privacy_and_policy_view():
+    return render_template('privacy_and_policy.html')
+
+@main.route('/terms-and-conditions', methods=['GET'])
+def terms_and_conditions_view():
+    return render_template('terms_and_condition.html')
+
+
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()

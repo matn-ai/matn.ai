@@ -50,6 +50,8 @@ def login():
                 next = url_for("dashboard.index")
             return redirect(next)
         flash("ایمیل یا رمزعبور صحیح نیست.")
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard.index"))
     return render_template("auth/login.html", form=form)
 
 
