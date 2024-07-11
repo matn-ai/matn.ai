@@ -38,56 +38,67 @@
                 <h4 class="">ترجمه به فارسی</h4>
             </div>
             <div class="p-2">
-                <span class="d-block mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
-                    {% if translated_data is not none and content is not none %}
-                    {{ content.word_count | to_persian_num }} کلمه
-                    {% else %}                    
-                    فایل
+
+                    {% if translated_data %}
+                        {% if content.word_count is not none %}
+                        <span class="d-block mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
+                            {{ content.word_count | to_persian_num }} کلمه
+                        </span>
+                        {% endif %}
+                    {% else %}          
+                    <span class="d-block mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
+                        فایل
+                    </span>
                     {% endif %}
                     
-                </span>
             </div>
             <div class="p-2 ms-auto">
 
-                    {% if translated_data is not none and content  is not none %}
+                    {% if translated_data %}
+                    {% if content %}
                     <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
                         تاریخ ایجاد: 
                         {{ content.timestamp | gregorian_to_jalali_detail }}
                     </span>
                     {% endif %}
+                    {% endif %}
             </div>
 
             <div class="p-2" >
-                {% if content %}
+                {% if translated_data %}
+                {% if content  %}
                 <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2" >
                     مدل: 
-                        {{content.get_input('llm_model')}}
+                      {{ content.llm }}
                 </span>
-                {% else %}
                 {% endif %}
-        </div>
+                {% endif %}
+            </div>
         </div>
         <div class="w-100 mr-auto mx-auto bg-white rounded p-4 card-shadow" id="form-container">
             <div class="mb-4 mt-4">
                 <div></div>
             </div>
-            <div class="p-4">
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <ul class="list-unstyled text-center mt-4">
-                    {% for message in messages %}
-                    <li class="alert alert-info">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                {% endwith %}
 
-                {% if translated_data is not none %}
+                {% if content.job.job_status != "SUCCESS" %}
+                    <div class="card mb-4">
+                        <div class="loading text-center" style="height: 200px;" id="loading-translate">
+                            <div class="mt-4 mb-4 spinner-border text-primary" role="status"
+                                style="width: 3rem; height: 3rem;">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <div class="loading-text">در حال ترجمه فایل...</div>
+                        </div>
+                    </div>
+                {% endif %}
+
+
+                {% if translated_data is not none and content  %}
 
                 <div class="row ">
                     {% for data in translated_data %}
                     <div class="col">
-                        <div class="card">
+                        <div class="card mb-3">
                             <div class="card-body text-center">
                                 <div class="file-icon"><i class="fas fa-file-alt"></i></div>
                                 <div class="fw-semibold">{{ data.file_name }}</div>
@@ -217,6 +228,28 @@
 
 <script>
     $(document).ready(function() {
+
+        {% if content %}
+
+        function checkJobStatus(jobId, contentId) {
+            $.get(`/dashboard/article/blog/status/cid/${jobId}`, function (data) {
+                if (data.status === 'SUCCESS') {
+                    fetchContent(contentId);
+                } else if (data.status === 'FAILURE') {
+                    // $('#loading-trasnlate').hide();
+                } else {
+                    setTimeout(() => checkJobStatus(jobId, contentId), 2000);
+                }
+            });
+        }
+
+        function fetchContent(contentId) {
+            $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
+                $('#loading-content').hide();
+                console.log(data)
+            });
+        }
+
         const $dropArea = $('#drop-area');
         const $fileInput = $('#file');
         const $fileDetails = $('#file-details');
