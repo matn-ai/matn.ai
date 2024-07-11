@@ -32,5 +32,5 @@ APP_MAIL_SUBJECT_PREFIX = '[هوش مصنوعی متن]'
 APP_MAIL_SENDER = os.environ.get('MAIL_SENDER')
 APP_ADMIN = os.environ.get('APP_ADMIN')
 MAIL_TOKEN_EXPIER_AGE = 3600
-UPLOAD_FOLDER = '/home/saman/Projects/BEHNEVIS/app/app/static/uploads'
+UPLOAD_FOLDER = './tmp/'
 ALLOWED_EXTENSIONS = {'pdf'}

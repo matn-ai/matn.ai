@@ -1,4 +1,4 @@
-import os, random, json, time
+import os, random, json, time, requests
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -316,60 +316,10 @@ def generate_blog_post_body(title, outlines, keywords, lang, length, llm_type):
 	return f"<h1>{title}</h1><br/>{inside}"
 
 
-def generate_article_pro_body(
-    title,
-    main_tag,
-    language_model,
-    keywords,
-    lang,
-    outlines,
-    point_ofview,
-    target_audience,
-    voice_tune,
-):
-
-    body = f"<h1>{title}</h1>"
-
-
-    for outline in outlines:
-        head = outline.get("head")
-        subs = outline.get("subs", [])
-        image = outline.get("image")
-
-        body += f"<br/><br/><h2>{head}</h2>"
-        logger.info(f'Creating section body -> {head} [{main_tag}] ({point_ofview})/{target_audience} [{voice_tune}]')
-
-        body += generate_sections_article_pro(
-            head,
-            main_tag,
-            keywords,
-            lang,
-            language_model,
-            point_ofview,
-            target_audience,
-            voice_tune,
-        )
-        
-        body += f"<img src='{image}' width=512 />" 
-
-
-        for sub in subs:
-            body += f"<br/><h3>{sub}</h3>"
-            logger.info(f'Creating section body -> {sub}')
-            section_content = generate_sections_article_pro(
-                sub,
-                main_tag,
-                keywords,
-                lang,
-                language_model,
-                point_ofview,
-                target_audience,
-                voice_tune,
-            )
-            body += section_content
-            body += "<br/>"
-
-    return body
+def get_web_data(url):
+    content = requests.get(url).content
+    soup = BeautifulSoup(content, features="lxml")
+    return soup.body.text
 
 
 def generate_sections_article_pro(
@@ -381,6 +331,7 @@ def generate_sections_article_pro(
     point_ofview,
     target_audience,
     voice_tune,
+    matched_content,
 ):
     prompt = (
         f"Write detailed paragraphs for the section titled '{sub_heading}' of a professional article. "
@@ -388,6 +339,9 @@ def generate_sections_article_pro(
         f"The content language is {lang}. Use the '{point_ofview}' point of view, and target audience as '{target_audience}'. "
         f"Make sure to maintain a '{voice_tune}' tune throughout the text.\n"
     )
+    
+    if matched_content:
+        prompt += f'Use the content below to enhance your context.\nContent:```{matched_content}```'
 
     if keywords:
         prompt += f"Use the following keywords where relevant: {', '.join(keywords)}.\n"
@@ -424,6 +378,143 @@ def generate_sections_article_pro(
     logger.info(f'Result of generate_sections_article_pro text {result}')
     # return result['text]
     return result
+
+
+def outline_resource_rag(headlines, resource_text, llm_type='gpt-3.5-turbo'):
+    user_prompt = (
+        f"Give the related content for each headline from the text. Summarize the related text in maximum 100 words and put it under the headline\n",
+        f"- Headlines: ```{headlines}```\n",
+        f"- Text: ```{resource_text}```\n",
+
+    )
+
+
+    assistant_prompt = (
+        "You are a professional content matcher. You can match the part of the text to the given outlines.\n",
+        # "If there is no content for headline, return headline text but empty matched_text.\n",
+        """```json_schema = {
+        "type": "object",
+        "properties": {
+            "headlines": {
+                "type": "array",
+                "description": "Headlines and summarized matched text with the headlines like a neural search engine",
+                "headlines_matched_text": {
+                    "type": "object", 
+                    "description": "a headline data",
+                    "required": ["matched_text", "headline_text"],
+                    "properties": {
+                        "matched_text": {
+                            "type": "string",
+                            "description": "The summarized text that matched the headline"
+                        },
+                        "headline_text": {
+                            "type": "string",
+                            "description": "The headline text"
+                        }
+                    }
+                }
+            }
+        }
+    }```"""
+    )
+    messages = [
+        {"role": "assistant", "content": ''.join(assistant_prompt)},
+        {"role": "user", "content": ''.join(user_prompt)},
+    ]
+
+
+    response = openai_client.chat.completions.create(
+        model=llm_type, messages=messages, temperature=0.2,
+        response_format={ "type": "json_object" }
+    )
+    
+    result = json.loads(response.choices[0].message.content)
+    return result
+
+
+def generate_headlines_resources_relevance_text(user_input):
+    outlines = user_input['outlines']
+    headlines = '-' + '- \n'.join([o['head'] for o in outlines])
+    resources = user_input['selected_resources']
+    resource_outlines = {}
+    for o in outlines:
+        resource_outlines[o['head']] = []
+    for resource in resources:
+        logger.info(f"Going to extract data for headlines {resource['type']} -> {resource['url']}")
+        if resource['type'] == 'web':
+            content = get_web_data(resource['url'])[:5000]
+        elif resource['type'] == 'file':
+            pass
+        else:
+            continue
+            
+        local_resource_outlines = outline_resource_rag(headlines, content)
+        print(f'Result: {local_resource_outlines}')
+        for ro in local_resource_outlines['headlines']:
+            print(ro)
+            if ro and ro['headline_text'] in resource_outlines and ro.get('matched_text'):
+                resource_outlines[ro['headline_text']] += [ro['matched_text']]
+    return resource_outlines
+
+def generate_article_pro_body(
+    title,
+    main_tag,
+    language_model,
+    keywords,
+    lang,
+    outlines,
+    point_ofview,
+    target_audience,
+    voice_tune,
+    headline_resources_text=None
+):
+
+    body = f"<h1>{title}</h1>"
+  
+
+    for outline in outlines:
+        head = outline.get("head")
+        subs = outline.get("subs", [])
+        image = outline.get("image")
+
+        body += f"<br/><br/><h2>{head}</h2>"
+        logger.info(f'Creating section body -> {head} [{main_tag}] ({point_ofview})/{target_audience} [{voice_tune}]')
+        matched_content = headline_resources_text.get(head)
+        matched_content = '\n'.join(matched_content)
+        body += generate_sections_article_pro(
+            head,
+            main_tag,
+            keywords,
+            lang,
+            language_model,
+            point_ofview,
+            target_audience,
+            voice_tune,
+            matched_content
+        )
+        
+        body += f"<img src='{image}' width=512 />" 
+
+
+        for sub in subs:
+            body += f"<br/><h3>{sub}</h3>"
+            logger.info(f'Creating section body -> {sub}')
+            section_content = generate_sections_article_pro(
+                sub,
+                main_tag,
+                keywords,
+                lang,
+                language_model,
+                point_ofview,
+                target_audience,
+                voice_tune,
+                matched_content
+            )
+            body += section_content
+            body += "<br/>"
+
+    return body
+
 
 
 def generate_article_body(title, outlines, keywords, lang, llm_type):
@@ -528,6 +619,8 @@ def generate_pro_article(content_id, user_input):
     point_ofview = user_input["point_ofview"]
     target_audience = user_input["target_audience"]
     voice_tune = user_input["voice_tune"]
+    
+    headlines_resources = generate_headlines_resources_relevance_text(user_input=user_input)
 
 
     body = generate_article_pro_body(
@@ -540,6 +633,7 @@ def generate_pro_article(content_id, user_input):
         point_ofview,
         target_audience,
         voice_tune,
+        headlines_resources
     )
 
 
