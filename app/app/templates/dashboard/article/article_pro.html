@@ -273,7 +273,7 @@
                             <div class="loading-text">در حال دریافت تیترها...</div>
                         </div>
 
-                        <ul class="p-3 rounded list-group" id="titles-container">
+                        <ul class="p-3 rounded list-group" id="titles-container" style="display: none;">
                             <ul id="suggest-titles" class="list-group">
 
                             </ul>
@@ -368,7 +368,6 @@
                     <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
                         background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
-                <div class="loading-text">در حال ایجاد محتوا...</div>
             </div>
             <div id="text-editor-area">
                 {{ form.body(id="text-editor", class="form-control") }}
@@ -487,7 +486,7 @@
             wz_button: ".m-2",
             wz_next: ".btn-outline-primary",
             wz_prev: ".btn-outline-dark",
-            wz_finish: ".finish-button"
+            wz_finish: ".btn-success"
         };
 
         const wizard = new Wizard(args);
@@ -539,11 +538,14 @@
                     'در حال پردازش تصاویر...'
                 ]);
                 $("#form-container").find("input, button, textarea, select").prop("disabled", false);
-               // $('.btn-outline-primary').hide();
-                $('.btn-outline-dark').hide();
-                $('.finish-button').css("display: none");
+                //$('.btn-outline-primary').hide();
+                //$('.btn-outline-dark').hide();
+                $('.btn-success').css("display: none");
                 loadBtnLoader()
 
+                $('.btn-outline-primary').hide();
+                $('.btn-outline-dark').hide();
+    
                 // Modify the function to integrate the click event for replacing the image
                 function loadImageForOutline(outline, outlineIndex) {
                     return new Promise((resolve, reject) => {
@@ -568,7 +570,7 @@
                                 <input type="text" class="form-control main-outline-input bg-white border-0 fs-5" disabled id="${mainOutlineId}-input" value="${mainHead}" />    
                             </div>
                             <div class="col-12"> 
-                                <img src="${image}" class="img-thumbnail rounded ratio ratio-1x1 mx-auto d-block mt-3 mb-3 outline-image" id="img-${mainOutlineId}" />
+                                <img src="${image}" class="img-thumbnail rounded ratio ratio-1x1 mx-auto mt-3 mb-3 outline-image" id="img-${mainOutlineId}" />
                             </div>
                         </div>
                         <button type="button" class="btn btn-link text-primary fs-5 ms-2 add-image" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom-${mainOutlineCounter}" aria-controls="offcanvasBottom-${mainOutlineCounter}" title="${mainHead}">
@@ -644,7 +646,7 @@
                                 const imageUrl = $(this).data('image-src');
                                 selected_list[id]['image'] = imageUrl
                                 console.log(selected_list)
-                                $(`#img-image-${id}`).show();
+                                $(`#images-container #img-image-${id}`).show();
                                 $(`#img-image-${id}`).attr('src', imageUrl);
                             });
                         },
@@ -672,7 +674,7 @@
                     $('#btn-spinner').remove();
                     $("#images-container").show()
                     $("#loading-images").hide()
-                    $('.finish-button').show();
+                    $('.btn-success').show();
 
                     wizard.unlock();
                 })();
@@ -682,7 +684,7 @@
 
         $('#images-container').on('click', '.remove-image', function () {
             const mainOutlineId = $(this).data('main-outline-id');
-            $(this).hide()
+            // $(this).hide()
             $(`#images-container #img-${mainOutlineId}`).hide();
             $(`#img-${mainOutlineId}`).attr('src', '/static/images/no-image.jpeg');
         });
@@ -845,6 +847,7 @@
             $('.btn-outline-primary').hide();
             $('.btn-outline-dark').hide();
             loadBtnLoader()
+            $("#titles-container").hide();
 
             $("#form-container").find("input, button, textarea, select").prop("disabled", true);
             $.ajax({
@@ -984,6 +987,7 @@
             $('.btn-outline-primary').hide();
             $('.btn-outline-dark').hide();
             loadBtnLoader()
+
             $.ajax({
                 type: 'POST',
                 url: "{{ url_for('dashboard.get_images') }}",
@@ -999,13 +1003,9 @@
             });
         }
 
-
-
         $("#refresh-suggest-titles").click(function () {
             loadTitles()
         });
-
-
 
         $("#user-title-input").click(function () {
             $("#titles-user-input-radio").prop('checked', true)
@@ -1192,7 +1192,7 @@
         }
 
         // Finish button click handler
-        $(".finish-button").on("click", function (e) {
+        $(".btn-success").on("click", function (e) {
             e.preventDefault();
 
             // Gather data from all steps
