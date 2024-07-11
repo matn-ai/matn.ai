@@ -52,18 +52,18 @@
                                 {{ form.user_topic(id="form_user_topic", size=500, class_="form-control",
                                 style="max-height: 100px;") }}
                                 <div id="user_topic_error" class="form-text text-danger"></div>
-                                <div class="form-text">عنوان یا شرح موضوع مقاله را وارد کنید.</div>
+                                <div class="form-text">شرح موضوع مقاله خود را وارد کنید. این شرح شامل گزاره‌های اصلی و نتیجه نهایی مقاله است.</div>
                             </div>
                             <div class="form-group mb-4 mt-2 pb-4">
                                 <label for="tags" class="mb-2">{{ form.main_tag.label }}</label>
                                 {{ form.main_tag(id="main-tag-input", class="form-control") }}
                                 <div id="main_tag_error" class="form-text text-danger"></div>
-                                <div class="form-text">پس از وارد کردن هر کلمه Enter بزنید.</div>
+                                <div class="form-text">عبارت کلیدی اصلی مقاله که بر اساس آن مقاله برای موتورهای جست‌وجو بهینه می‌شود</div>
                             </div>
                             <div class="form-group mb-4 mt-2 pb-4">
                                 <label for="tags" class="mb-2">{{ form.tags.label }}</label>
                                 {{ form.tags(id="tags-input", class="form-control") }}
-                                <div class="form-text">پس از وارد کردن هر کلمه Enter بزنید.</div>
+                                <div class="form-text">دیگر گزاره‌های کلیدی که در متن مقاله از آن استفاده می‌شود.<br>پس از نوشتن هر عبارت Enter را بزنید</div>
                             </div>
                             <div class="row mb-4">
                                 <div class="col-6">
@@ -539,7 +539,7 @@
                     'در حال پردازش تصاویر...'
                 ]);
                 $("#form-container").find("input, button, textarea, select").prop("disabled", false);
-                $('.btn-outline-primary').hide();
+               // $('.btn-outline-primary').hide();
                 $('.btn-outline-dark').hide();
                 $('.finish-button').css("display: none");
                 loadBtnLoader()
@@ -549,12 +549,12 @@
                     return new Promise((resolve, reject) => {
                         let mainOutlineCounter = outlineIndex + 1;
                         let mainOutlineId = `image-${mainOutlineCounter}`;
-                        let mainHead = outline.head;
-
+                        let mainHead = outline.head ; // TODO: Add user_input main headline to this to enhance the search
+                        let title = $("#form_user_topic").val()
                         $.ajax({
                             type: 'POST',
                             url: "{{ url_for('dashboard.get_images') }}",  // Replace with correct endpoint
-                            data: JSON.stringify({ title: mainHead }),
+                            data: JSON.stringify({ title: mainHead + ' ' + title }),
                             contentType: "application/json",
                             processData: false,
                             success: function (response) {
@@ -611,10 +611,13 @@
 
                 // Function to load images in the search container and handle image click
                 function loadImageSearch(containerId, mainHead, id) {
+                    let user_topic = $("#form_user_topic").val()
+                    let query = `${main_tagify.value[0]['value']} ${user_topic}`;
+        
                     $.ajax({
                         type: 'POST',
                         url: "{{ url_for('dashboard.search_images') }}",  // Replace with correct endpoint
-                        data: JSON.stringify({ title: mainHead }),
+                        data: JSON.stringify({ title: query }),
                         contentType: "application/json",
                         processData: false,
                         success: function (response) {
@@ -641,6 +644,7 @@
                                 const imageUrl = $(this).data('image-src');
                                 selected_list[id]['image'] = imageUrl
                                 console.log(selected_list)
+                                $(`#img-image-${id}`).show();
                                 $(`#img-image-${id}`).attr('src', imageUrl);
                             });
                         },
@@ -663,7 +667,7 @@
                             // Handle the error case if needed
                         }
                     }
-                    $('.btn-outline-primary').show();
+                   // $('.btn-outline-primary').show();
                     $('.btn-outline-dark').show();
                     $('#btn-spinner').remove();
                     $("#images-container").show()
@@ -678,6 +682,8 @@
 
         $('#images-container').on('click', '.remove-image', function () {
             const mainOutlineId = $(this).data('main-outline-id');
+            $(this).hide()
+            $(`#images-container #img-${mainOutlineId}`).hide();
             $(`#img-${mainOutlineId}`).attr('src', '/static/images/no-image.jpeg');
         });
 
@@ -755,15 +761,19 @@
             $("input[name='search_in_resource']").prop('disabled', true)
             $("#search-resource-btn").prop('disabled', true)
 
+
+            let user_topic = $("#form_user_topic").val()
+            let query = `${main_tagify.value[0]['value']} ${user_topic}`;
             let request = reload ?
                 {
-                    "main_topic": $("input[name='search_in_resource']").val(),
+                    "main_topic": query,
+                    //"main_topic": $("input[name='search_in_resource']").val(),
                     "language_model": $("input[name='language_model']").val()
                 } : {
                     "main_topic": main_tagify.value[0]['value']
                 };
 
-            $("input[name='search_in_resource']").val(request.main_topic);
+            $("input[name='search_in_resource']").val(query);
 
 
             $("#form-container").find("input, button, textarea, select").prop("disabled", true);
@@ -964,7 +974,10 @@
             $("input[name='search_in_resource']").prop('disabled', true);
             $("#search-resource-btn").prop('disabled', true);
 
-            let request = { "main_topic": main_tagify.value[0]['value'], 'list': selected_list };
+            let user_topic = $("#form_user_topic").val()
+            let query = `${main_tagify.value[0]['value']} ${user_topic}`;
+
+            let request = { "main_topic": query, 'list': selected_list };
 
             $("input[name='search_in_resource']").val(main_tagify.value[0]['value']);
             $("#form-container").find("input, button, textarea, select").prop("disabled", true);
@@ -1116,7 +1129,7 @@
 
             var formData = new FormData();
             var file = $('#file-upload')[0].files[0];
-            formData.append('file', file);
+            formData.append('file', file.slice(0, 50));
 
             var $uploadButton = $('#upload-button');
             $uploadButton.find('.spinner-border').removeClass('d-none');
@@ -1130,7 +1143,7 @@
                 processData: false,
                 success: function (data) {
                     addResource(data.url, 'file', data.url);
-                    resources.push(['file', data.url]);
+                    resources.push(['file', data.url, data.file_id]);
                     console.log(resources)
                     $uploadButton.find('.spinner-border').addClass('d-none');
                     $uploadButton.prop('disabled', false);
