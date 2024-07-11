@@ -190,7 +190,7 @@
 
   $(document).ready(function () {
     function checkJobStatus(jobId, contentId) {
-      $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
+      $.get(`/dashboard/article//status/${jobId}`, function (data) {
         if (data.status === 'SUCCESS') {
           $(`.status-${contentId}`).hide();
           $.get(`/dashboard/article/blog/list/${contentId}`, function (data) {

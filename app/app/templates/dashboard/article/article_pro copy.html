@@ -412,7 +412,7 @@
         }
 
         function checkJobStatus(jobId, contentId) {
-            $.get(`/dashboard/article/blog/status/cid/${jobId}`, function (data) {
+            $.get(`/dashboard/article//status/cid/${jobId}`, function (data) {
                 if (data.status === 'SUCCESS') {
                     $('#article-info-timer').html(data.running_duration);
                     fetchContent(contentId);

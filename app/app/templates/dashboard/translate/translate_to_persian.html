@@ -36,13 +36,7 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .model-card {
-            display: flex;
-            align-items: center;
-        }
-        .model-info {
-            flex-grow: 1;
-        }
+
     </style>
     <div class="row">
         <div class="col-12 mr-auto mx-auto mb-3">
@@ -181,9 +175,6 @@
                     <div class="col">
                         <div class="bg-white mr-auto mx-auto rounded p-4 card-shadow w-100 position-relative" id="output-container">
                             {{ form.body(id="output-text-area", class="form-control bg-light", style="min-height: 680px;", readonly=True) }}
-                            <div class="w-100">
-                                <span class="badge text-bg-light word-count" id="output-word-count">کلمات: ۰</span>
-                            </div>
                             <div class="loading-overlay">
                             </div>
                         </div>
