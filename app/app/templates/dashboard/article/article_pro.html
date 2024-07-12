@@ -389,7 +389,7 @@
         let maxSelectedResources = 5;
         let resources = [];
         let suggested_lists = [];
-        let selected_list = "";
+        let selected_list = [];
         let selectedTitle = "";
         let mainOutlineCounter = 0;
         let subOutlineCounter = 0;
@@ -642,10 +642,15 @@
                             });
 
                             //console.log(selected_list)
+
+                        },
+                        complete: function(response){
                             $(containerId).find('.image-result').on('click', function () {
                                 const imageUrl = $(this).data('image-src');
-
-                                selected_list[id]['image'] = imageUrl
+                                const mainOutlineId = $(this).data('main-outline-id');
+                                const mainOutlineCounter = parseInt(mainOutlineId.split('-').pop());
+                                //console.log(mainOutlineCounter)
+                                selected_list[mainOutlineCounter]['image'] = imageUrl
                                 //console.log(selected_list)
                                 $(`#images-container #img-image-${id}`).show();
                                 $(`#img-image-${id}`).attr('src', imageUrl);
@@ -1179,10 +1184,10 @@
 
         $wz_doc.addEventListener("wz.error", function (e) {
             e.preventDefault();
-            // console.log(`↓ ID ↓`);
-            // console.log(e.detail.id);
-            // console.log(`↓ Message ↓`);
-            // console.log(e.detail.msg);
+            //console.log(`↓ ID ↓`);
+            //console.log(e.detail.id);
+            //console.log(`↓ Message ↓`);
+            //console.log(e.detail.msg);
         });
 
         ClassicEditor
