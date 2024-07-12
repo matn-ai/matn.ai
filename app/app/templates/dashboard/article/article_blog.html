@@ -58,7 +58,7 @@
                     <div class="p-2 ms-auto">
                         <span
                             class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">تاریخ
-                            تولید: {{ content.timestamp | gregorian_to_jalali_detail }}</span>
+                            تولید: {{ content.timestamp | g2j_detail }}</span>
                     </div>
                     <div class="p-2">
                         <span
@@ -80,7 +80,7 @@
                     <div class="p-2 ms-auto">
                         <span
                             class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">تاریخ
-                            تولید: {{ content.timestamp | gregorian_to_jalali_detail }}</span>
+                            تولید: {{ content.timestamp | g2j_detail }}</span>
                     </div>
                     <div class="p-2">
                         <span
@@ -143,6 +143,7 @@
     ClassicEditor
         .create(document.querySelector('#text-editor'), {
             language: "fa",
+            toolbar: ['heading', '|' ,'undo', 'redo', 'bold', 'italic', 'link','numberedList', 'bulletedList'],
             height: 500
         })
         .then(newEditor => {

@@ -2,7 +2,7 @@ from functools import wraps
 from flask import abort
 from flask_login import current_user
 from .const import content_type_map
-from .utils import utils_gre2jalali, to_persian_numerals
+from .utils import utils_gre2jalali, to_persian_numerals, utils_gre2jalali_listing
 
 import jdatetime
 from datetime import datetime
@@ -34,8 +34,12 @@ def to_persian_num(num):
     return to_persian_numerals(num)
 
 
-def gregorian_to_jalali_detail(date):
+def g2j_detail(date):
     return utils_gre2jalali(date)
+
+def g2j_for_list(date):
+    return utils_gre2jalali_listing(date)
+
 
 def convert_seconds_to_min_sec(total_seconds):
     minutes = total_seconds // 60

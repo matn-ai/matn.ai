@@ -114,6 +114,7 @@ def save_html_to_docx(html_string, file_path):
 
 def suggest_outlines(user_title, lang, llm_type="gpt-4o"):
     try:
+        llm_type="gpt-4o"
         user_prompt = f"The content language is {lang}\n"
         user_prompt += f"Use numbering for list. \n"
         random.seed(int(time.time()))
@@ -174,6 +175,7 @@ def suggest_outlines(user_title, lang, llm_type="gpt-4o"):
 
 def suggest_titles(topic, lang, llm_type="gpt-4o"):
     try:
+        llm_type="gpt-4o"
         user_prompt = (
             f"Generate 6 catchy and informative title for a blog post about {topic}. "
             f"The title should be engaging and appealing to the general audience and "

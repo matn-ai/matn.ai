@@ -59,7 +59,7 @@
                         {% if translated_data is not none and content  is not none %}
                         <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
                             تاریخ ایجاد: 
-                            {{ content.timestamp | gregorian_to_jalali_detail }}
+                            {{ content.timestamp | g2j_detail }}
                         </span>
                         {% endif %}
                 </div>

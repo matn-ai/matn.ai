@@ -12,6 +12,9 @@
     .is-invalid {
         border-color: red !important;
     }
+    .btn-success{
+        display: none;
+    }
 </style>
 <div class="row">
     <div class="col-12 mr-auto mx-auto">
@@ -273,7 +276,7 @@
                             <div class="loading-text">در حال دریافت تیترها...</div>
                         </div>
 
-                        <ul class="p-3 rounded list-group" id="titles-container">
+                        <ul class="p-3 rounded list-group" id="titles-container" style="display: none;">
                             <ul id="suggest-titles" class="list-group">
 
                             </ul>
@@ -368,7 +371,6 @@
                     <lottie-player src="{{ url_for('static', filename='media/content-create.json') }}"
                         background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
-                <div class="loading-text">در حال ایجاد محتوا...</div>
             </div>
             <div id="text-editor-area">
                 {{ form.body(id="text-editor", class="form-control") }}
@@ -387,7 +389,7 @@
         let maxSelectedResources = 5;
         let resources = [];
         let suggested_lists = [];
-        let selected_list = null;
+        let selected_list = "";
         let selectedTitle = "";
         let mainOutlineCounter = 0;
         let subOutlineCounter = 0;
@@ -460,7 +462,7 @@
                 </div>
                 <div class="col-9 p-2" style="direction: ltr; text-align: left;">
                     <span class="badge ${badgeClass} ms-2">${type === 'file' ? 'فایل' : 'وب'}</span>
-                    <a class="link-primary" href="${url}" >${url}</a>
+                    <a class="link-primary" target=_blank href="${url}" >${url}</a>
                 </div>
             </div>`;
             $("#selected-resources").append(selectedRow);
@@ -487,7 +489,7 @@
             wz_button: ".m-2",
             wz_next: ".btn-outline-primary",
             wz_prev: ".btn-outline-dark",
-            wz_finish: ".finish-button"
+            wz_finish: ".btn-success"
         };
 
         const wizard = new Wizard(args);
@@ -538,12 +540,11 @@
                     'در حال دریافت اطلاعات تصاویر...',
                     'در حال پردازش تصاویر...'
                 ]);
-                $("#form-container").find("input, button, textarea, select").prop("disabled", false);
-               // $('.btn-outline-primary').hide();
-                $('.btn-outline-dark').hide();
-                $('.finish-button').css("display: none");
-                loadBtnLoader()
+                //$('.wizard-buttons .btn-outline-primary').hide();
+                //$('.btn-outline-dark').hide();
 
+
+    
                 // Modify the function to integrate the click event for replacing the image
                 function loadImageForOutline(outline, outlineIndex) {
                     return new Promise((resolve, reject) => {
@@ -568,7 +569,7 @@
                                 <input type="text" class="form-control main-outline-input bg-white border-0 fs-5" disabled id="${mainOutlineId}-input" value="${mainHead}" />    
                             </div>
                             <div class="col-12"> 
-                                <img src="${image}" class="img-thumbnail rounded ratio ratio-1x1 mx-auto d-block mt-3 mb-3 outline-image" id="img-${mainOutlineId}" />
+                                <img src="${image}" class="img-thumbnail rounded ratio ratio-1x1 mx-auto mt-3 mb-3 outline-image" id="img-${mainOutlineId}" />
                             </div>
                         </div>
                         <button type="button" class="btn btn-link text-primary fs-5 ms-2 add-image" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom-${mainOutlineCounter}" aria-controls="offcanvasBottom-${mainOutlineCounter}" title="${mainHead}">
@@ -602,7 +603,7 @@
                                 resolve();  // Resolve the promise
                             },
                             error: function (error) {
-                                console.log('Error:', error);
+                                //console.log('Error:', error);
                                 reject(error);  // Reject the promise
                             }
                         });
@@ -623,7 +624,7 @@
                         success: function (response) {
                             $(containerId).empty();
                             $.each(response, function (index, imageDetails) {
-                                console.log(imageDetails)
+                                //console.log(imageDetails)
                                 if (imageDetails && imageDetails.img_src && imageDetails.source) {
                                     const imageHTML = `<div class="image-result card mb-4 p-3" data-image-src="${imageDetails.img_src}" data-main-outline-id="image-${id}">
                                         <img src="${imageDetails.thumbnail_src}" alt="${imageDetails.title}" class="img-thumbnail ratio ratio-1x1 image-result-item "">
@@ -640,21 +641,32 @@
                                 }
                             });
 
+                            //console.log(selected_list)
                             $(containerId).find('.image-result').on('click', function () {
                                 const imageUrl = $(this).data('image-src');
+
                                 selected_list[id]['image'] = imageUrl
-                                console.log(selected_list)
-                                $(`#img-image-${id}`).show();
+                                //console.log(selected_list)
+                                $(`#images-container #img-image-${id}`).show();
                                 $(`#img-image-${id}`).attr('src', imageUrl);
                             });
                         },
                         error: function (error) {
-                            console.log('Error:', error);
+                            //console.log('Error:', error);
                         }
                     });
                 }
                 // Sequentially load images for each outline
                 (async function loadAllImages() {
+                    $("#form-container").find("input, button, textarea, select").prop("disabled", false);
+                    // $('.btn-success').hide();
+                    $('.wizard-buttons .btn-outline-primary').hide();
+                    $('.wizard-buttons .btn-outline-dark').hide();
+                    
+
+                    loadBtnLoader()
+
+                    
                     for (let outlineIndex = 0; outlineIndex < selected_list.length; outlineIndex++) {
                         try {
                             if (outlineIndex == 0)
@@ -667,12 +679,13 @@
                             // Handle the error case if needed
                         }
                     }
-                   // $('.btn-outline-primary').show();
+                    $('.btn-outline-primary').show();
                     $('.btn-outline-dark').show();
                     $('#btn-spinner').remove();
                     $("#images-container").show()
                     $("#loading-images").hide()
-                    $('.finish-button').show();
+                    $('.btn-success').show();
+//                    $('.wizard-buttons .btn-success').hide();
 
                     wizard.unlock();
                 })();
@@ -682,7 +695,7 @@
 
         $('#images-container').on('click', '.remove-image', function () {
             const mainOutlineId = $(this).data('main-outline-id');
-            $(this).hide()
+            // $(this).hide()
             $(`#images-container #img-${mainOutlineId}`).hide();
             $(`#img-${mainOutlineId}`).attr('src', '/static/images/no-image.jpeg');
         });
@@ -768,16 +781,17 @@
                 {
                     "main_topic": query,
                     //"main_topic": $("input[name='search_in_resource']").val(),
-                    "language_model": $("input[name='language_model']").val()
+                    "language_model": getCheckedLanguageModel()
                 } : {
                     "main_topic": main_tagify.value[0]['value']
                 };
+            //console.log(getCheckedLanguageModel())
 
             $("input[name='search_in_resource']").val(query);
 
 
             $("#form-container").find("input, button, textarea, select").prop("disabled", true);
-            $('.btn-outline-primary').hide();
+            $('.wizard-buttons .btn-outline-primary').hide();
             $('.btn-outline-dark').hide();
             loadBtnLoader()
             $.ajax({
@@ -817,11 +831,10 @@
                     });
                 },
                 error: function (error) {
-                    console.log('Error:', error);
+                    //console.log('Error:', error);
                 }
             });
         }
-
 
         $("#search-resource-btn").click(function () {
             loadResources(true)
@@ -838,13 +851,15 @@
 
             var request = {
                 "user_topic": $("input[name='main_tag']").val(),
-                "language_model": $("input[name='language_model']").val(),
+                "language_model": getCheckedLanguageModel(),
                 "lang": $('input[name="language"]:checked').val()
             };
+            //console.log(getCheckedLanguageModel())
 
-            $('.btn-outline-primary').hide();
+            $('.wizard-buttons .btn-outline-primary').hide();
             $('.btn-outline-dark').hide();
             loadBtnLoader()
+            $("#titles-container").hide();
 
             $("#form-container").find("input, button, textarea, select").prop("disabled", true);
             $.ajax({
@@ -894,11 +909,12 @@
 
             var request = {
                 "selected_title": selectedTitle,
-                "language_model": $("input[name='language_model']").val(),
+                "language_model": getCheckedLanguageModel(),
                 "lang": $('input[name="language"]:checked').val()
             };
+            // console.log(getCheckedLanguageModel())
 
-            $('.btn-outline-primary').hide();
+            $('.wizard-buttons .btn-outline-primary').hide();
             $('.btn-outline-dark').hide();
             loadBtnLoader()
 
@@ -981,9 +997,10 @@
 
             $("input[name='search_in_resource']").val(main_tagify.value[0]['value']);
             $("#form-container").find("input, button, textarea, select").prop("disabled", true);
-            $('.btn-outline-primary').hide();
-            $('.btn-outline-dark').hide();
+            $('.wizard-buttons .btn-outline-primary').hide();
+            $('.wizard-buttons .btn-outline-dark').hide();
             loadBtnLoader()
+
             $.ajax({
                 type: 'POST',
                 url: "{{ url_for('dashboard.get_images') }}",
@@ -991,7 +1008,7 @@
                 contentType: "application/json",
                 processData: false,
                 success: function (response) {
-                    console.log(response)
+                    // console.log(response)
                 },
                 error: function (error) {
                     console.log('Error:', error);
@@ -999,13 +1016,9 @@
             });
         }
 
-
-
         $("#refresh-suggest-titles").click(function () {
             loadTitles()
         });
-
-
 
         $("#user-title-input").click(function () {
             $("#titles-user-input-radio").prop('checked', true)
@@ -1108,9 +1121,9 @@
             //let url = resourceItem.find('a.link-primary').attr('href');
 
             resources.push(['web', url]);
-            console.log(url)
+            // console.log(url)
 
-            console.log(resources)
+            // console.log(resources)
             addResource(key, 'web', url);
             resourceItem.remove();
         });
@@ -1120,6 +1133,10 @@
             e.preventDefault();
             $('#file-upload').click();
         });
+
+        function getCheckedLanguageModel() {
+            return $('input[name="language_model"]:checked').val();
+        }
 
         $('#file-upload').on('change', function () {
             if ($("#selected-resources .row").length >= maxSelectedResources) {
@@ -1144,7 +1161,7 @@
                 success: function (data) {
                     addResource(data.url, 'file', data.url);
                     resources.push(['file', data.url, data.file_id]);
-                    console.log(resources)
+                    // console.log(resources)
                     $uploadButton.find('.spinner-border').addClass('d-none');
                     $uploadButton.prop('disabled', false);
                     $('#file-upload').val('');
@@ -1162,15 +1179,16 @@
 
         $wz_doc.addEventListener("wz.error", function (e) {
             e.preventDefault();
-            console.log(`↓ ID ↓`);
-            console.log(e.detail.id);
-            console.log(`↓ Message ↓`);
-            console.log(e.detail.msg);
+            // console.log(`↓ ID ↓`);
+            // console.log(e.detail.id);
+            // console.log(`↓ Message ↓`);
+            // console.log(e.detail.msg);
         });
 
         ClassicEditor
             .create(document.querySelector('#text-editor'), {
                 language: "fa",
+                toolbar: ['heading', '|' ,'undo', 'redo', 'bold', 'italic', 'link','numberedList', 'bulletedList'],
                 height: 500
             })
             .then(newEditor => {
@@ -1192,7 +1210,7 @@
         }
 
         // Finish button click handler
-        $(".finish-button").on("click", function (e) {
+        $(".btn-success").on("click", function (e) {
             e.preventDefault();
 
             // Gather data from all steps
@@ -1210,11 +1228,12 @@
                 const resourceUrl = $(this).find("a.link-primary").attr("href");
                 selectedResources.push({ type: resourceType, url: resourceUrl });
             });
+//            console.log(getCheckedLanguageModel())
 
             const requestData = {
                 user_topic: userTopic,
                 main_tag: mainTag,
-                language_model: $("input[name='language_model']").val(),
+                language_model: getCheckedLanguageModel(),
                 tags: tags,
                 point_ofview: $("#point_ofview").val(),
                 target_audience: $("#target_audience").val(),
@@ -1227,7 +1246,7 @@
                 content_type: 1
             };
             //console.log(requestData)
-            console.log(requestData)
+            //console.log(requestData)
 
             $.ajax({
                 type: 'POST',
@@ -1248,7 +1267,7 @@
                     checkJobStatus(jobId, contentId);
                 },
                 error: function (error) {
-                    console.error("Submission error:", error);
+                    //console.error("Submission error:", error);
                 }
             });
         });

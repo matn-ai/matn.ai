@@ -452,7 +452,8 @@ def generate_headlines_resources_relevance_text(user_input):
         print(f'Result: {local_resource_outlines}')
         for ro in local_resource_outlines['headlines']:
             print(ro)
-            if ro and ro['headline_text'] in resource_outlines and ro.get('matched_text'):
+            #TODO
+            if ro and 'headline_text' in ro and ro['headline_text'] in resource_outlines and ro.get('matched_text'):
                 resource_outlines[ro['headline_text']] += [ro['matched_text']]
     return resource_outlines
 
@@ -493,7 +494,8 @@ def generate_article_pro_body(
             matched_content
         )
         
-        body += f"<img src='{image}' width=512 />" 
+        if image:
+            body += f"<img src='{image}' width=512 />" 
 
 
         for sub in subs:

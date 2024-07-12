@@ -34,14 +34,41 @@
           <td class="text-center p-4">
             <div id="content-wc-{{ content.id }}">
               {% if content.word_count %}
-              {{ content.word_count | to_persian_num }}
+              <span class="badge fw-semibold text-light-emphasis">
+                {{ content.word_count | to_persian_num }}
+                </span>
               {% else %}
               <span class="loading-placeholder rounded status-{{ content.id }}"></span>
               {% endif %}
             </div>
           </td>
-          <td class="text-center p-4">{{ content.content_type | show_content_type }}</td>
-          <td class="text-center p-4">{{ content.timestamp | gregorian_to_jalali_detail }}</td>
+          <td class="text-center p-4">
+            {% if content.content_type == 0 %}
+            <span class="badge fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle">
+              {{ content.content_type | show_content_type }}
+            </span>
+            {% endif %}
+            {% if content.content_type == 1 %}
+            <span class="badge fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle">
+              {{ content.content_type | show_content_type }}
+            </span>
+            {% endif %}
+            {% if content.content_type == 2 %}
+            <span class="badge fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle">
+              {{ content.content_type | show_content_type }}
+            </span>
+            {% endif %}
+            {% if content.content_type == 3 %}
+            <span class="badge fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle">
+              {{ content.content_type | show_content_type }}
+            </span>
+            {% endif %}
+          </td>
+          <td class="text-center p-4">
+            <span class="badge fw-semibold text-light-emphasis bg-light-subtle border border-light-subtle">
+              {{ content.timestamp | g2j_for_list }}
+              </span>
+          </td>
           <td class="text-center p-4">
             <div class="dropdown">
               <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown"
@@ -192,11 +219,12 @@
     function checkJobStatus(jobId, contentId) {
       $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
         if (data.status === 'SUCCESS') {
-          $(`.status-${contentId}`).hide();
-          $.get(`/dashboard/article/blog/list/${contentId}`, function (data) {
-            $(`#content-title-${contentId}`).html(data.title);
-            $(`#content-wc-${contentId}`).html(data.count);
-          });
+          window.location.reload()
+          // $(`.status-${contentId}`).hide();
+          // $.get(`/dashboard/article/blog/list/${contentId}`, function (data) {
+          //   $(`#content-title-${contentId}`).html(data.title);
+          //   $(`#content-wc-${contentId}`).html(data.count);
+          // });
         } else {
           setTimeout(() => checkJobStatus(jobId, contentId), 2000);
         }
