@@ -26,12 +26,12 @@
         </a>
         <div class="collapse {{ 'show' if 'article' in request.path else '' }}" id="contentCollapse">
           <ul class="nav flex-column ms-3">
-            <li class="nav-item">
+            <li class="nav-item small">
               <a class="nav-link {% if request.endpoint == 'dashboard.article_pro' %}active-nav{% endif %}" id="content حرفه‌ایLink" href="{{ url_for('dashboard.article_pro') }}">
                 <i class="fas fa-file-alt me-2"></i>مقاله حرفه‌ای
               </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item small">
               <a class="nav-link {% if request.endpoint == 'dashboard.article_blog' %}active-nav{% endif %}" id="بلاگLink" href="{{ url_for('dashboard.article_blog') }}">
                 <i class="fas fa-blog me-2"></i>مقاله بلاگ
               </a>
@@ -98,14 +98,16 @@
       </a>
       <div class="collapse {{ 'show' if 'translate' in request.path else '' }}" id="ترجمهCollapse">
         <ul class="nav flex-column ms-3">
-          <li class="nav-item">
+          <li class="nav-item small">
             <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian_file' %}active-nav{% endif %}" id="از فارسیLink" href="{{ url_for('dashboard.translate_to_persian_file') }}">
-              <i class="fas fa-language me-2"></i>ترجمه فایل به فارسی
+              <i class="fas fa-language me-2"></i>ترجمه به فارسی
+              <span class="badge text-bg-light">فایل</span>
             </a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item small">
             <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian' %}active-nav{% endif %}" id="به فارسیLink" href="{{ url_for('dashboard.translate_to_persian') }}">
-              <i class="fas fa-language me-2"></i>ترجمه متن به فارسی
+              <i class="fas fa-language me-2"></i>ترجمه به فارسی
+              <span class="badge text-bg-light">متن</span>
             </a>
           </li>
         </ul>
