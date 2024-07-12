@@ -16,7 +16,7 @@ load_dotenv()
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
-
+login_manager.login_message = u"برای دسترسی به این صفحه باید وارد سیستم شوید."
 
 # # Ensure the collection is created (if not exists)
 # if "contents" not in mdb.list_collection_names():
