@@ -12,6 +12,9 @@
     .is-invalid {
         border-color: red !important;
     }
+    .btn-success{
+        display: none;
+    }
 </style>
 <div class="row">
     <div class="col-12 mr-auto mx-auto">
@@ -386,7 +389,7 @@
         let maxSelectedResources = 5;
         let resources = [];
         let suggested_lists = [];
-        let selected_list = null;
+        let selected_list = "";
         let selectedTitle = "";
         let mainOutlineCounter = 0;
         let subOutlineCounter = 0;
@@ -459,7 +462,7 @@
                 </div>
                 <div class="col-9 p-2" style="direction: ltr; text-align: left;">
                     <span class="badge ${badgeClass} ms-2">${type === 'file' ? 'فایل' : 'وب'}</span>
-                    <a class="link-primary" href="${url}" >${url}</a>
+                    <a class="link-primary" target=_blank href="${url}" >${url}</a>
                 </div>
             </div>`;
             $("#selected-resources").append(selectedRow);
@@ -537,14 +540,10 @@
                     'در حال دریافت اطلاعات تصاویر...',
                     'در حال پردازش تصاویر...'
                 ]);
-                $("#form-container").find("input, button, textarea, select").prop("disabled", false);
-                //$('.btn-outline-primary').hide();
+                //$('.wizard-buttons .btn-outline-primary').hide();
                 //$('.btn-outline-dark').hide();
-                $('.btn-success').css("display: none");
-                loadBtnLoader()
 
-                $('.btn-outline-primary').hide();
-                $('.btn-outline-dark').hide();
+
     
                 // Modify the function to integrate the click event for replacing the image
                 function loadImageForOutline(outline, outlineIndex) {
@@ -642,8 +641,11 @@
                                 }
                             });
 
+                            console.log(selected_list)
                             $(containerId).find('.image-result').on('click', function () {
                                 const imageUrl = $(this).data('image-src');
+
+                                console.log("Hellooooooooo ", id)
                                 selected_list[id]['image'] = imageUrl
                                 console.log(selected_list)
                                 $(`#images-container #img-image-${id}`).show();
@@ -657,6 +659,15 @@
                 }
                 // Sequentially load images for each outline
                 (async function loadAllImages() {
+                    $("#form-container").find("input, button, textarea, select").prop("disabled", false);
+                    // $('.btn-success').hide();
+                    $('.wizard-buttons .btn-outline-primary').hide();
+                    $('.wizard-buttons .btn-outline-dark').hide();
+                    
+
+                    loadBtnLoader()
+
+                    
                     for (let outlineIndex = 0; outlineIndex < selected_list.length; outlineIndex++) {
                         try {
                             if (outlineIndex == 0)
@@ -669,12 +680,13 @@
                             // Handle the error case if needed
                         }
                     }
-                   // $('.btn-outline-primary').show();
+                    $('.btn-outline-primary').show();
                     $('.btn-outline-dark').show();
                     $('#btn-spinner').remove();
                     $("#images-container").show()
                     $("#loading-images").hide()
                     $('.btn-success').show();
+//                    $('.wizard-buttons .btn-success').hide();
 
                     wizard.unlock();
                 })();
@@ -770,16 +782,17 @@
                 {
                     "main_topic": query,
                     //"main_topic": $("input[name='search_in_resource']").val(),
-                    "language_model": $("input[name='language_model']").val()
+                    "language_model": getCheckedLanguageModel()
                 } : {
                     "main_topic": main_tagify.value[0]['value']
                 };
+            console.log(getCheckedLanguageModel())
 
             $("input[name='search_in_resource']").val(query);
 
 
             $("#form-container").find("input, button, textarea, select").prop("disabled", true);
-            $('.btn-outline-primary').hide();
+            $('.wizard-buttons .btn-outline-primary').hide();
             $('.btn-outline-dark').hide();
             loadBtnLoader()
             $.ajax({
@@ -824,7 +837,6 @@
             });
         }
 
-
         $("#search-resource-btn").click(function () {
             loadResources(true)
         });
@@ -840,11 +852,12 @@
 
             var request = {
                 "user_topic": $("input[name='main_tag']").val(),
-                "language_model": $("input[name='language_model']").val(),
+                "language_model": getCheckedLanguageModel(),
                 "lang": $('input[name="language"]:checked').val()
             };
+            console.log(getCheckedLanguageModel())
 
-            $('.btn-outline-primary').hide();
+            $('.wizard-buttons .btn-outline-primary').hide();
             $('.btn-outline-dark').hide();
             loadBtnLoader()
             $("#titles-container").hide();
@@ -897,11 +910,12 @@
 
             var request = {
                 "selected_title": selectedTitle,
-                "language_model": $("input[name='language_model']").val(),
+                "language_model": getCheckedLanguageModel(),
                 "lang": $('input[name="language"]:checked').val()
             };
+            console.log(getCheckedLanguageModel())
 
-            $('.btn-outline-primary').hide();
+            $('.wizard-buttons .btn-outline-primary').hide();
             $('.btn-outline-dark').hide();
             loadBtnLoader()
 
@@ -984,8 +998,8 @@
 
             $("input[name='search_in_resource']").val(main_tagify.value[0]['value']);
             $("#form-container").find("input, button, textarea, select").prop("disabled", true);
-            $('.btn-outline-primary').hide();
-            $('.btn-outline-dark').hide();
+            $('.wizard-buttons .btn-outline-primary').hide();
+            $('.wizard-buttons .btn-outline-dark').hide();
             loadBtnLoader()
 
             $.ajax({
@@ -1121,6 +1135,10 @@
             $('#file-upload').click();
         });
 
+        function getCheckedLanguageModel() {
+            return $('input[name="language_model"]:checked').val();
+        }
+
         $('#file-upload').on('change', function () {
             if ($("#selected-resources .row").length >= maxSelectedResources) {
                 alert('You can select up to ' + maxSelectedResources + ' resources only.');
@@ -1171,6 +1189,7 @@
         ClassicEditor
             .create(document.querySelector('#text-editor'), {
                 language: "fa",
+                toolbar: ['heading', '|' ,'undo', 'redo', 'bold', 'italic', 'link','numberedList', 'bulletedList'],
                 height: 500
             })
             .then(newEditor => {
@@ -1210,11 +1229,12 @@
                 const resourceUrl = $(this).find("a.link-primary").attr("href");
                 selectedResources.push({ type: resourceType, url: resourceUrl });
             });
+            console.log(getCheckedLanguageModel())
 
             const requestData = {
                 user_topic: userTopic,
                 main_tag: mainTag,
-                language_model: $("input[name='language_model']").val(),
+                language_model: getCheckedLanguageModel(),
                 tags: tags,
                 point_ofview: $("#point_ofview").val(),
                 target_audience: $("#target_audience").val(),

@@ -335,6 +335,7 @@ def get_outlines():
     try:
         data = request.data
         topic = json.loads(data)
+        print(topic)
         resources = suggest_outlines(topic['selected_title'], topic['lang'], topic['language_model'])
 
         logger.info(f"User {current_user.id} requested outline suggestions for selected title: {topic['selected_title']}.")

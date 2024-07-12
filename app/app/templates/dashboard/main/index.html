@@ -40,8 +40,33 @@
               {% endif %}
             </div>
           </td>
-          <td class="text-center p-4">{{ content.content_type | show_content_type }}</td>
-          <td class="text-center p-4">{{ content.timestamp | gregorian_to_jalali_detail }}</td>
+          <td class="text-center p-4">
+            {% if content.content_type == 0 %}
+            <span class="badge text-bg-light">
+              {{ content.content_type | show_content_type }}
+            </span>
+            {% endif %}
+            {% if content.content_type == 1 %}
+            <span class="badge text-bg-primary">
+              {{ content.content_type | show_content_type }}
+            </span>
+            {% endif %}
+            {% if content.content_type == 2 %}
+            <span class="badge text-bg-info">
+              {{ content.content_type | show_content_type }}
+            </span>
+            {% endif %}
+            {% if content.content_type == 3 %}
+            <span class="badge text-bg-secondary">
+              {{ content.content_type | show_content_type }}
+            </span>
+            {% endif %}
+          </td>
+          <td class="text-center p-4">
+            <span class="badge text-bg-light">            
+            {{ content.timestamp | g2j_for_list }}
+              </span>
+          </td>
           <td class="text-center p-4">
             <div class="dropdown">
               <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown"
