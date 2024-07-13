@@ -1,0 +1,297 @@
+{% extends "dashboard/dashboard.html" %}
+{% block dashboard %}
+<style>
+    .card-title {
+        font-size: 14px;
+        font-weight: bold;
+    }
+    .word-count {
+        text-align: right;
+        margin-top: 5px;
+    }
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 10;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-spinner {
+        display: none;
+    }
+    .loading-spinner {
+        border: 4px solid transparent;
+        border-top: 4px solid #000;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .gradient-custom {
+        background-color: #fafafa;
+        min-height: 700px;;
+    }
+    .mask-custom {
+        min-width: 200px;
+        background: rgba(226, 226, 226, 0.9);
+        border-radius: 2em;
+        backdrop-filter: blur(15px);
+        border: 2px solid rgba(255, 255, 255, 0.05);
+        background-clip: padding-box;
+        box-shadow: 10px 10px 10px rgba(46, 54, 68, 0.03);
+    }
+    .card-body p {
+        margin-bottom: 10px;
+    }
+    .card-body pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+    }
+    .card-body code {
+        background-color: #f4f4f4;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+    .card-body blockquote {
+        border-left: 3px solid #ccc;
+        padding-left: 10px;
+        color: #666;
+    }
+    .card-body img {
+        max-width: 100%;
+        height: auto;
+    }
+    #loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h4 class="">چت با هوش‌مصنوعی</h4>
+        </div>
+        <div class="col-12">
+            <section class="gradient-custom border p-4 rounded">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-4 mt-4">
+                                <div class="w-100 p-3 pb-1 text-right">مدل زبانی را انتخاب کنید</div>
+                                <div class="w-100 pt-2">
+                                    <div class="row row-cols-4 g-2">
+                                        <div class="col">
+                                            <div class="card-body">
+                                                <input type="radio" class="btn-check" value="gpt-4o" name="llm_model" id="gpt4-outlined" autocomplete="off" checked>
+                                                <label class="btn btn-outline-primary w-100 p-0" for="gpt4-outlined">
+                                                    <div class="model-card">
+                                                        <img src="/static/images/logo-gpt4.jpeg" alt="OpenAI" class="rounded m-1 me-2" style="height: 54px;">
+                                                        <div class="model-info">
+                                                            <p class="card-title m-0 p-0">OpenAI GPT-4o</p>
+                                                            <div class="small mt-1">ضریب کلمه: ۵</div>
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card-body">
+                                                <input type="radio" class="btn-check" value="gpt-3.5-turbo" name="llm_model" id="gpt3.5-outlined" autocomplete="off">
+                                                <label class="btn btn-outline-primary w-100 p-0" for="gpt3.5-outlined">
+                                                    <div class="model-card">
+                                                        <img src="/static/images/logo-gpt3.5.jpeg" alt="OpenAI" class="rounded m-1 me-2" style="height: 54px;">
+                                                        <div class="model-info">
+                                                            <p class="card-title m-0 p-0">OpenAI GPT-3.5</p>
+                                                            <div class="small mt-1">ضریب کلمه: ۱</div>
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card-body">
+                                                <input type="radio" class="btn-check" value="claude-3-haiku" name="llm_model" id="claude3-haiku-outlined" autocomplete="off">
+                                                <label class="btn btn-outline-primary w-100 p-0" for="claude3-haiku-outlined">
+                                                    <div class="model-card">
+                                                        <img src="/static/images/logo-claude.jpeg" alt="Haiku" class="rounded m-1 me-2" style="height: 54px;">
+                                                        <div class="model-info">
+                                                            <p class="card-title m-0 p-0">Claude 3 Haiku</p>
+                                                            <div class="small mt-1">ضریب کلمه: ۱</div>
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card-body">
+                                                <input type="radio" class="btn-check" value="claude-3.5-sonnet" name="llm_model" id="claude3-sonnet-outlined" autocomplete="off">
+                                                <label class="btn btn-outline-primary w-100 p-0" for="claude3-sonnet-outlined">
+                                                    <div class="model-card">
+                                                        <img src="/static/images/logo-claude.jpeg" alt="Sonnet" class="rounded m-1 me-2" style="height: 54px;">
+                                                        <div class="model-info">
+                                                            <p class="card-title m-0 p-0">Claude 3 Sonnet</p>
+                                                            <div class="small mt-1">ضریب کلمه: ۴</div>
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container py-5 mb-4">
+                    <ul class="list-unstyled border text-bg-light rounded p-3" style="height: 650px; overflow: auto">
+                        <!-- Chat messages will be dynamically added here -->
+                    </ul>
+                    <div class="form-outline form-white mb-3">
+                        <textarea class="form-control" id="input-text-area" rows="4"></textarea>
+                        <label class="form-label" for="input-text-area"><span class="badge text-bg-light word-count" id="input-word-count">کلمات: ۰</span></label>
+                        <label for="input-text-area" class="form-label float-end"><span class="badge text-bg-light word-count" id="">اگر Enter بزنید پیام فرستاده می‌شود.</span></label>
+                    </div>
+                    <div class="clearfix"></div>
+                    <a href="{{url_for('dashboard.forget_chat')}}" class="btn btn-outline-danger btn-lg btn-rounded float-start mt-3">مکالمه را پاک کن</a>
+                    <button type="button" id="send-btn" class="btn btn-primary btn-lg btn-rounded float-end mt-3">ارسال</button>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        function toPersianNumber(number) {
+            const persianMap = { '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴', '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹' };
+            return number.toString().split('').map(char => persianMap[char] || char).join('');
+        }
+
+        function updateWordCount() {
+            const text = $('#input-text-area').val();
+            const wordCount = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+            $('#input-word-count').text("کلمات: " + toPersianNumber(wordCount));
+        }
+
+        $('#input-text-area').on('input', updateWordCount);
+
+        function sendMessage() {
+            const message = $('#input-text-area').val();
+            const selectedModel = $('input[name="llm_model"]:checked').val();
+
+            if (message.trim() === '') return;
+
+            // Add user message
+            const userMessageHtml = `
+                <li class="d-flex justify-content-start mb-4">
+                    <div class="card mask-custom">
+                        <div class="card-body">
+                            <div class="mb-0">${marked.parse(message)}</div>
+                        </div>
+                    </div>
+                </li>
+            `;
+            $('ul.list-unstyled').append(userMessageHtml);
+
+            // Add loading animation
+            const loadingHtml = `
+                <li id="loading-container" class="d-flex justify-content-center mb-4">
+                    <lottie-player src="{{ url_for('static', filename='media/ai.json') }}"
+                        background="transparent" speed="1" loop autoplay style="width: 100px; height: 100px;"></lottie-player>
+                </li>
+            `;
+            $('ul.list-unstyled').append(loadingHtml);
+
+            // Scroll to bottom of chat
+            const chatContainer = $('ul.list-unstyled');
+            chatContainer.scrollTop(chatContainer[0].scrollHeight);
+
+            $.ajax({
+                type: 'POST',
+                url: '{{url_for("dashboard.chat")}}',
+                data: JSON.stringify({ message, llm_model: selectedModel }),
+                contentType: 'application/json',
+                beforeSend: function() {
+                    $('#input-text-area').prop('disabled', true);
+                    $('#send-btn').prop('disabled', true).text('در حال دریافت پاسخ');
+                },
+                success: function(response) {
+                    // Remove loading animation
+                    $('#loading-container').remove();
+                    
+                    const botMessageHtml = `
+                        <li class="d-flex justify-content-end mb-4">
+                            <div class="card mask-custom">
+                                <div class="card-header d-flex justify-content-between p-3" style="background: transparent;">
+                                    <p class="fw-bold mb-0">Matn.ai (${selectedModel})</p>
+                                    <button class="btn btn-sm btn-outline-secondary copy-btn border-0" data-message="${response.answer}">
+                                        <i class="fa-solid fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-0">${marked.parse(response.answer)}</div>
+                                </div>
+                            </div>
+                            <img src="/static/images/matn-ai-short-logo.png" alt="Bot" class="rounded-circle d-flex align-self-start ms-3 shadow-1-strong" width="60">
+                        </li>
+                    `;
+                    $('ul.list-unstyled').append(botMessageHtml);
+                    $('#input-text-area').val('');
+                    updateWordCount();
+
+                    // Scroll to bottom of chat
+                    chatContainer.scrollTop(chatContainer[0].scrollHeight);
+                },
+                complete: function() {
+                    $('#input-text-area').prop('disabled', false);
+                    $('#send-btn').prop('disabled', false).text('ارسال');
+                },
+                error: function() {
+                    // Remove loading animation
+                    $('#loading-container').remove();
+                    
+                    alert('خطایی رخ داده است. لطفا دوباره تلاش کنید.');
+                    $('#input-text-area').prop('disabled', false);
+                    $('#send-btn').prop('disabled', false).text('ارسال');
+                }
+            });
+        }
+
+        $('#send-btn').on('click', sendMessage);
+
+        // Handle Enter key press
+        $('#input-text-area').on('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // Prevent default behavior (new line)
+                sendMessage();
+            }
+        });
+
+        // Copy button functionality
+        $(document).on('click', '.copy-btn', function() {
+            const textToCopy = $(this).data('message');
+            navigator.clipboard.writeText(textToCopy).then(function() {
+                // alert('پیام کپی شد');
+            }, function(err) {
+                console.error('خطا در کپی کردن: ', err);
+            });
+        });
+    });
+</script>
+{% endblock %}
