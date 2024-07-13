@@ -44,13 +44,21 @@ def forget_chat():
 def chat():
     user = current_user
     session_id = f"chat_session_{user.id}"
-    
+    if current_user.remain_charge < 0:
+        flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+        return redirect(url_for('finance.create_pay'))
+
     if request.method == "POST":
         form_data = request.json  # Receive JSON data
         logger.info(f"Received chat request data: {form_data}")
 
         llm_model = form_data.get('llm_model')
         _request = form_data.get('message')
+
+        if current_user.remain_charge < 0:
+            flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+            return jsonify({"error": "No creadit provided"}), 200
+
         
         if not _request:
             return jsonify({"error": "No message provided"}), 400
@@ -73,8 +81,9 @@ def chat():
 @login_required
 def index():
     if current_user.remain_charge < 0:
-        flash('موجودی شما کافی نیست')
-        return redirect(url_for('finance.create_pay'))
+        flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+        return jsonify({"error": "No creadit"}), 200    
+
     search_query = request.args.get("q", "")
     sort_order = request.args.get("sort", "desc")
     page = request.args.get("page", 1, type=int)
@@ -189,6 +198,10 @@ def article_blog(id=None):
 @dashboard.route("/article/pro/create", methods=["POST"])
 @login_required
 def create_article_pro():
+    if current_user.remain_charge < 0:
+        flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+        # return redirect(url_for('finance.create_pay'))
+
     try:
         data = request.data
         article_data = json.loads(data)
@@ -209,6 +222,10 @@ def create_article_pro():
 @login_required
 def article_pro():
     try:
+        if current_user.remain_charge < 0:
+            flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+            return redirect(url_for('finance.create_pay'))
+
         form = GenerateArticlePro()
 
         logger.info(f"User {current_user.id} accessed pro article creation form.")
