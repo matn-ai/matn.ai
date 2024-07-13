@@ -290,33 +290,38 @@
                 alert('فقط می‌توانید یک فایل آپلود کنید.');
                 return;
             }
-
+        
             const file = files[0];
-
+            const allowedExtensions = ['pdf', 'doc', 'docx', 'srt'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+        
+            if (!allowedExtensions.includes(fileExtension)) {
+                alert('فرمت فایل مجاز نیست. لطفاً فایل PDF، Word، یا SRT آپلود کنید.');
+                return;
+            }
+        
             if (file.size > maxFileSize) {
                 alert('حجم فایل نباید بیشتر از 10 مگابایت باشد.');
                 return;
             }
-
+        
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             $fileInput[0].files = dataTransfer.files;
             
             const fileName = file.name;
             const fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-            const fileExtension = fileName.split('.').pop();
-
+        
             $fileName.text("نام فایل: " + fileName);
             $fileSize.text("سایز فایل: " + fileSize);
             $fileExtension.text("فرمت فایل: " + fileExtension.toUpperCase());
             $fileDetails.show();
-
-            $('#estimateCostBtn').attr('disabled', false)
-            $('#estimateCostBtn').show()
+        
+            $('#estimateCostBtn').attr('disabled', false);
+            $('#estimateCostBtn').show();
             $('#costContainer').hide();
-
         }
-
+        
         $dropArea
             .on('dragenter dragover', function(e) {
                 preventDefaults(e);
