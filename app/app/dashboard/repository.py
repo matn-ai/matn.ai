@@ -16,6 +16,7 @@ from html2docx import html2docx
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from logging import getLogger
+# from .chat import do_chat
 
 # Initialize Logger
 logger = getLogger(__name__)
@@ -25,16 +26,6 @@ OPENROUTER_API = os.getenv("OPENROUTER_API")
 
 # Initialize OpenAI client
 openai_client = OpenAI(base_url=OPENROUTER_API, api_key=API_KEY)
-
-# def set_paragraph_rtl(paragraph):
-#     # Set paragraph RTL formatting
-#     paragraph.paragraph_format.right_to_left = True
-#     p = paragraph._element
-#     pProperties = p.get_or_add_pPr()
-#     bidi = OxmlElement('w:bidi')
-#     bidi.set(qn('w:val'), '1')
-#     pProperties.append(bidi)
-
 
 def set_paragraph_rtl(paragraph):
     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT

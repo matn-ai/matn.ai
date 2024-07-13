@@ -7,6 +7,11 @@ from ..const import (
     POINT_OF_VIEW_CHOICES, TARGET_AUDIENCE_CHOICES, ARTICLE_LENGTH_PRO_CHOICES, VOICE_TUNE_CHOICES
 )
 
+class ChatForm(FlaskForm):
+    text_to_answer = TextAreaField('دستور خود را وارد کنید', validators=[DataRequired(), Length(1, 5000)])
+    llm_model = StringField()
+    body = TextAreaField('محتوا')
+    submit = SubmitField('ترجمه کن!')
 
 class URLFieldForm(FlaskForm):
     url = StringField('لینک‌ورودی', validators=[URL(message='آدرس نامعتبر')])

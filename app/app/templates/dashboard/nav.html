@@ -1,19 +1,26 @@
 {% from "_macros.html" import nav_item %}
 
-<ul class="nav flex-column w-100">
-    <li class="nav-item">
+<nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
+  <a class="navbar-brand d-lg-none" href="#">منوی داشبورد</a>
+  <button class="navbar-toggler border-0 me-3 mb-2 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="nav flex-column w-100">
+
+      <li class="nav-item">
         <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active-nav{% endif %}" href="{{ url_for('dashboard.index') }}">
-            داشبورد
+          داشبورد
         </a>
-    </li>
-    <!-- <li class="nav-item">
-        <a class="nav-link {% if request.endpoint == 'dashboard.article_blog_content' %}active-nav{% endif %}" href="{{ url_for('dashboard.index') }}">
-            تقویم تولید محتوا
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.endpoint == 'dashboard.chat' %}active-nav{% endif %}" href="{{ url_for('dashboard.chat') }}">
+          چت
         </a>
-    </li> -->
-    
-    <!-- مقالات Dropdown -->
-    <li class="nav-item">
+      </li>
+
+      <!-- مقالات Dropdown -->
+      <li class="nav-item">
         <a class="nav-link d-flex justify-content-between align-items-center"
            id="contentLink"
            href="#contentCollapse"
@@ -38,79 +45,37 @@
             </li>
           </ul>
         </div>
-    </li>
+      </li>
 
-    <!-- <li class="nav-item">
-      <a class="nav-link {% if request.endpoint == 'dashboard.idea_brainstorming' %}active-nav{% endif %}" id="پردازش ایدهLink" href="{{ url_for('dashboard.idea_brainstorming') }}">
-        پردازش ایده
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link {% if request.endpoint == 'dashboard.product_describe' %}active-nav{% endif %}" id="توصیف محصولLink" href="{{ url_for('dashboard.product_describe') }}">
-        توصیف محصول
-      </a>
-    </li> -->
-  
-    <!-- شبکه‌های اجتماعی Dropdown -->
-    <!-- <li class="nav-item">
-      <a class="nav-link d-flex justify-content-between align-items-center"
-         id="شبکه‌های اجتماعیLink"
-         href="#شبکه‌های اجتماعیCollapse"
-         data-bs-toggle="collapse"
-         role="button"
-         aria-controls="شبکه‌های اجتماعیCollapse"
-         aria-expanded="{{ 'true' if 'social' in request.path else 'false' }}">
-        <span>شبکه‌های اجتماعی</span>
-        <i class="fas fa-chevron-down"></i>
-      </a>
-      <div class="collapse {{ 'show' if 'social' in request.path else '' }}" id="شبکه‌های اجتماعیCollapse">
-        <ul class="nav flex-column ms-3">
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active-nav{% endif %}" id="لینکدینLink" href="{{ url_for('dashboard.index') }}">
-              <i class="fab fa-linkedin me-2"></i>لینکدین
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active-nav{% endif %}" id="شبکه ایکسLink" href="{{ url_for('dashboard.index') }}">
-              <i class="fab fa-twitter me-2"></i>شبکه ایکس
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active-nav{% endif %}" id="اینستاگرامLink" href="{{ url_for('dashboard.index') }}">
-              <i class="fab fa-instagram me-2"></i>اینستاگرام
-            </a>
-          </li>
-        </ul>
-      </div>
-    </li>
-   -->
-    <!-- ترجمه Dropdown -->
-    <li class="nav-item">
-      <a class="nav-link d-flex justify-content-between align-items-center"
-         id="ترجمهLink"
-         href="#ترجمهCollapse"
-         data-bs-toggle="collapse"
-         role="button"
-         aria-controls="ترجمهCollapse"
-         aria-expanded="{{ 'true' if 'translate' in request.path else 'false' }}">
-        <span>ترجمه</span>
-        <i class="fas fa-chevron-down"></i>
-      </a>
-      <div class="collapse {{ 'show' if 'translate' in request.path else '' }}" id="ترجمهCollapse">
-        <ul class="nav flex-column ms-3">
-          <li class="nav-item small">
-            <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian_file' %}active-nav{% endif %}" id="از فارسیLink" href="{{ url_for('dashboard.translate_to_persian_file') }}">
-              <i class="fas fa-language me-2"></i>ترجمه به فارسی
-              <span class="badge text-bg-light">فایل</span>
-            </a>
-          </li>
-          <li class="nav-item small">
-            <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian' %}active-nav{% endif %}" id="به فارسیLink" href="{{ url_for('dashboard.translate_to_persian') }}">
-              <i class="fas fa-language me-2"></i>ترجمه به فارسی
-              <span class="badge text-bg-light">متن</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </li>
-</ul>
+      <li class="nav-item">
+        <a class="nav-link d-flex justify-content-between align-items-center"
+           id="ترجمهLink"
+           href="#ترجمهCollapse"
+           data-bs-toggle="collapse"
+           role="button"
+           aria-controls="ترجمهCollapse"
+           aria-expanded="{{ 'true' if 'translate' in request.path else 'false' }}">
+          <span>ترجمه</span>
+          <i class="fas fa-chevron-down"></i>
+        </a>
+        <div class="collapse {{ 'show' if 'translate' in request.path else '' }}" id="ترجمهCollapse">
+          <ul class="nav flex-column ms-3">
+            <li class="nav-item small">
+              <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian_file' %}active-nav{% endif %}" id="از فارسیLink" href="{{ url_for('dashboard.translate_to_persian_file') }}">
+                <i class="fas fa-language me-2"></i>ترجمه به فارسی
+                <span class="badge text-bg-light">فایل</span>
+              </a>
+            </li>
+            <li class="nav-item small">
+              <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian' %}active-nav{% endif %}" id="به فارسیLink" href="{{ url_for('dashboard.translate_to_persian') }}">
+                <i class="fas fa-language me-2"></i>ترجمه به فارسی
+                <span class="badge text-bg-light">متن</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+

@@ -1,7 +1,7 @@
 from flask import render_template, jsonify, abort, request, url_for, send_file
 from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
-from app.dashboard.forms import GenerateArticleBlog, GenerateArticlePro
+from app.dashboard.forms import GenerateArticleBlog, GenerateArticlePro, ChatForm
 from app.dashboard import dashboard
 from ..tasks import generate_blog_simple, generate_pro_article
 from .repository import (
@@ -25,15 +25,56 @@ import json, os
 import uuid
 from ..utils import utils_gre2jalali
 from .. import app
-
-
+from ..tasks import chat
+from .chat import do_chat, forget_conversation
 from ..translator.views import *
 
+
+@dashboard.route("/forget_conversation", methods=["GET"])
+@login_required
+def forget_chat():
+    user = current_user
+    forget_conversation(user)        
+    flash('مکالمه از نو بارگزاری شد...')
+    return redirect(url_for('dashboard.chat'))
+    
+    
+@dashboard.route("/chat", methods=["GET", "POST"])
+@login_required
+def chat():
+    user = current_user
+    session_id = f"chat_session_{user.id}"
+    
+    if request.method == "POST":
+        form_data = request.json  # Receive JSON data
+        logger.info(f"Received chat request data: {form_data}")
+
+        llm_model = form_data.get('llm_model')
+        _request = form_data.get('message')
+        
+        if not _request:
+            return jsonify({"error": "No message provided"}), 400
+
+        try:
+            answer = do_chat(_request, llm_model, session_id)
+            total_words = len(str(answer).split())
+
+            Charge.reduce_user_charge(user_id=user.id, total_words=total_words, model=llm_model)
+            
+            return jsonify({"answer": answer})
+        except Exception as e:
+            logger.error(f"Error during chat processing: {e}")
+            return jsonify({"error": str(e)}), 500
+
+    return render_template("dashboard/chat.html", form=ChatForm(), content=None)
 
 
 @dashboard.route("/", methods=["GET"])
 @login_required
 def index():
+    if current_user.remain_charge < 0:
+        flash('موجودی شما کافی نیست')
+        return redirect(url_for('finance.create_pay'))
     search_query = request.args.get("q", "")
     sort_order = request.args.get("sort", "desc")
     page = request.args.get("page", 1, type=int)
@@ -100,14 +141,22 @@ def article_blog(id=None):
     form = GenerateArticleBlog()
     content = None
     not_enough_charge = False
+
     if current_user.remain_charge < 0:
         flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
         not_enough_charge = True
+        return redirect(url_for('finance.create_pay'))
+
+    if current_user.remain_charge < 3000:
+        flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+
+
     if form.validate_on_submit() and not not_enough_charge:
         form_data = request.form.to_dict()
         total_words = 600 if form_data['article_length'] == 'short' else 1300
         if current_user.remain_charge < total_words:
             flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید')
+            return redirect(url_for('finance.create_pay'))
         else:
             content = create_content(user_input=form_data, author=current_user)
             job = generate_blog_simple.delay(content.id, form_data)

@@ -7,99 +7,97 @@
     cursor: pointer;
   }
 </style>
-<div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start p-4" style="min-height: 65vh;">
-  <div style="min-height: 65vh;" class="w-100">
-    <table class="table table-hover" id="listing-table">
-      <thead class="">
-        <tr>
-          <td class="text-center p-4" style="min-width: 250px;">عنوان</td>
-          <td class="text-center p-4">کلمات</td>
-          <td class="text-center p-4">نوع محتوا</td>
-          <td class="text-center p-4">تاریخ</td>
-          <td class="text-center p-4"></td>
-        </tr>
-      </thead>
-      <tbody class="table-group-divider">
-        {% for content in contents %}
-        <tr>
-          <td class="text-center p-4" onclick="openContent('{{ content.content_type }}', '{{ content.id }}')">
-            <div id="content-title-{{ content.id }}">
-              {% if content.system_title %}
-              {{ content.system_title | safe }}
-              {% else %}
-              <span class="loading-placeholder rounded status-{{ content.id }}"></span>
-              {% endif %}
-            </div>
-          </td>
-          <td class="text-center p-4">
-            <div id="content-wc-{{ content.id }}">
-              {% if content.word_count %}
-              <span class="badge fw-semibold text-light-emphasis">
-                {{ content.word_count | to_persian_num }}
+<div class="dashboard-card d-flex flex-column align-items-start justify-content-start p-4" style="min-height: 65vh;">
+  <div class="w-100 flex-grow-1">
+    <div class="table-responsive">
+      <table class="table table-hover" id="listing-table">
+        <thead>
+          <tr>
+            <th class="text-center p-4" style="min-width: 250px;">عنوان</th>
+            <th class="text-center p-4">کلمات</th>
+            <th class="text-center p-4">نوع محتوا</th>
+            <th class="text-center p-4">تاریخ</th>
+            <th class="text-center p-4"></th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          {% for content in contents %}
+          <tr>
+            <td class="text-center p-4" onclick="openContent('{{ content.content_type }}', '{{ content.id }}')">
+              <div id="content-title-{{ content.id }}">
+                {% if content.system_title %}
+                {{ content.system_title | safe }}
+                {% else %}
+                <span class="loading-placeholder rounded status-{{ content.id }}"></span>
+                {% endif %}
+              </div>
+            </td>
+            <td class="text-center p-4">
+              <div id="content-wc-{{ content.id }}">
+                {% if content.word_count %}
+                <span class="badge fw-semibold text-light-emphasis">
+                  {{ content.word_count | to_persian_num }}
                 </span>
-              {% else %}
-              <span class="loading-placeholder rounded status-{{ content.id }}"></span>
-              {% endif %}
-            </div>
-          </td>
-          <td class="text-center p-4">
-            {% if content.content_type == 0 %}
-            <span class="badge fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle">
-              {{ content.content_type | show_content_type }}
-            </span>
-            {% endif %}
-            {% if content.content_type == 1 %}
-            <span class="badge fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle">
-              {{ content.content_type | show_content_type }}
-            </span>
-            {% endif %}
-            {% if content.content_type == 2 %}
-            <span class="badge fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle">
-              {{ content.content_type | show_content_type }}
-            </span>
-            {% endif %}
-            {% if content.content_type == 3 %}
-            <span class="badge fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle">
-              {{ content.content_type | show_content_type }}
-            </span>
-            {% endif %}
-          </td>
-          <td class="text-center p-4">
-            <span class="badge fw-semibold text-light-emphasis bg-light-subtle border border-light-subtle">
-              {{ content.timestamp | g2j_for_list }}
+                {% else %}
+                <span class="loading-placeholder rounded status-{{ content.id }}"></span>
+                {% endif %}
+              </div>
+            </td>
+            <td class="text-center p-4">
+              {% if content.content_type == 0 %}
+              <span class="badge fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle">
+                {{ content.content_type | show_content_type }}
               </span>
-          </td>
-          <td class="text-center p-4">
-            <div class="dropdown">
-              <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-              </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" href="#"
-                    onclick="openContent('{{ content.content_type }}', '{{ content.id }}')">
-                    <i class="fa-solid fa-pen me-2"></i> ویرایش
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#" onclick="showInfoModal('{{ content.id }}')">
-                    <i class="fa-solid fa-info-circle me-2"></i> اطلاعات
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#" onclick="showDeleteModal('{{ content.id }}')">
-                    <i class="fa-solid fa-trash me-2"></i> حذف
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+              {% elif content.content_type == 1 %}
+              <span class="badge fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle">
+                {{ content.content_type | show_content_type }}
+              </span>
+              {% elif content.content_type == 2 %}
+              <span class="badge fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle">
+                {{ content.content_type | show_content_type }}
+              </span>
+              {% elif content.content_type == 3 %}
+              <span class="badge fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle">
+                {{ content.content_type | show_content_type }}
+              </span>
+              {% endif %}
+            </td>
+            <td class="text-center p-4">
+              <span class="badge fw-semibold text-light-emphasis bg-light-subtle border border-light-subtle">
+                {{ content.timestamp | g2j_for_list }}
+              </span>
+            </td>
+            <td class="text-center p-4">
+              <div class="dropdown">
+                <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="#"
+                      onclick="openContent('{{ content.content_type }}', '{{ content.id }}')">
+                      <i class="fa-solid fa-pen me-2"></i> ویرایش
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="showInfoModal('{{ content.id }}')">
+                      <i class="fa-solid fa-info-circle me-2"></i> اطلاعات
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" onclick="showDeleteModal('{{ content.id }}')">
+                      <i class="fa-solid fa-trash me-2"></i> حذف
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
-
   <nav aria-label="Page navigation">
     <ul class="pagination justify-content-center">
       {% if next_url %}
@@ -121,10 +119,10 @@
 </div>
 
 {% else %}
-<div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start p-4">
+<div class="dashboard-card d-flex flex-column align-items-start justify-content-start p-4">
   <div id="dashboard-content" class="w-100 d-flex flex-column justify-content-center" style="min-height: 65vh;">
     <div class="d-flex justify-content-center align-items-center flex-grow-1" style="min-height: 65vh;">
-      <span class="p-4 rounded bg-light text-dark text-center align-bottom border-1" style="width: 300px;">
+      <span class="p-4 rounded bg-light text-dark text-center border" style="width: 300px;">
         هنوز محتوایی تولید نکرده‌اید
       </span>
     </div>
@@ -167,33 +165,32 @@
         const inputs = JSON.parse(data.info.inputs);
         if (data.info.word_count == "None")
           data.info.word_count = "-"
-        // const article_length = data.info["article_length"]
-        const modalBodyContent = `<ul class="list-group list-group-horizontal w-100"> \ 
-          <li class="list-group-item w-25">موضوع</li> \
-          <li class="list-group-item w-75">${inputs['user_topic']}</li> \      
-        </ul> \
-        <ul class="list-group list-group-horizontal w-100 mt-2"> \ 
-          <li class="list-group-item w-25">نوع محتوا</li> \
-          <li class="list-group-item w-75">${data.info.content_type}</li> \      
-        </ul>
-        <ul class="list-group list-group-horizontal w-100 mt-2"> \ 
-          <li class="list-group-item w-25">وضعیت</li> \
-          <li class="list-group-item w-75">${data.info.job_status}</li> \      
-        </ul>
-        <ul class="list-group list-group-horizontal w-100 mt-2"> \ 
-          <li class="list-group-item w-25">تاریخ تولید</li> \
-          <li class="list-group-item w-75">${data.info.timestamp}</li> \      
-        </ul>
-        <ul class="list-group list-group-horizontal w-100 mt-2"> \ 
-          <li class="list-group-item w-25">تعداد کلمات</li> \
-          <li class="list-group-item w-75">${data.info.word_count}</li> \      
-        </ul>
+        const modalBodyContent = `
+          <ul class="list-group list-group-horizontal w-100">
+            <li class="list-group-item w-25">موضوع</li>
+            <li class="list-group-item w-75">${inputs['user_topic']}</li>
+          </ul>
+          <ul class="list-group list-group-horizontal w-100 mt-2">
+            <li class="list-group-item w-25">نوع محتوا</li>
+            <li class="list-group-item w-75">${data.info.content_type}</li>
+          </ul>
+          <ul class="list-group list-group-horizontal w-100 mt-2">
+            <li class="list-group-item w-25">وضعیت</li>
+            <li class="list-group-item w-75">${data.info.job_status}</li>
+          </ul>
+          <ul class="list-group list-group-horizontal w-100 mt-2">
+            <li class="list-group-item w-25">تاریخ تولید</li>
+            <li class="list-group-item w-75">${data.info.timestamp}</li>
+          </ul>
+          <ul class="list-group list-group-horizontal w-100 mt-2">
+            <li class="list-group-item w-25">تعداد کلمات</li>
+            <li class="list-group-item w-75">${data.info.word_count}</li>
+          </ul>
         `;
         const modalFooterContent = '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>';
         createAndOpenModal('infoModal', 'اطلاعات محتوا', modalBodyContent, modalFooterContent);
       }
     });
-
   }
 
   function showDeleteModal(contentId) {
@@ -219,17 +216,11 @@
     function checkJobStatus(jobId, contentId) {
       $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
         if (data.status === 'SUCCESS') {
-          window.location.reload()
-          // $(`.status-${contentId}`).hide();
-          // $.get(`/dashboard/article/blog/list/${contentId}`, function (data) {
-          //   $(`#content-title-${contentId}`).html(data.title);
-          //   $(`#content-wc-${contentId}`).html(data.count);
-          // });
+          window.location.reload();
         } else {
           setTimeout(() => checkJobStatus(jobId, contentId), 2000);
         }
-      }).fail(function (xhr, status, error) {
-      });
+      }).fail(function (xhr, status, error) {});
     }
 
     {% for content in contents %}
