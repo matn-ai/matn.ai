@@ -92,7 +92,7 @@ def translate_file(content_id, user_input=None):
     start_time = time.time()
     content = db.session.query(Content).get(content_id)
     file_path = content.get_input('file_path')
-    
+    print(file_path)
     file_name = content.get_input('file_path').split('/')[-1]
     mimetype = content.get_input('mimetype')
     logger.info('Going to upload the main file')
