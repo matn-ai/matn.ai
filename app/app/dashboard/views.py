@@ -13,7 +13,7 @@ from .repository import (
     get_job_by_id,
     get_content_info,
     search_resources,
-    suggest_outline_images,
+    suggest_one_image,
     suggest_titles,
     suggest_outlines,
     delete_article_pro,
@@ -361,7 +361,7 @@ def get_resources():
 def get_images():
     data = request.data
     input = json.loads(data)
-    result = suggest_outline_images(input['title'])
+    result = suggest_one_image(input['title'])
 
     logger.info(f"User {current_user.id} requested resource.")
 
@@ -423,6 +423,7 @@ def article_info(content_id):
     except Exception as e:
         logger.error(f"Error in article_info route for content ID {content_id}: {e}")
         return abort(500)
+
 
 @dashboard.route("/article/status/id/<job_id>", methods=["GET"])
 @dashboard.route("/article/status/cid/<job_id>", methods=["GET"])

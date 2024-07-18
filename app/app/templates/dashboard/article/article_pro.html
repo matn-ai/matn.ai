@@ -367,7 +367,7 @@
             style="display: none; position: relative; height: 100%">
             <div id="loading-content" class="text-center mr-auto mx-auto"
                 style="display: none;  height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
-                <div style="width: 160px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
+                <div style="width: 72px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
                     <lottie-player src="{{ url_for('static', filename='media/ai.json') }}"
                         background="transparent" speed="1" loop autoplay></lottie-player>
                 </div>
@@ -422,7 +422,7 @@
         }
 
         function checkJobStatus(jobId, contentId) {
-            $.get(`/dashboard/article/blog/status/cid/${jobId}`, function (data) {
+            $.get(`/dashboard/article/status/cid/${jobId}`, function (data) {
                 if (data.status === 'SUCCESS') {
                     $('#article-info-timer').html(data.running_duration);
                     fetchContent(contentId);
@@ -613,7 +613,7 @@
                 // Function to load images in the search container and handle image click
                 function loadImageSearch(containerId, mainHead, id) {
                     let user_topic = $("#form_user_topic").val()
-                    let query = `${main_tagify.value[0]['value']} ${user_topic}`;
+                    let query = `${main_tagify.value[0]['value']}`;
         
                     $.ajax({
                         type: 'POST',
@@ -667,6 +667,7 @@
 
                     loadBtnLoader()
 
+                    // console.log(selected_list)
                     
                     for (let outlineIndex = 0; outlineIndex < selected_list.length; outlineIndex++) {
                         try {
@@ -696,8 +697,16 @@
 
         $('#images-container').on('click', '.remove-image', function () {
             const mainOutlineId = $(this).data('main-outline-id');
+            // let mainOutlineIndex = mainOutlineId.split('-')[2] - 1;
             // $(this).hide()
+
+            let mainOutline = $(this).closest('.outline-item').attr('id');
+            let mainOutlineIndex = mainOutline.split('-')[2] - 1;
+            // console.log(selected_list);
+            // console.log(mainOutlineIndex);
+
             $(`#images-container #img-${mainOutlineId}`).hide();
+            selected_list[mainOutlineIndex]['image'] = "";
             $(`#img-${mainOutlineId}`).attr('src', '/static/images/no-image.jpeg');
         });
 
@@ -1052,9 +1061,14 @@
             selected_list = suggested_lists[1];
         });
 
+        // Updated attachEventHandlers function
         function attachEventHandlers() {
             $('.remove-main-outline').off('click').on('click', function () {
+                let mainOutlineId = $(this).closest('.outline-item').attr('id');
+                let mainOutlineIndex = mainOutlineId.split('-')[2] - 1;
+                selected_list.splice(mainOutlineIndex, 1);
                 $(this).closest('.outline-item').remove();
+                updateMainOutlineIndices();
             });
 
             $('.add-sub-outline').off('click').on('click', function () {
@@ -1062,15 +1076,25 @@
                 let parentId = $(this).closest('.outline-item').attr('id');
                 let subOutlineId = `sub-outline-${subOutlineCounter}`;
                 let subOutlineHTML = `<div class="d-flex mb-2 sub-outline-item" id="${subOutlineId}">
-                    <input type="text" class="form-control sub-outline-input" id="${subOutlineId}-input" value="" />
+                    <input type="text" class="form-control sub-outline-input" id="input-${subOutlineId}" value="" />
                     <button class="btn btn-link text-danger ms-2 remove-sub-outline" type="button" id="${subOutlineId}-remove"><i class="fas fa-minus"></i></button>
                 </div>`;
                 $(`#${parentId}-subs`).append(subOutlineHTML);
+
+                let mainOutlineIndex = parentId.split('-')[2] - 1;
+                selected_list[mainOutlineIndex].subs.push("");
+
                 attachEventHandlers();
             });
 
             $('.remove-sub-outline').off('click').on('click', function () {
+                let subOutlineId = $(this).closest('.sub-outline-item').attr('id');
+                let mainOutlineId = $(this).closest('.outline-item').attr('id');
+                let mainOutlineIndex = mainOutlineId.split('-')[2] - 1;
+                let subOutlineIndex = subOutlineId.split('-')[2] - 1;
+                selected_list[mainOutlineIndex].subs.splice(subOutlineIndex, 1);
                 $(this).closest('.sub-outline-item').remove();
+                updateSubOutlineIndices(mainOutlineIndex);
             });
 
             $('.add-main-outline-btn').off('click').on('click', function () {
@@ -1086,7 +1110,43 @@
                     <div class="ms-3 sub-outline-container" id="${mainOutlineId}-subs"></div>
                 </div>`;
                 $("#list-" + listId).append(mainOutlineHTML);
+                selected_list.push({ head: "", subs: [] });
                 attachEventHandlers();
+            });
+
+            // Attach event listeners to update the selected list when inputs change
+            $('.main-outline-input').off('input').on('input', function () {
+                let mainOutlineId = $(this).closest('.outline-item').attr('id');
+                let mainOutlineIndex = mainOutlineId.split('-')[2] - 1;
+                selected_list[mainOutlineIndex].head = $(this).val();
+            });
+
+            $('.sub-outline-input').off('input').on('input', function () {
+                let subOutlineId = $(this).closest('.sub-outline-item').attr('id');
+                let mainOutlineId = $(this).closest('.outline-item').attr('id');
+                let mainOutlineIndex = mainOutlineId.split('-')[2] - 1;
+                let subOutlineIndex = subOutlineId.split('-')[2] - 1;
+                selected_list[mainOutlineIndex].subs[subOutlineIndex] = $(this).val();
+            });
+        }
+
+        function updateMainOutlineIndices() {
+            $(".outline-item").each(function (index) {
+                let mainOutlineId = `main-outline-${index + 1}`;
+                $(this).attr('id', mainOutlineId);
+                $(this).find('.main-outline-input').attr('id', `${mainOutlineId}-input`);
+                $(this).find('.remove-main-outline').attr('id', `${mainOutlineId}-remove`);
+                $(this).find('.add-sub-outline').attr('id', `${mainOutlineId}-add-sub`);
+                $(this).find('.sub-outline-container').attr('id', `${mainOutlineId}-subs`);
+            });
+        }
+
+        function updateSubOutlineIndices(mainOutlineIndex) {
+            $(`#main-outline-${mainOutlineIndex + 1} .sub-outline-item`).each(function (index) {
+                let subOutlineId = `sub-outline-${index + 1}`;
+                $(this).attr('id', subOutlineId);
+                $(this).find('.sub-outline-input').attr('id', `input-${subOutlineId}`);
+                $(this).find('.remove-sub-outline').attr('id', `${subOutlineId}-remove`);
             });
         }
 

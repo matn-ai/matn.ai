@@ -214,11 +214,11 @@
 
   $(document).ready(function () {
     function checkJobStatus(jobId, contentId) {
-      $.get(`/dashboard/article/blog/status/${jobId}`, function (data) {
+      $.get(`/dashboard/article/status/id/${jobId}`, function (data) {
         if (data.status === 'SUCCESS') {
           window.location.reload();
         } else {
-          setTimeout(() => checkJobStatus(jobId, contentId), 2000);
+          setTimeout(() => checkJobStatus(jobId, contentId), 5000);
         }
       }).fail(function (xhr, status, error) {});
     }

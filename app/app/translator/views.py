@@ -169,3 +169,5 @@ def estimate_cost():
         return jsonify({'estimated_cost': -1, 'meme': 'file not supported'})
     
     return jsonify({'estimated_cost': estimated_cost_value, 'meme': uploaded_file.mimetype})
+
+
