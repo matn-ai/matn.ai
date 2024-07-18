@@ -90,12 +90,37 @@ def html_to_docx(html_string):
         logger.error(f"Error converting HTML to DOCX: {e}")
         raise e
     
+def suggest_search_query(input):
+    try:
+        llm_type="gpt-3.5-turbo"
+        user_prompt = (
+            f"Write a SEO-optimized query to image search for this title {input}."
+            f"This image is going to use as part of an article"
+        )
+        assistant_prompt = (
+            "You write SEO-optimized query for earch"
 
-def suggest_outline_images(selected_outline, llm_type="gpt-3.5-turbo"):
+        )
+
+        messages = [
+            {"role": "assistant", "content": assistant_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+        response = openai_client.chat.completions.create(
+            model=llm_type, messages=messages, temperature=0.8
+        )
+        result = response.choices[0].message.content
+
+
+        return result
+    except Exception as e:
+        logger.error(f"Error suggesting query for search of '{input}': {e}")
+        return []
+
+
+def suggest_one_image(selected_outline):
     return get_search_images(selected_outline, 1)
-    out = list
-    for item in selected_outline:
-        item['head']['images'] = search_images(item['head'])
         
 
 def save_html_to_docx(html_string, file_path):
@@ -186,7 +211,7 @@ def suggest_titles(topic, lang, llm_type="gpt-4o"):
         ]
 
         response = openai_client.chat.completions.create(
-            model=llm_type, messages=messages, temperature=0.8
+            model=llm_type, messages=messages, temperature=0.8,
         )
         result = response.choices[0].message.content
 
@@ -215,9 +240,10 @@ def search_resources(topic):
 
 def get_search_images(topic, num):
     try:
+        query = suggest_search_query(topic)
         base_url = os.getenv("WEB_SEARCH_API")
         #search = f"{base_url}?q={topic}&format=json&categories=images"
-        search = f"{base_url}?q={topic}&format=json&categories=images&engine=!bi"        
+        search = f"{base_url}?q={query}&format=json&categories=images&engine=!bi"        
         response = requests.get(search)
         result = response.json()
 
