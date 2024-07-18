@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,37 +15,51 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/flag-icons.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/wizard.css') }}">
     {% if request.endpoint == 'dashboard.index' %}
-        <script type="text/javascript">
-            (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "n6qjpsjrrh");
-        </script>
-        <!-- Hotjar Tracking Code for Site 5058518 (name missing) -->
-        <script>
-            (function(h,o,t,j,a,r){
-                h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-                h._hjSettings={hjid:5058518,hjsv:6};
-                a=o.getElementsByTagName('head')[0];
-                r=o.createElement('script');r.async=1;
-                r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-                a.appendChild(r);
-            })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-        </script>
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-08Z9W74CB5"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-        
-          gtag('config', 'G-08Z9W74CB5');
-        </script>
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "n6qjpsjrrh");
+    </script>
+    <!-- Hotjar Tracking Code for Site 5058518 (name missing) -->
+    <script>
+        (function (h, o, t, j, a, r) {
+            h.hj = h.hj || function () { (h.hj.q = h.hj.q || []).push(arguments) };
+            h._hjSettings = { hjid: 5058518, hjsv: 6 };
+            a = o.getElementsByTagName('head')[0];
+            r = o.createElement('script'); r.async = 1;
+            r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-08Z9W74CB5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-08Z9W74CB5');
+    </script>
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function () {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/66938c10becc2fed69249ee1/1i2o5m908';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
     {% endif %}
 
 </head>
+
 <body>
-    
+
     <header>
         {% include 'partials/_header.html' %}
     </header>
@@ -56,18 +71,20 @@
             <div class="toast-container position-fixed bottom-0 start-0 p-3">
                 <!-- Toast Notifications -->
                 {% for message in get_flashed_messages() %}
-                <div class="toast text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+                <div class="toast text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true"
+                    data-bs-delay="5000">
                     <div class="d-flex">
                         <div class="toast-body">
                             {{ message }}
                         </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                            aria-label="Close"></button>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
-    
+
         {% block content %}
         {% endblock %}
     </main>
@@ -77,22 +94,22 @@
     </footer>
 
 
-<script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-<script src="{{ url_for('static', filename='fontawesome/js/all.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/lottie-player.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='fontawesome/js/all.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/lottie-player.js') }}"></script>
 
 
-<script>
-    // Initialize Bootstrap Toasts
-    document.addEventListener('DOMContentLoaded', function() {
-        var toastElements = document.querySelectorAll('.toast');
-        toastElements.forEach(function (toastElement) {
-            var toast = new bootstrap.Toast(toastElement);
-            toast.show();
+    <script>
+        // Initialize Bootstrap Toasts
+        document.addEventListener('DOMContentLoaded', function () {
+            var toastElements = document.querySelectorAll('.toast');
+            toastElements.forEach(function (toastElement) {
+                var toast = new bootstrap.Toast(toastElement);
+                toast.show();
+            });
         });
-    });
-</script>
+    </script>
 </body>
 
 
