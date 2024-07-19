@@ -27,6 +27,7 @@ def calculate_charge_rule(rial_amount):
 
 MODELS_RATIO = {
     'gpt-4o': 5,
+    'gpt-4o-mini': 1.5,
     'gpt-3.5': 1,
     'gpt-3.5-turbo': 1,
     'claude-3-haiku': 1,

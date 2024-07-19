@@ -17,17 +17,21 @@
     }
 </style>
 <div class="row">
-    {% if feedback == "" %}
-    <div class="container rounded mb-2" id="feedback-msg">
-        
-        <div class="col-12">
-            <div
-            class="w-100 mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
-            لطفا نظر خودتان را از متن تولید شده بنویسید. 
-            <button type="button" class="btn btn-link" id="feedbackButton">ثبت نظر</button>
-        </div>
-        </div>
-    </div>
+    {% if content %}
+        {% if content.job.job_status == "SUCCESS" %}
+            {% if feedback == "" %}
+                <div class="container rounded mb-2" id="feedback-msg">
+                    
+                    <div class="col-12">
+                        <div
+                        class="w-100 mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 text-center">
+                        لطفا نظر خودتان را از متن تولید شده بنویسید. 
+                        <button type="button" class="btn btn-link text-center text-decoration-none" id="feedbackButton">ثبت نظر</button>
+                    </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
     {% endif %}
     <div class="col-4">
         <div class="bg-white rounded p-4 card-shadow">
@@ -110,12 +114,12 @@
                             class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">تاریخ
                             تولید: {{ content.timestamp | g2j_detail }}</span>
                     </div>
-                    <div class="p-2">
+                    <!-- <div class="p-2">
                         <span
                             class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2" id="article-info-timer">
                             ۰۰:۰۰
                             </span>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -133,12 +137,12 @@
                             class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
                             </span>
                     </div>
-                    <div class="p-2" style="display: none;" id="article-timer-container">
+                    <!-- <div class="p-2" style="display: none;" id="article-timer-container">
                         <span
                             class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2" id="article-info-timer">
                             ۰۰:۰۰
                             </span>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
@@ -298,16 +302,20 @@
                 const contentId = data.content_id;
                 const job_date = data.job_date;
 
-
+                
                 $('.info-detail').show();
                 $('#article-info-date').html(job_date);
                 $('#article-info-timer').show();
                 $('#article-date-container').show();
                 $('#article-timer-container').show();
 
+                    // Construct the URL with the contentId dynamically
+                    const redirectUrl = "{{ url_for('dashboard.article_blog', id='') }}" + contentId;
 
-                startTimer();
-                checkJobStatus(jobId, contentId);
+                    // Redirect to the newly constructed URL
+                    window.location.href = redirectUrl;
+                // startTimer();
+                // checkJobStatus(jobId, contentId);
             },
             error: function (xhr, status, error) {
                 $('#loading-content').hide();
@@ -357,19 +365,20 @@
                 $('#submission_form').find('input, textarea, button, select').prop('disabled', false);
                 tagify.setReadonly(false);
             } else {
-                setTimeout(() => checkJobStatus(jobId, contentId), 2000);
+                setTimeout(() => checkJobStatus(jobId, contentId), 5000);
             }
         });
     }
 
     function fetchContent(contentId) {
-        $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
-            $('#loading-content').hide();
-            editor.setData(data.content);
-            tagify.setReadonly(false);
-            $('#word-count').val(data.content.word_count)
-            $('#submission_form').find('input, textarea, button, select').prop('disabled', false);
-        });
+        window.location.reload()
+        // $.get(`/dashboard/article/blog/content/${contentId}`, function (data) {
+        //     $('#loading-content').hide();
+        //     editor.setData(data.content);
+        //     tagify.setReadonly(false);
+        //     $('#word-count').val(data.content.word_count)
+        //     $('#submission_form').find('input, textarea, button, select').prop('disabled', false);
+        // });
     }
 </script>
 {% endblock %}

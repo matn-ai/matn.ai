@@ -135,7 +135,7 @@
                                                         for="gpt4-outlined">
                                                         <img src="/static/images/logo-gpt4.jpeg" alt="OpenAI"
                                                             class="mb-3 rounded" style="height: 72px;">
-                                                        <h5 class="card-title">OpenAI GPT-4o</h5>
+                                                        <h5 class="card-title">GPT-4o</h5>
                                                         <p class="card-text">ضریب کلمه: ۵</p>
                                                     </label>
                                                 </div>
@@ -150,9 +150,28 @@
                                                         for="gpt3.5-outlined">
                                                         <img src="/static/images/logo-gpt3.5.jpeg" alt="OpenAI"
                                                             class="mb-3 rounded" style="height: 72px;">
-                                                        <h5 class="card-title">OpenAI GPT-3.5</h5>
+                                                        <h5 class="card-title">GPT-3.5</h5>
                                                         <p class="card-text">ضریب کلمه: ۱</p>
                                                     </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card h-100">
+                                                <div class="card-body">
+                                                    <input type="radio" class="btn-check" value="gpt-4o-mini"
+                                                        name="language_model" id="gpt-4o-mini-outlined" autocomplete="off">
+                                                    <label class="btn btn-outline-primary w-100 h-100"
+                                                        for="gpt-4o-mini-outlined">
+                                                        <img src="/static/images/logo-gpt-4o-mini.jpeg" alt="OpenAI"
+                                                            class="mb-3 rounded" style="height: 72px;">
+                                                        <h5 class="card-title">
+                                                            GPT-4o mini
+                                                            
+                                                        </h5>
+                                                        <p class="card-text">ضریب کلمه: ۱.۵</p>
+                                                        <span class="badge text-bg-success ">جدید</span>
+                                                </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -563,8 +582,8 @@
                                 selected_list[outlineIndex]['image'] = image
 
                                 let outlineHTML = `<div class="mb-3 outline-item" id="image-${mainOutlineId}">
-                    <div class="d-flex mb-2">
-                        <div class="row">
+                    <div class="w-100 p-3 border rounded mb-3">
+                        <div class="row mb-4">
                             <div class="col-12">
                                 <input type="text" class="form-control main-outline-input bg-white border-0 fs-5" disabled id="${mainOutlineId}-input" value="${mainHead}" />    
                             </div>
@@ -585,7 +604,7 @@
                             <div class="offcanvas-title" id="offcanvasBottomLabel-${mainOutlineCounter}"> جستجو در تصاویر</div>
                             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
-                        <div class="offcanvas-body small image-search-container text-center p-2" id="image-search-container-${mainOutlineCounter}">
+                        <div class="offcanvas-body small image-search-container text-center p-2 bg-primary-subtle" id="image-search-container-${mainOutlineCounter}">
                             در حال بارگزاری موتور جستجو...
                         </div>
                     </div>
@@ -626,14 +645,14 @@
                             $.each(response, function (index, imageDetails) {
                                 // console.log(imageDetails)
                                 if (imageDetails && imageDetails.img_src && imageDetails.source) {
-                                    const imageHTML = `<div class="image-result card mb-4 p-3" data-image-src="${imageDetails.img_src}" data-main-outline-id="image-${id}">
+                                    const imageHTML = `<div class="image-result card mb-4 p-3" style="pointer: cursor;" data-image-src="${imageDetails.img_src}" data-main-outline-id="image-${id}">
                                         <img src="${imageDetails.thumbnail_src}" alt="${imageDetails.title}" class="img-thumbnail ratio ratio-1x1 image-result-item "">
                                         <div class="w-100 mt-2">
                                             <span class="badge text-bg-light"> منبع ${imageDetails.source}</span>
                                             <span class="badge text-bg-light"> موتور ${imageDetails.engine}</span>
                                             <span class="badge text-bg-light"><a class="text-bg-primary" href="${imageDetails.url}" target=_blank><i class="fa-solid fa-arrow-up-right-from-square"></i></a></span>
                                         <div class="w-100 text-secondary p-2 mt-3" style='text-align: right;'>
-                                            ${imageDetails.title}
+                                            ${imageDetails.title}...
                                         </div>
                                     </div>`;
                                     $(containerId).append(imageHTML);
@@ -1324,8 +1343,14 @@
                     const jobId = data.job_id;
                     const contentId = data.content_id;
 
-                    startTimer()
-                    checkJobStatus(jobId, contentId);
+                    // Construct the URL with the contentId dynamically
+                    const redirectUrl = "{{ url_for('dashboard.article_pro_View', id='') }}" + contentId;
+
+                    // Redirect to the newly constructed URL
+                    window.location.href = redirectUrl;
+    
+                    // startTimer()
+                    // checkJobStatus(jobId, contentId);
                 },
                 error: function (error) {
                     console.error("Submission error:", error);

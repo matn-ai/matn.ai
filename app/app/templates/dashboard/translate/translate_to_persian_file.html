@@ -29,17 +29,19 @@
     .file-icon {
         font-size: 64px;
     }
-    
+
     .rating {
         display: flex;
         direction: rtl;
     }
+
     .star {
         cursor: pointer;
         font-size: 2rem;
         color: #ccc;
         transition: color 0.3s;
     }
+
     .star:hover,
     .star.selected {
         color: #ff0;
@@ -48,55 +50,61 @@
 
 <div class="row">
     <div class="col-8 mr-auto mx-auto">
+        {% if content %}
+        {% if content.job.job_status == "SUCCESS" %}
         {% if feedback == "" %}
-            <div class="w-100 rounded mb-2" id="feedback-msg">
-                
-                <div class="">
-                    <div
-                    class="w-100 mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
-                    لطفا نظر خودتان را از متن تولید شده بنویسید. 
-                    <button type="button" class="btn btn-link" id="feedbackButton">ثبت نظر</button>
-                </div>
+        <div class="w-100 rounded mb-2" id="feedback-msg">
+
+            <div class="">
+                <div
+                class="w-100 mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2 text-center">
+                لطفا نظر خودتان را از متن تولید شده بنویسید.
+                    <button type="button" class="btn btn-link text-decoration-none" id="feedbackButton">ثبت نظر</button>
                 </div>
             </div>
-        {% endif %}
+        </div>
+        {% endif %} {% endif %} {% endif %}
         <div class="d-flex">
             <div class="p-2">
                 <h4 class="">ترجمه به فارسی</h4>
             </div>
             <div class="p-2">
 
-                    {% if translated_data %}
-                        {% if content.word_count is not none %}
-                        <span class="d-block mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
-                            {{ content.word_count | to_persian_num }} کلمه
-                        </span>
-                        {% endif %}
-                    {% else %}          
-                    <span class="d-block mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
-                        فایل
-                    </span>
-                    {% endif %}
-                    
+                {% if translated_data %}
+                {% if content.word_count is not none %}
+                <span
+                    class="d-block mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
+                    {{ content.word_count | to_persian_num }} کلمه
+                </span>
+                {% endif %}
+                {% else %}
+                <span
+                    class="d-block mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
+                    فایل
+                </span>
+                {% endif %}
+
             </div>
             <div class="p-2 ms-auto">
 
-                    {% if translated_data %}
-                    {% if content %}
-                    <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
-                        تاریخ ایجاد: 
-                        {{ content.timestamp | g2j_detail }}
-                    </span>
-                    {% endif %}
-                    {% endif %}
+                {% if translated_data %}
+                {% if content %}
+                <span
+                    class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-2">
+                    تاریخ ایجاد:
+                    {{ content.timestamp | g2j_detail }}
+                </span>
+                {% endif %}
+                {% endif %}
             </div>
 
-            <div class="p-2" >
+            <div class="p-2">
                 {% if translated_data %}
-                {% if content  %}
-                <span class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2" >
-                    مدل: 
-                      {{ content.llm }}
+                {% if content %}
+                <span
+                    class="d-inline-flex mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
+                    مدل:
+                    {{ content.llm }}
                 </span>
                 {% endif %}
                 {% endif %}
@@ -107,131 +115,160 @@
                 <div></div>
             </div>
 
-                {% if content and content.job.job_status != "SUCCESS" %}
-                    <div class="card mb-4">
-                        <div class="loading text-center" style="height: 160px;" id="loading-translate">
-                            <div class="mt-4 mb-4 spinner-border text-primary" role="status"
-                                style="width: 3rem; height: 3rem;">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <div class="loading-text">در حال ترجمه فایل...</div>
-                        </div>
+            {% if content and content.job.job_status != "SUCCESS" %}
+            <div class="card mb-4">
+                <div class="loading text-center" style="height: 160px;" id="loading-translate">
+                    <div class="mt-4 mb-4 spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
-                {% endif %}
-
-
-                {% if translated_data is not none and content  %}
-
-                <div class="row ">
-                    {% for data in translated_data %}
-                    <div class="col">
-                        <div class="card mb-3">
-                            <div class="card-body text-center">
-                                <div class="file-icon"><i class="fas fa-file-alt"></i></div>
-                                <div class="fw-semibold">{{ data.file_name }}</div>
-                                <div class="mt-4"><a href="{{ data.url }}" class="btn btn-outline-primary" download>دانلود فایل</a></div>    
-    
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
+                    <div class="loading-text">در حال ترجمه فایل...</div>
                 </div>
+            </div>
+            {% endif %}
 
-                {% else %}
-                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate id="translateForm">
-                    {{ form.hidden_tag() }}
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-2 mt-4">
 
-                                        <div id="drop-area" class="border rounded p-4 text-center">
-                                            <p>فایل خود را اینجا رها کنید یا برای انتخاب فایل کلیک کنید</p>
-                                            {{ form.file(class="form-control d-none", id="file") }}
-                                        </div>
-                                        <div id="file-details" class="rounded border border-primary p-3">
-                                            <div class="file-icon"><i class="fas fa-file-alt"></i></div>
-                                            <div class="w-100 p-2 small"  id="file-name"></div>
-                                            <span class="badge text-bg-light" id="file-size"></span>
-                                            <span class="badge text-bg-light" id="file-extension"></span>
-                                        </div>
-                                        <div class="w-100 p-2 text-center">
-                                            <span class="badge text-bg-light">
-                                                فرمت قابل قبول: pdf, word, docx, srt
-                                            </span>
-                                            <span class="badge text-bg-light">
-                                                حداکثر سایز فایل: ۱۰ مگابایت
-                                            </span>
-                                        </div>
+            {% if translated_data is not none and content %}
 
-                                    </div>
-                                </div>
+            <div class="row ">
+                {% for data in translated_data %}
+                <div class="col">
+                    <div class="card mb-3">
+                        <div class="card-body text-center">
+                            <div class="file-icon"><i class="fas fa-file-alt"></i></div>
+                            <div class="fw-semibold">{{ data.file_name }}</div>
+                            <div class="mt-4"><a href="{{ data.url }}" class="btn btn-outline-primary" download>دانلود
+                                    فایل</a></div>
 
-                            </div>
                         </div>
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="mb-4 mt-4">
-                                        <div class="w-100 p-3 pb-1 text-right">مدل زبانی را انتخاب کنید</div>
-                                        <div class="w-100 pt-2">
-                                            <div class="row row-cols-2 g-2">
-                                                <div class="col-6">
-                                                    <div class="card-body">
-                                                        <input type="radio" class="btn-check" value="gpt-4o" name="llm_model" id="gpt4-outlined" autocomplete="off" checked>
-                                                        <label class="btn btn-outline-primary w-100 p-0" for="gpt4-outlined">
-                                                            <div class="model-card">
-                                                                <img src="/static/images/logo-gpt4.jpeg" alt="OpenAI" class="rounded m-1 me-2" style="height: 54px;">
-                                                                <div class="model-info">
-                                                                    <p class="card-title m-0 p-0">OpenAI GPT-4o</p>
-                                                                    <div class="small mt-1">ضریب کلمه: ۵</div>
-                                                                </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate id="translateForm">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-2 mt-4">
+
+                                    <div id="drop-area" class="border rounded p-4 text-center">
+                                        <p>فایل خود را اینجا رها کنید یا برای انتخاب فایل کلیک کنید</p>
+                                        {{ form.file(class="form-control d-none", id="file") }}
+                                    </div>
+                                    <div id="file-details" class="rounded border border-primary p-3">
+                                        <div class="file-icon"><i class="fas fa-file-alt"></i></div>
+                                        <div class="w-100 p-2 small" id="file-name"></div>
+                                        <span class="badge text-bg-light" id="file-size"></span>
+                                        <span class="badge text-bg-light" id="file-extension"></span>
+                                    </div>
+                                    <div class="w-100 p-2 text-center">
+                                        <span class="badge text-bg-light">
+                                            فرمت قابل قبول: pdf, word, docx, srt
+                                        </span>
+                                        <span class="badge text-bg-light">
+                                            حداکثر سایز فایل: ۱۰ مگابایت
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-4 mt-4">
+                                    <div class="w-100 p-3 pb-1 text-right">مدل زبانی را انتخاب کنید</div>
+                                    <div class="w-100 pt-2">
+                                        <div class="row row-cols-2 g-2">
+                                            <div class="col-6">
+                                                <div class="card-body">
+                                                    <input type="radio" class="btn-check" value="gpt-4o"
+                                                        name="llm_model" id="gpt4-outlined" autocomplete="off" checked>
+                                                    <label class="btn btn-outline-primary w-100 p-0"
+                                                        for="gpt4-outlined">
+                                                        <div class="model-card">
+                                                            <img src="/static/images/logo-gpt4.jpeg" alt="OpenAI"
+                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <div class="model-info">
+                                                                <p class="card-title m-0 p-0">OpenAI GPT-4o</p>
+                                                                <div class="small mt-1">ضریب کلمه: ۵</div>
                                                             </div>
-                                                        </label>
-                                                    </div>
+                                                        </div>
+                                                    </label>
                                                 </div>
-                                                <div class="col-6">
-                                                    <div class="card-body">
-                                                        <input type="radio" class="btn-check" value="gpt-3.5-turbo" name="llm_model" id="gpt3.5-outlined" autocomplete="off">
-                                                        <label class="btn btn-outline-primary w-100 p-0" for="gpt3.5-outlined">
-                                                            <div class="model-card">
-                                                                <img src="/static/images/logo-gpt3.5.jpeg" alt="OpenAI" class="rounded m-1 me-2" style="height: 54px;">
-                                                                <div class="model-info">
-                                                                    <p class="card-title m-0 p-0">OpenAI GPT-3.5</p>
-                                                                    <div class="small mt-1">ضریب کلمه: ۱</div>
-                                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="card-body">
+                                                    <input type="radio" class="btn-check" value="gpt-3.5-turbo"
+                                                        name="llm_model" id="gpt3.5-outlined" autocomplete="off">
+                                                    <label class="btn btn-outline-primary w-100 p-0"
+                                                        for="gpt3.5-outlined">
+                                                        <div class="model-card">
+                                                            <img src="/static/images/logo-gpt3.5.jpeg" alt="OpenAI"
+                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <div class="model-info">
+                                                                <p class="card-title m-0 p-0">OpenAI GPT-3.5</p>
+                                                                <div class="small mt-1">ضریب کلمه: ۱</div>
                                                             </div>
-                                                        </label>
-                                                    </div>
+                                                        </div>
+                                                    </label>
                                                 </div>
-                                                <div class="col-6">
-                                                    <div class="card-body">
-                                                        <input type="radio" class="btn-check" value="claude-3-haiku" name="llm_model" id="claude3-haiku-outlined" autocomplete="off">
-                                                        <label class="btn btn-outline-primary w-100 p-0" for="claude3-haiku-outlined">
-                                                            <div class="model-card">
-                                                                <img src="/static/images/logo-claude.jpeg" alt="Haiku" class="rounded m-1 me-2" style="height: 54px;">
-                                                                <div class="model-info">
-                                                                    <p class="card-title m-0 p-0">Claude 3 Haiku</p>
-                                                                    <div class="small mt-1">ضریب کلمه: ۱</div>
-                                                                </div>
+                                            </div>
+                                            <!-- <div class="col-6">
+                                                <div class="card-body">
+                                                    <input type="radio" class="btn-check" value="gpt-4o-mini"
+                                                        name="llm_model" id="gpt-4o-mini-outlined" autocomplete="off">
+                                                    <label class="btn btn-outline-primary w-100 p-0"
+                                                        for="gpt-4o-mini-outlined">
+                                                        <div class="model-card">
+                                                            <img src="/static/images/logo-gpt-4o-mini.jpeg" alt="OpenAI"
+                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <div class="model-info">
+                                                                <p class="card-title m-0 p-0">OpenAI GPT-4o-mini</p>
+                                                                <div class="small mt-1">ضریب کلمه: ۱.۵</div>
                                                             </div>
-                                                        </label>
-                                                    </div>
+                                                        </div>
+                                                    </label>
                                                 </div>
-                                                <div class="col-6">
-                                                    <div class="card-body">
-                                                        <input type="radio" class="btn-check" value="claude-3.5-sonnet" name="llm_model" id="claude3-sonnet-outlined" autocomplete="off">
-                                                        <label class="btn btn-outline-primary w-100 p-0" for="claude3-sonnet-outlined">
-                                                            <div class="model-card">
-                                                                <img src="/static/images/logo-claude.jpeg" alt="Sonnet" class="rounded m-1 me-2" style="height: 54px;">
-                                                                <div class="model-info">
-                                                                    <p class="card-title m-0 p-0">Claude 3 Sonnet</p>
-                                                                    <div class="small mt-1">ضریب کلمه: ۴</div>
-                                                                </div>
+                                            </div> -->
+                                            <div class="col-6">
+                                                <div class="card-body">
+                                                    <input type="radio" class="btn-check" value="claude-3-haiku"
+                                                        name="llm_model" id="claude3-haiku-outlined" autocomplete="off">
+                                                    <label class="btn btn-outline-primary w-100 p-0"
+                                                        for="claude3-haiku-outlined">
+                                                        <div class="model-card">
+                                                            <img src="/static/images/logo-claude.jpeg" alt="Haiku"
+                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <div class="model-info">
+                                                                <p class="card-title m-0 p-0">Claude 3 Haiku</p>
+                                                                <div class="small mt-1">ضریب کلمه: ۱</div>
                                                             </div>
-                                                        </label>
-                                                    </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="card-body">
+                                                    <input type="radio" class="btn-check" value="claude-3.5-sonnet"
+                                                        name="llm_model" id="claude3-sonnet-outlined"
+                                                        autocomplete="off">
+                                                    <label class="btn btn-outline-primary w-100 p-0"
+                                                        for="claude3-sonnet-outlined">
+                                                        <div class="model-card">
+                                                            <img src="/static/images/logo-claude.jpeg" alt="Sonnet"
+                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <div class="model-info">
+                                                                <p class="card-title m-0 p-0">Claude 3 Sonnet</p>
+                                                                <div class="small mt-1">ضریب کلمه: ۴</div>
+                                                            </div>
+                                                        </div>
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -239,23 +276,29 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 text-center">
-                            <button type="button" class="btn btn-primary" style="width: 150px;" id="estimateCostBtn" disabled>{{ form.submit.label }}</button>
-                            <button class="btn btn-primary" type="button" style="width: 150px; display:none" id="estimateSpinner" disabled >
-                                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
-                                <span role="status">در حال تخمین</span>
-                              </button>
-                            <div id="costContainer" style="display: none;">
-                                <div class="fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2 p-3 mb-4">تخمین هزینه تعداد کلمه مورد نیاز: <span id="estimatedCost" class="text-decoration-underline"></span> کلمه</div>
-                                {{ form.start_translation(class="btn btn-success") }}
-                            </div>
+                    </div>
+                    <div class="col-12 text-center">
+                        <button type="button" class="btn btn-primary" style="width: 150px;" id="estimateCostBtn"
+                            disabled>{{ form.submit.label }}</button>
+                        <button class="btn btn-primary" type="button" style="width: 150px; display:none"
+                            id="estimateSpinner" disabled>
+                            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                            <span role="status">در حال تخمین</span>
+                        </button>
+                        <div id="costContainer" style="display: none;">
+                            <div
+                                class="fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2 p-3 mb-4">
+                                تخمین هزینه تعداد کلمه مورد نیاز: <span id="estimatedCost"
+                                    class="text-decoration-underline"></span> کلمه</div>
+                            {{ form.start_translation(class="btn btn-success") }}
                         </div>
                     </div>
-                </form>
-                {% endif %}
-            </div>
+                </div>
+            </form>
+            {% endif %}
         </div>
     </div>
+</div>
 </div>
 <div class="toast-container position-fixed top-0 start-0 p-3" id="toast-container">
 </div>
@@ -282,7 +325,7 @@
         `;
         const modalFooterContent = `
             <button type="button" class="btn btn-primary" onclick="submitFeedback('${contentId}')" >ثبت نظر</button>
-        `;  
+        `;
         createAndOpenModal('createModal', 'نظرتان راجعبه متن', modalBodyContent, modalFooterContent);
     }
 
@@ -298,7 +341,7 @@
         const rating = selectedStar.getAttribute('data-star');
         //console.log(rating)
         //console.log(feedbackText)
-        
+
 
         //console.log('Feedback submitted:', { contentId, rating, feedbackText });
         var request = {
@@ -328,7 +371,7 @@
 
 
 
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         var contentId = '{{ content.id }}';
         $("#feedbackButton").on('click', function () {
@@ -337,11 +380,11 @@
 
 
         {% if content %}
-            {% if content.job.job_status != "SUCCESS" %}
-                $('#loading-translate').show();
-                checkJobStatus('{{ content.job.job_id }}', '{{ content.id }}');
-    //            startTimer('{{ content.job.created_at }}')
-            {% endif %}
+        {% if content.job.job_status != "SUCCESS" %}
+        $('#loading-translate').show();
+        checkJobStatus('{{ content.job.job_id }}', '{{ content.id }}');
+        //            startTimer('{{ content.job.created_at }}')
+        {% endif %}
         {% endif %}
         function checkJobStatus(jobId, contentId) {
             $.get(`/dashboard/article/status/cid/${jobId}`, function (data) {
@@ -388,71 +431,71 @@
                 alert('فقط می‌توانید یک فایل آپلود کنید.');
                 return;
             }
-        
+
             const file = files[0];
             const allowedExtensions = ['pdf', 'doc', 'docx', 'srt'];
             const fileExtension = file.name.split('.').pop().toLowerCase();
-        
+
             if (!allowedExtensions.includes(fileExtension)) {
                 alert('فرمت فایل مجاز نیست. لطفاً فایل PDF، Word، یا SRT آپلود کنید.');
                 return;
             }
-        
+
             if (file.size > maxFileSize) {
                 alert('حجم فایل نباید بیشتر از 10 مگابایت باشد.');
                 return;
             }
-        
+
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             $fileInput[0].files = dataTransfer.files;
-            
+
             const fileName = file.name;
             const fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-        
+
             $fileName.text("نام فایل: " + fileName);
             $fileSize.text("سایز فایل: " + fileSize);
             $fileExtension.text("فرمت فایل: " + fileExtension.toUpperCase());
             $fileDetails.show();
-        
+
             $('#estimateCostBtn').attr('disabled', false);
             $('#estimateCostBtn').show();
             $('#costContainer').hide();
         }
-        
+
         $dropArea
-            .on('dragenter dragover', function(e) {
+            .on('dragenter dragover', function (e) {
                 preventDefaults(e);
                 highlight();
             })
-            .on('dragleave drop', function(e) {
+            .on('dragleave drop', function (e) {
                 preventDefaults(e);
                 unhighlight();
             })
             .on('drop', handleDrop);
 
         // Separate click handler for the drop area
-        $dropArea.on('click', function(e) {
+        $dropArea.on('click', function (e) {
             e.stopPropagation();
             $fileInput.click();
         });
 
-        $fileInput.on('change', function(e) {
+        $fileInput.on('change', function (e) {
             handleFiles(e.target.files);
         });
 
 
-        $("input[name='llm_model']").on('change', function(e) {
+        $("input[name='llm_model']").on('change', function (e) {
             $('#estimateCostBtn').show()
             $('#costContainer').hide();
         });
 
         // Prevent the file input's click event from bubbling up to the document
-        $fileInput.on('click', function(e) {
+        $fileInput.on('click', function (e) {
             e.stopPropagation();
         });
 
-        $('#estimateCostBtn').on('click', function() {
+        $('#estimateCostBtn').on('click', function () {
             var form = $('#translateForm')[0];
             var formData = new FormData(form);
             $(this).hide()
@@ -463,13 +506,13 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function(data) {
+                success: function (data) {
                     $('#estimateSpinner').hide()
                     $('#estimatedCost').text(toPersianNumber(data.estimated_cost));
                     $('#costContainer').show();
                     // $('#estimateCostBtn').show()
                 },
-                error: function(error) {
+                error: function (error) {
                     console.error('Error:', error);
                 }
             });
@@ -484,7 +527,7 @@
         }
 
         // Form validation
-        $('.needs-validation').on('submit', function(event) {
+        $('.needs-validation').on('submit', function (event) {
             if (!this.checkValidity()) {
                 event.preventDefault();
                 event.stopPropagation();

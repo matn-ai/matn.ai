@@ -184,6 +184,9 @@ def suggest_outlines(user_title, lang, llm_type="gpt-4o"):
             lists.append(list_dict)
 
         logger.info(f"Generated outlines for topic: {user_title}")
+        if len(lists) < 1:
+            logger.info(f"Unsuccessful generating outline for {user_title}, retrying")
+            return suggest_outlines(user_title, lang, llm_type)
         return lists
     except Exception as e:
         logger.error(f"Error suggesting outlines for topic '{user_title}': {e}")
