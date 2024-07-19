@@ -46,6 +46,8 @@ def login():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, remember=True)
+            if user.is_administrator():
+                return redirect(url_for('admin.index'))
             next = form.next_url.data
             if next is None or not next.startswith("/"):
                 next = url_for("dashboard.index")
@@ -53,6 +55,8 @@ def login():
         flash("ایمیل یا رمزعبور صحیح نیست.")
     if current_user.is_authenticated:
         return redirect(url_for("dashboard.index"))
+    if current_user.is_administrator():
+        return redirect(url_for('admin.index'))
     return render_template("auth/login.html", form=form)
 
 

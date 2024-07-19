@@ -99,6 +99,8 @@ class User(UserMixin, db.Model):
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = self.gravatar_hash()
             
+    def is_administrator(self):
+        return self.role is not None and self.role.has_permission(Permission.ADMIN)
 
     @property
     def password(self):
