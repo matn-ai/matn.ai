@@ -12,6 +12,7 @@ from .forms import (
     PasswordResetForm,
     ChangeEmailForm,
 )
+import uuid
 
 
 @auth.before_app_request
@@ -67,9 +68,10 @@ def logout():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
+        rand_user = uuid.uuid4()
         user = User(
             email=form.email.data.lower(),
-            username=form.username.data,
+            username=rand_user,
             password=form.password.data,
         )
         db.session.add(user)

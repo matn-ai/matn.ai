@@ -401,3 +401,11 @@ def get_content_by_id(content_id):
     except Exception as e:
         logger.error(f"Error fetching content by ID {content_id}: {e}")
         return None
+    
+def is_content_has_feedback(content_id):
+    content = Content.query.get_or_404(content_id)
+    feedback = content.get_input('feedback')
+    if feedback: 
+        return feedback
+    else: return ""
+        

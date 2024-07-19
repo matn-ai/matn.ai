@@ -19,7 +19,8 @@ from .repository import (
     delete_article_pro,
     update_article_pro,
     html_to_docx,
-    get_search_images
+    get_search_images,
+    is_content_has_feedback
 )
 import json, os
 import uuid
@@ -174,7 +175,8 @@ def article_blog(id=None):
             logger.info(f"User {current_user.id} created new blog article with content ID {content.id} and job ID {job.id}.")
 
             return jsonify(job_id=job.id, content_id=content.id, job_date=j_date)
-
+        
+    feedback = ""
     if request.method == "GET" and id:
         content = get_content_by_id(id)
         if not content:
@@ -187,11 +189,13 @@ def article_blog(id=None):
         form.article_length.data = inputs["article_length"]
         form.content_type.data = inputs["content_type"]
         form.body.data = content.body
+        feedback = content.get_input('feedback')
+        if feedback is None: feedback = ""
 
         logger.info(f"User {current_user.id} accessed blog article with content ID {id}.")
 
     return render_template(
-        "dashboard/article/article_blog.html", form=form, content=content, not_enough_charge=not_enough_charge
+        "dashboard/article/article_blog.html", form=form, content=content, not_enough_charge=not_enough_charge, feedback=feedback
     )
 
 @dashboard.route("/article/pro/create", methods=["POST"])
@@ -282,14 +286,13 @@ def delete_article_pro_route(content_id):
 @login_required
 def article_pro_View(id=None):
     content = get_content_by_id(id)
-
-    if not content:
-        logger.warning(f"User {current_user.id} tried to access non-existing pro article content ID {id}.")
-        return abort(404)
+    feedback = is_content_has_feedback(id)
+    # if not feedback:
+    #     flash("لطفا نظر خود را درباره‌ی متن تولید شده به ما بگویید، خیلی ممنون هستیم!")
     
     logger.info(f"User {current_user.id} accessed pro article with content ID {id}.")
 
-    return render_template("dashboard/article/article_pro_view.html", content=content)
+    return render_template("dashboard/article/article_pro_view.html", content=content, feedback=feedback)
 
 # ALLOWED_EXTENSIONS and MAX_FILE_SIZE remain unchanged.
 ALLOWED_EXTENSIONS = {'pdf'}
@@ -489,34 +492,52 @@ def get_content_data(content_id):
 def article_blog_content(content_id):
     try:
         content = get_content_by_id(content_id)
-        print(content)
+        # print(content)
         logger.info(f"User {current_user.id} requested blog content for content ID {content_id}.")
         return jsonify({"content": content.body})
     except Exception as e:
         logger.error(f"Error in article_blog_content route for content ID {content_id}: {e}")
         return abort(500)
+    
+    
+@dashboard.route("/article/feedback", methods=["POST"])
+@login_required
+def article_feedback():
+    try:
+        data = request.data
+        data_json = json.loads(data)
+        content_id = data_json['content_id']
+        rating = data_json['rating']
+        feedback = data_json['feedback']
+        content = get_content_by_id(int(content_id))
+        content.set_input({"rating": rating, "feedback": feedback})
+        return jsonify({"feedback": "success"}), 200
+    except Exception as e:
+        logger.error(f"Error in article_blog_content route for content ID {content_id}: {e}")
+        return abort(500)
+    
 
 ### PRODUCT
 
-@dashboard.route("/product/product-description", methods=["GET", "POST"])
-@login_required
-def product_describe():
-    try:
-        logger.info(f"User {current_user.id} accessed product description.")
-        return render_template("dashboard/product/product_describe.html")
-    except Exception as e:
-        logger.error(f"Error in product_describe route for user {current_user.id}: {e}")
-        return abort(500)
+# @dashboard.route("/product/product-description", methods=["GET", "POST"])
+# @login_required
+# def product_describe():
+#     try:
+#         logger.info(f"User {current_user.id} accessed product description.")
+#         return render_template("dashboard/product/product_describe.html")
+#     except Exception as e:
+#         logger.error(f"Error in product_describe route for user {current_user.id}: {e}")
+#         return abort(500)
 
-@dashboard.route("/idea/brainstorming", methods=["GET", "POST"])
-@login_required
-def idea_brainstorming():
-    try:
-        logger.info(f"User {current_user.id} accessed idea brainstorming.")
-        return render_template("dashboard/idea_brainstorming.html")
-    except Exception as e:
-        logger.error(f"Error in idea_brainstorming route for user {current_user.id}: {e}")
-        return abort(500)
+# @dashboard.route("/idea/brainstorming", methods=["GET", "POST"])
+# @login_required
+# def idea_brainstorming():
+#     try:
+#         logger.info(f"User {current_user.id} accessed idea brainstorming.")
+#         return render_template("dashboard/idea_brainstorming.html")
+#     except Exception as e:
+#         logger.error(f"Error in idea_brainstorming route for user {current_user.id}: {e}")
+#         return abort(500)
 
 ### TRANSLATE
 

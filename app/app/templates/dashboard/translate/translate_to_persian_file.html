@@ -29,10 +29,37 @@
     .file-icon {
         font-size: 64px;
     }
+    
+    .rating {
+        display: flex;
+        direction: rtl;
+    }
+    .star {
+        cursor: pointer;
+        font-size: 2rem;
+        color: #ccc;
+        transition: color 0.3s;
+    }
+    .star:hover,
+    .star.selected {
+        color: #ff0;
+    }
 </style>
 
 <div class="row">
     <div class="col-8 mr-auto mx-auto">
+        {% if feedback == "" %}
+            <div class="w-100 rounded mb-2" id="feedback-msg">
+                
+                <div class="">
+                    <div
+                    class="w-100 mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
+                    لطفا نظر خودتان را از متن تولید شده بنویسید. 
+                    <button type="button" class="btn btn-link" id="feedbackButton">ثبت نظر</button>
+                </div>
+                </div>
+            </div>
+        {% endif %}
         <div class="d-flex">
             <div class="p-2">
                 <h4 class="">ترجمه به فارسی</h4>
@@ -230,12 +257,83 @@
         </div>
     </div>
 </div>
+<div class="toast-container position-fixed top-0 start-0 p-3" id="toast-container">
+</div>
 
 <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/toast.js') }}"></script>
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
 <script>
+
+
+    function showFeedbackModal(contentId) {
+        const modalBodyContent = `
+            <p>لطفا میزان رضایت خود از متن را انتخاب کنید</p>
+            <div class="rating justify-content-center p-3" style='direction: ltr;'>
+                <span class="star" data-star="5">&#9733;</span>
+                <span class="star" data-star="4">&#9733;</span>
+                <span class="star" data-star="3">&#9733;</span>
+                <span class="star" data-star="2">&#9733;</span>
+                <span class="star" data-star="1">&#9733;</span>
+            </div>
+            <textarea class="form-control mt-3" id="feedback-body" placeholder="نظر خود را لطفا بنویسید..."></textarea>
+        `;
+        const modalFooterContent = `
+            <button type="button" class="btn btn-primary" onclick="submitFeedback('${contentId}')" >ثبت نظر</button>
+        `;  
+        createAndOpenModal('createModal', 'نظرتان راجعبه متن', modalBodyContent, modalFooterContent);
+    }
+
+    function submitFeedback(contentId) {
+        const selectedStar = document.querySelector('.star.selected');
+        const feedbackText = $("#feedback-body").val();
+
+        if (!selectedStar) {
+            alert('Please select a rating.');
+            return;
+        }
+
+        const rating = selectedStar.getAttribute('data-star');
+        //console.log(rating)
+        //console.log(feedbackText)
+        
+
+        //console.log('Feedback submitted:', { contentId, rating, feedbackText });
+        var request = {
+            "content_id": contentId,
+            "rating": rating,
+            "feedback": feedbackText
+        };
+        $.ajax({
+            url: "{{ url_for('dashboard.article_feedback') }}",
+            type: 'POST',
+            data: JSON.stringify(request),
+            contentType: "application/json",
+            success: function (data) {
+                showToast('نظر شما با موفقیت ثبت شد. با تشکر', 'success', 3000);
+                $("#feedback-msg").hide()
+                // console.log(data)
+            },
+            error: function () {
+                alert('Error converting HTML to DOCX');
+            }
+        });
+
+        // Close the modal after submitting feedback
+        const modal = bootstrap.Modal.getInstance(document.getElementById('createModal'));
+        modal.hide();
+    }
+
+
+
     $(document).ready(function() {
+
+        var contentId = '{{ content.id }}';
+        $("#feedbackButton").on('click', function () {
+            showFeedbackModal(contentId)
+        });
 
 
         {% if content %}
