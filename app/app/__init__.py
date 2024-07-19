@@ -12,6 +12,9 @@ from flask_login import LoginManager
 from flask_pagedown import PageDown
 from flask_sqlalchemy import SQLAlchemy
 
+
+from flask_minify import Minify
+
 load_dotenv()
 
 login_manager = LoginManager()
@@ -69,6 +72,7 @@ app.config.from_mapping(
     ),
 )
 
+Minify(app=app, html=True, js=True, cssless=True)
 
 celery_app = celery_init_app(app)
 
