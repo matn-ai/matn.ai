@@ -3,6 +3,7 @@ import click
 from os import getenv
 from flask import Flask
 from dotenv import load_dotenv
+
 # from flask_appbuilder import AppBuilder, SQLA
 from flask_mail import Mail
 from flask_moment import Moment
@@ -13,13 +14,14 @@ from flask_pagedown import PageDown
 from flask_sqlalchemy import SQLAlchemy
 
 
+from flask_admin import Admin
 from flask_minify import Minify
 
 load_dotenv()
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
-login_manager.login_message = u"برای دسترسی به این صفحه باید وارد سیستم شوید."
+login_manager.login_message = "برای دسترسی به این صفحه باید وارد سیستم شوید."
 
 # # Ensure the collection is created (if not exists)
 # if "contents" not in mdb.list_collection_names():
@@ -88,6 +90,18 @@ pagedown.init_app(app)
 mail.init_app(app)
 
 
+app.config["FLASK_ADMIN_SWATCH"] = "cerulean"
+
+
+from .admin import SecureAdminIndexView, load_admin_views
+admin = Admin(app, name="Matn.ai Admin Panel", template_mode="bootstrap3", index_view=SecureAdminIndexView())
+load_admin_views()
+# from .admin import admin as admin_blueprint
+# app.register_blueprint(admin_blueprint)
+from flask_babel import Babel
+
+babel = Babel(app)
+
 from .main import main as main_blueprint
 
 app.register_blueprint(main_blueprint)
@@ -109,22 +123,32 @@ from .api import api as api_blueprint
 
 app.register_blueprint(api_blueprint, url_prefix="/api/v1")
 
-from .decorators import show_content_type, gregorian_to_jalali, g2j_detail, convert_seconds_to_min_sec, to_persian_num, g2j_for_list
-app.jinja_env.filters['show_content_type'] = show_content_type
-app.jinja_env.filters['gregorian_to_jalali'] = gregorian_to_jalali
-app.jinja_env.filters['g2j_detail'] = g2j_detail
-app.jinja_env.filters['g2j_for_list'] = g2j_for_list
-app.jinja_env.filters['convert_seconds_to_min_sec'] = convert_seconds_to_min_sec
-app.jinja_env.filters['to_persian_num'] = to_persian_num
+from .decorators import (
+    show_content_type,
+    gregorian_to_jalali,
+    g2j_detail,
+    convert_seconds_to_min_sec,
+    to_persian_num,
+    g2j_for_list,
+)
+
+app.jinja_env.filters["show_content_type"] = show_content_type
+app.jinja_env.filters["gregorian_to_jalali"] = gregorian_to_jalali
+app.jinja_env.filters["g2j_detail"] = g2j_detail
+app.jinja_env.filters["g2j_for_list"] = g2j_for_list
+app.jinja_env.filters["convert_seconds_to_min_sec"] = convert_seconds_to_min_sec
+app.jinja_env.filters["to_persian_num"] = to_persian_num
 
 
-app.config['S3_ENDPOINT_URL'] = getenv('S3_ENDPOINT_URL')
-app.config['S3_ACCESS_KEY'] = getenv('S3_ACCESS_KEY')
-app.config['S3_SECRET_KEY'] = getenv('S3_SECRET_KEY')
-app.config['S3_DEFAULT_CONTENT_TYPE'] = getenv('S3_DEFAULT_CONTENT_TYPE', 'application/octet-stream')
-app.config['S3_PRESIGNED_URL_EXPIRATION'] = int(getenv('S3_PRESIGNED_URL_EXPIRATION', 3600))
-
-
+app.config["S3_ENDPOINT_URL"] = getenv("S3_ENDPOINT_URL")
+app.config["S3_ACCESS_KEY"] = getenv("S3_ACCESS_KEY")
+app.config["S3_SECRET_KEY"] = getenv("S3_SECRET_KEY")
+app.config["S3_DEFAULT_CONTENT_TYPE"] = getenv(
+    "S3_DEFAULT_CONTENT_TYPE", "application/octet-stream"
+)
+app.config["S3_PRESIGNED_URL_EXPIRATION"] = int(
+    getenv("S3_PRESIGNED_URL_EXPIRATION", 3600)
+)
 
 
 @app.cli.command("create-admin")
@@ -135,15 +159,36 @@ def create_admin(username, email, password):
     """Create an admin user."""
     with app.app_context():
         try:
-            from .models import Role, User
+            from .models import Role, User, Permission
 
-            user = User(username=username, email=email, confirmed=True)
+            # Ensure all roles are created
+            Role.insert_roles()
+
+            # Get or create the Administrator role
+            admin_role = Role.query.filter_by(name='Administrator').first()
+            if admin_role is None:
+                admin_role = Role(name='Administrator')
+                admin_role.permissions = Permission.ADMIN
+                db.session.add(admin_role)
+                db.session.commit()
+                click.echo("Administrator role created.")
+
+            # Check if the user already exists
+            user = User.query.filter_by(username=username).first()
+            if user:
+                click.echo(f"User {username} already exists.")
+                return
+
+            # Create the new admin user
+            user = User(username=username, email=email, confirmed=True, role=admin_role)
             user.password = password
             db.session.add(user)
             db.session.commit()
             click.echo(f"Admin user {username} created successfully.")
-        except:
-            click.echo("Skipped")
+
+        except Exception as e:
+            db.session.rollback()
+            click.echo(f"Error creating admin user: {str(e)}")
 
 
 @app.cli.command("create-bank")
@@ -154,9 +199,9 @@ def create_admin(slug):
         try:
             from .models import Role, User
             from .finance.models import Bank
-        
-            user = User(username=slug, email=slug + '@novahub.ir', confirmed=True)
-            user.password = 'sldjhflakdsjfalkdjf'
+
+            user = User(username=slug, email=slug + "@novahub.ir", confirmed=True)
+            user.password = "sldjhflakdsjfalkdjf"
             db.session.add(user)
             bank = Bank(slug=slug, user_id=user.id, name=slug)
             db.session.add(bank)
