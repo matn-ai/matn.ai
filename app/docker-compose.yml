@@ -22,16 +22,7 @@ services:
       - "traefik.http.routers.web.rule=Host(`behnevis.tosiehgar.ir`) || Host(`pay.novahub.ir`) || Host(`matn.ai`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.tls.certresolver=myresolver"
-      - "traefik.http.routers.web.http.middlewares=https-redirect@docker"
-      
-      # HTTP router for redirecting traffic to HTTPS
-      - "traefik.http.routers.web-http.rule=Host(`behnevis.tosiehgar.ir`) || Host(`pay.novahub.ir`) || Host(`matn.ai`)"
-      - "traefik.http.routers.web-http.entrypoints=web"
-      - "traefik.http.routers.web-http.middlewares=https-redirect@docker"
-      
-      # Middleware for redirecting HTTP to HTTPS
-      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
+
 
   worker:
     build: .
