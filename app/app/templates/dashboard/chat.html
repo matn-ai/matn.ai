@@ -130,7 +130,7 @@
                     <a href="{{url_for('dashboard.forget_chat')}}"
                         class="btn btn-outline-danger btn-lg btn-rounded float-start mt-3">مکالمه را پاک کن</a>
                     <button type="button" id="send-btn"
-                        class="btn btn-primary btn-lg btn-rounded float-end mt-3">ارسال</button>
+                        class="btn btn-primary btn-lg btn-rounded float-end mt-3" style="width: 128px;">ارسال</button>
 
                     <div class="clearfix"></div>
                     <div class="col-12">
@@ -141,7 +141,7 @@
                                         مدل زبانی انتخاب شده <span id="selected-model" class="badge text-bg-primary">GPT-4o</span> است.
                                         <span class="badge text-bg-light"
                                         >
-                                        <i class="fa-solid fa-arrow-turn-down me-2"></i>
+                                        <!-- <i class="fa-solid fa-arrow-turn-down me-2"></i> -->
                                         <span id="show-llm-container" class="text-decoration-none"
                                         >
                                         
@@ -179,6 +179,23 @@
                                                             <div class="model-info">
                                                                 <p class="card-title m-0 p-0">OpenAI GPT-3.5</p>
                                                                 <div class="small mt-1">ضریب کلمه: ۱</div>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="card-body">
+                                                    <input type="radio" class="btn-check" value="gpt-4o-mini"
+                                                        name="llm_model" id="gpt4o-mini-outlined" autocomplete="off">
+                                                    <label class="btn btn-outline-primary w-100 p-0"
+                                                        for="gpt4o-mini-outlined">
+                                                        <div class="model-card">
+                                                            <img src="/static/images/logo-gpt-4o-mini.jpeg" alt="OpenAI"
+                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <div class="model-info">
+                                                                <p class="card-title m-0 p-0">OpenAI GPT-4o-mini</p>
+                                                                <div class="small mt-1">ضریب کلمه: ۱.۵</div>
                                                             </div>
                                                         </div>
                                                     </label>

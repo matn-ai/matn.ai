@@ -380,7 +380,7 @@ def generate_sections_article_pro(
     return result
 
 
-def outline_resource_rag(headlines, resource_text, llm_type='gpt-3.5-turbo'):
+def outline_resource_rag(headlines, resource_text, llm_type='gpt-4o-mini'):
     user_prompt = (
         f"Give the related content for each headline from the text. Summarize the related text in maximum 100 words and put it under the headline\n",
         f"- Headlines: ```{headlines}```\n",
@@ -543,7 +543,7 @@ def generate_article_body(title, outlines, keywords, lang, llm_type):
     return f"<h1>{title}</h1><br/>{toc}<br/><hr/><br/>{inside}"
 
 
-def save_article_to_db(content_id, body, title, outlines, content_length, model='gpt-4o'):
+def save_article_to_db(content_id, body, title, outlines, content_length, model='gpt-4o-mini'):
     with flask_app.app_context():
         content = Content.query.get(content_id)
         
@@ -588,6 +588,7 @@ def generate_blog_simple(content_id, user_input):
     keywords = user_input["tags"].split(",")
     lang = "فارسی" if user_input["lang"] else "English"
     llm = "gpt-3.5-turbo"
+    # llm = "gpt-4o-mini"
     logger.info(f'The LLM is {llm}')
     article_length = user_input["article_length"]
     title = generate_title_blog_post(title, lang, article_length, llm)
