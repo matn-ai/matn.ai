@@ -91,6 +91,7 @@ def translate_to_persian_file(id=None):
     user = current_user
     translated_data = None
     content=None
+    feedback = ""
     if user.remain_charge < 0:
         flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
     if form.validate_on_submit():
@@ -129,6 +130,8 @@ def translate_to_persian_file(id=None):
     if request.method == "GET" and id:
         logger.info('going to show translation file page')
         content = get_content_by_id(id)
+        feedback = content.get_input("feedback")
+        if feedback is None: feedback = ""
         translated_data = []
         if not content and content.content_type != FILE_TRANSLATION:
             return abort(404)
@@ -147,7 +150,8 @@ def translate_to_persian_file(id=None):
     return render_template("dashboard/translate/translate_to_persian_file.html",
                            form=form, 
                            translated_data=translated_data,
-                           content=content
+                           content=content,
+                           feedback=feedback
                            )
     
 

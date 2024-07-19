@@ -482,7 +482,7 @@ def generate_article_pro_body(
         logger.info(f'Creating section body -> {head} [{main_tag}] ({point_ofview})/{target_audience} [{voice_tune}]')
         matched_content = headline_resources_text.get(head)
         matched_content = '\n'.join(matched_content)
-        body += generate_sections_article_pro(
+        section = generate_sections_article_pro(
             head,
             main_tag,
             keywords,
@@ -493,6 +493,10 @@ def generate_article_pro_body(
             voice_tune,
             matched_content
         )
+        
+        section = str(section).replace("html", "").replace("", "").replace("```", "")
+        
+        body += section
         
         if image:
             body += f"<img src='{image}' width=512 />" 
@@ -512,6 +516,7 @@ def generate_article_pro_body(
                 voice_tune,
                 matched_content
             )
+            section_content = str(section_content).replace("html", "").replace("", "").replace("```", "")
             body += section_content
             body += "<br/>"
 

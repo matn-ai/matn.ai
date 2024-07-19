@@ -1,8 +1,24 @@
 {% extends "dashboard/dashboard.html" %}
 {% block dashboard %}
+<style>
+    .rating {
+        display: flex;
+        direction: rtl;
+    }
+    .star {
+        cursor: pointer;
+        font-size: 2rem;
+        color: #ccc;
+        transition: color 0.3s;
+    }
+    .star:hover,
+    .star.selected {
+        color: #ff0;
+    }
+</style>
 <div class="row">
     <div class="col-12">
-        <div class="row rounded  mb-2">
+        <div class="row rounded mb-2">
             {% if content %}
             {% if content.job.job_status == "SUCCESS" %}
             <div class="col-12">
@@ -75,6 +91,18 @@
             </div>
             {% endif %}
         </div>
+        {% if feedback == "" %}
+        <div class="row rounded mb-2" id="feedback-msg">
+            
+            <div class="col-12">
+                <div
+                class="w-100 mb-3 px-2 py-1 fw-semibold text-success-emphasis bg-success-subtle border border-success-subtle rounded-2">
+                لطفا نظر خودتان را از متن تولید شده بنویسید. 
+                <button type="button" class="btn btn-link" id="feedbackButton">ثبت نظر</button>
+            </div>
+            </div>
+        </div>
+        {% endif %}
         <div class="rounded card-shadow position-relative p-1">
             <div id="loading-content" class="text-center mr-auto mx-auto"
                 style="display: none; height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
@@ -93,12 +121,14 @@
         </div>
     </div>
 </div>
-
+<div class="toast-container position-fixed top-0 start-0 p-3" id="toast-container">
+</div>
 
 <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 <script src="{{ url_for('static', filename='js/ckeditor.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tagify.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/modals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/toast.js') }}"></script>
 
 <script>
     let editor;
@@ -311,9 +341,67 @@
         });
     }
 
+    function showFeedbackModal(contentId) {
+        const modalBodyContent = `
+            <p>لطفا میزان رضایت خود از متن را انتخاب کنید</p>
+            <div class="rating justify-content-center p-3" style='direction: ltr;'>
+                <span class="star" data-star="5">&#9733;</span>
+                <span class="star" data-star="4">&#9733;</span>
+                <span class="star" data-star="3">&#9733;</span>
+                <span class="star" data-star="2">&#9733;</span>
+                <span class="star" data-star="1">&#9733;</span>
+            </div>
+            <textarea class="form-control mt-3" id="feedback-body" placeholder="نظر خود را لطفا بنویسید..."></textarea>
+        `;
+        const modalFooterContent = `
+            <button type="button" class="btn btn-primary" onclick="submitFeedback('${contentId}')" >ثبت نظر</button>
+        `;  
+        createAndOpenModal('createModal', 'نظرتان راجعبه متن', modalBodyContent, modalFooterContent);
+    }
+    function submitFeedback(contentId) {
+        const selectedStar = document.querySelector('.star.selected');
+        const feedbackText = $("#feedback-body").val();
+
+        if (!selectedStar) {
+            alert('Please select a rating.');
+            return;
+        }
+
+        const rating = selectedStar.getAttribute('data-star');
+        //console.log(rating)
+        //console.log(feedbackText)
+        
+
+        console.log('Feedback submitted:', { contentId, rating, feedbackText });
+        var request = {
+            "content_id": contentId,
+            "rating": rating,
+            "feedback": feedbackText
+        };
+        $.ajax({
+            url: "{{ url_for('dashboard.article_feedback') }}",
+            type: 'POST',
+            data: JSON.stringify(request),
+            contentType: "application/json",
+            success: function (data) {
+                showToast('نظر شما با موفقیت ثبت شد. با تشکر', 'success', 3000);
+                $("#feedback-msg").hide()
+                // console.log(data)
+            },
+            error: function () {
+                alert('Error converting HTML to DOCX');
+            }
+        });
+
+        // Close the modal after submitting feedback
+        const modal = bootstrap.Modal.getInstance(document.getElementById('createModal'));
+        modal.hide();
+    }
+
+
     $(document).ready(function () {
         $(".ck-toolbar__items").append('<span class="flex-fill">&nbsp;</span>');
-        //        $(".ck-toolbar__items").append('<button id="create-pdf" class="ck ck-button" style="font-family: Vazirmatn;" type="button" tabindex="-1" aria-disabled="true" data-cke-tooltip-text="دانلود PDF"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf me-2" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/><path d="M4.603 14.087a.8.8 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.7 7.7 0 0 1 1.482-.645 20 20 0 0 0 1.062-2.227 7.3 7.3 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a11 11 0 0 0 .98 1.686 5.8 5.8 0 0 1 1.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 0 1-.354.416.86.86 0 0 1-.51.138c-.331-.014-.654-.196-.933-.417a5.7 5.7 0 0 1-.911-.95 11.7 11.7 0 0 0-1.997.406 11.3 11.3 0 0 1-1.02 1.51c-.292.35-.609.656-.927.787a.8.8 0 0 1-.58.029m1.379-1.901q-.25.115-.459.238c-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361q.016.032.026.044l.035-.012c.137-.056.355-.235.635-.572a8 8 0 0 0 .45-.606m1.64-1.33a13 13 0 0 1 1.01-.193 12 12 0 0 1-.51-.858 21 21 0 0 1-.5 1.05zm2.446.45q.226.245.435.41c.24.19.407.253.498.256a.1.1 0 0 0 .07-.015.3.3 0 0 0 .094-.125.44.44 0 0 0 .059-.2.1.1 0 0 0-.026-.063c-.052-.062-.2-.152-.518-.209a4 4 0 0 0-.612-.053zM8.078 7.8a7 7 0 0 0 .2-.828q.046-.282.038-.465a.6.6 0 0 0-.032-.198.5.5 0 0 0-.145.04c-.087.035-.158.106-.196.283-.04.192-.03.469.046.822q.036.167.09.346z"/></svg>PDF</button>');
+        //        $(".ck-toolbar__items").append('<button id="create-pdf" class="ck ck-button" style="font-family: Vazirmatn;" type="button" tabindex="-1" aria-disabled="true" data-cke-tooltip-text="دانلود PDF"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf me-2" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5a.5.5 0 0 1 0 1z"/><path d="M4.603 14.087a.8.8 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.198-.307.526-.568.897-.787a7.7 7.7 0 0 1 1.482-.645 20 20 0 0 0 1.062-2.227 7.3 7.3 0 0 1-.43-1.295c-.086-.4-.119-.796-.046-1.136.075-.354.274-.672.65-.823.192-.077.4-.12.602-.077a.7.7 0 0 1 .477.365c.088.164.12.356.127.538.007.188-.012.396-.047.614-.084.51-.27 1.134-.52 1.794a11 11 0 0 0 .98 1.686 5.8 5.8 0 0 1 1.334.05c.364.066.734.195.96.465.12.144.193.32.2.518.007.192-.047.382-.138.563a1.04 1.04 0 0 1-.354.416.86.86 0 0 1-.51.138c-.331-.014-.654-.196-.933-.417a5.7 5.7 0 0 1-.911-.95 11.7 11.7 0 0 0-1.997.406 11.3 11.3 0 0 1-1.02 1.51c-.292.35-.609.656-.927.787a.8.8 0 0 1-.58.029m1.379-1.901q-.25.115-.459.238c-.328.194-.541.383-.647.547-.094.145-.096.25-.04.361q.016.032.026.044l.035-.012c.137-.056.355-.235.635-.572a8 8 0 0 0 .45-.606m1.64-1.33a13 13 0 0 1 1.01-.193 12 12 0 0 1-.51-.858 21 21 0 0 1-.5 1.05zm2.446.45q.226.245.435.41c.24.19.407.253.498.256a.1.1 0 0 0 .07-.015.3.3 0 0 0 .094-.125.44.44 0 0 0 .059-.2.1.1 0 0 0-.026-.063c-.052-.062-.2-.152-.518-.209a4 4 0 0 0-.612-.053zM8.078 7.8a7 7 0 0 0 .2-.828q.046-.282.038-.465a.6.6 0 0 0-.032-.198.5.5 0 0 0-.145.04c-.087.035-.158.106-.196.283-.04.192-.03.469.046.822q.036.167.09.346z"/></svg>PDF</button>');
         $(".ck-toolbar__items").append('<button id="create-docx" style="cursor: pointer;" class="ck ck-button" style="font-family: Vazirmatn;" type="button" tabindex="-1" aria-disabled="true" data-cke-tooltip-text="دانلود DOCX"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-word me-2" viewBox="0 0 16 16"><path d="M5.485 6.879a.5.5 0 1 0-.97.242l1.5 6a.5.5 0 0 0 .967.01L8 9.402l1.018 3.73a.5.5 0 0 0 .967-.01l1.5-6a.5.5 0 0 0-.97-.242l-1.036 4.144-.997-3.655a.5.5 0 0 0-.964 0l-.997 3.655L5.485 6.88z"/><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/></svg>DOCX</button>');
         $(".ck-toolbar__items").append('<span style="height: 100%; border-right: 1px solid #ccc;">&nbsp;</span>');
         $(".ck-toolbar__items").append('<button id="save-content" class="ck ck-button ms-3" style="font-family: Vazirmatn; cursor: pointer;" type="button" tabindex="-1" aria-disabled="true" data-cke-tooltip-text="ذخیره متن"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save2 me-2" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1z"/></svg>ذخیره</button>');
@@ -322,6 +410,30 @@
         var contentId = '{{ content.id }}';
 
 
+
+        $("#feedbackButton").on('click', function () {
+            showFeedbackModal(contentId)
+        });
+        // showFeedbackModal(contentId)
+    
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('star')) {
+                let stars = document.querySelectorAll('.star');
+                let starValue = parseInt(event.target.getAttribute('data-star'));
+
+                stars.forEach(star => {
+                    if (parseInt(star.getAttribute('data-star')) <= starValue) {
+                        star.classList.add('selected');
+                    } else {
+                        star.classList.remove('selected');
+                    }
+                });
+            }
+        });
+        
+
+  
+        
         // Save content action
         $("#save-content").on('click', function () {
             showConfirmModal(contentId)
@@ -331,8 +443,6 @@
         $("#delete-content").on('click', function () {
             showDeleteModal(contentId)
         });
-
-
 
         $('#create-docx').click(function () {
             var request = {
@@ -362,8 +472,6 @@
                 }
             });
         });
-
-
 
         // Download .docx file
         $('#create-pdf').click(function () {

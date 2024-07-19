@@ -23,10 +23,7 @@ class LoginForm(BaseForm):
 
 class RegistrationForm(BaseForm):
     email = StringField('ایمیل', validators=[DataRequired(), Length(1, 64), Email()])
-    username = StringField('نام کاربری', validators=[
-        DataRequired(), Length(1, 64),
-        Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
-               'نام کاربری باید شامل حروف، اعداد، نقاط یا زیرخط باشد')])
+    username = StringField('نام کاربری')
     password = PasswordField('رمزعبور', validators=[
         DataRequired(), EqualTo('password2', message='رمزعبور اشتباه است')])
     password2 = PasswordField('تکرار رمزعبور', validators=[DataRequired()])

@@ -1171,3 +1171,18 @@
 .model-info {
 	flex-grow: 1;
 }
+
+.article-rating {
+	display: flex;
+	direction: rtl;
+}
+.article-star {
+	cursor: pointer;
+	font-size: 2rem;
+	color: #ccc;
+	transition: color 0.3s;
+}
+.article-star:hover,
+.article-star.selected {
+	color: #ff0;
+}
