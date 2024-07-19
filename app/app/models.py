@@ -1,4 +1,6 @@
 from datetime import datetime
+
+import pytz
 import hashlib, json
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
@@ -247,7 +249,8 @@ class Content(db.Model):
     system_title = db.Column(db.Text)
     outlines = db.Column(db.Text)
     llm = db.Column(db.String(64))
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    # timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, index=True, default=lambda: datetime.now(pytz.timezone('Asia/Tehran')))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     flow_id = db.Column(db.Integer, db.ForeignKey('flows.id'))
     job = db.relationship('Job', backref='content', uselist=False)
