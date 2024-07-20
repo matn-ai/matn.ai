@@ -1,5 +1,8 @@
 {% extends "dashboard/dashboard.html" %}
 {% block dashboard %}
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='js/showdown.js') }}"></script>
+
 <style>
     .card-title {
         font-size: 14px;
@@ -50,7 +53,6 @@
     .gradient-custom {
         background-color: #fafafa;
         min-height: 700px;
-        ;
     }
 
     .mask-custom {
@@ -229,7 +231,7 @@
                                                             <img src="/static/images/logo-claude.jpeg" alt="Sonnet"
                                                                 class="rounded m-1 me-2" style="height: 54px;">
                                                             <div class="model-info">
-                                                                <p class="card-title m-0 p-0">Claude 3 Sonnet</p>
+                                                                <p class="card-title m-0 پ-0">Claude 3 Sonnet</p>
                                                                 <div class="small mt-1">ضریب کلمه: ۴</div>
                                                             </div>
                                                         </div>
@@ -242,171 +244,167 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
     </div>
-</div>
-<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-<script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
 
-<script>
-    $(document).ready(function () {
+    <script>
+        $(document).ready(function () {
 
-        $('#show-llm-container').on('click', function () {
-            $('#llm-container').toggle();
-            var $this = $(this);
-            $this.text(function (i, text) {
-                return text === "تغییر مدل" ? "پنهان کردن" : "تغییر مدل";
+            $('#show-llm-container').on('click', function () {
+                $('#llm-container').toggle();
+                var $this = $(this);
+                $this.text(function (i, text) {
+                    return text === "تغییر مدل" ? "پنهان کردن" : "تغییر مدل";
+                });
             });
-        });
 
-        // Initially hide the llm-container
-//        $('#llm-container').hide();
+            // Initially hide the llm-container
+            // $('#llm-container').hide();
 
-        // Function to update the selected model text
-        function updateSelectedModelText() {
-            var selectedModel = $('input[name="llm_model"]:checked').val();
-            var modelName = '';
-            switch(selectedModel) {
-                case 'gpt-4o':
-                    modelName = 'GPT-4o';
-                    break;
-                case 'gpt-3.5-turbo':
-                    modelName = 'GPT-3.5';
-                    break;
-                case 'claude-3-haiku':
-                    modelName = 'Claude 3 Haiku';
-                    break;
-                case 'claude-3.5-sonnet':
-                    modelName = 'Claude 3 Sonnet';
-                    break;
+            // Function to update the selected model text
+            function updateSelectedModelText() {
+                var selectedModel = $('input[name="llm_model"]:checked').val();
+                var modelName = '';
+                switch(selectedModel) {
+                    case 'gpt-4o':
+                        modelName = 'GPT-4o';
+                        break;
+                    case 'gpt-3.5-turbo':
+                        modelName = 'GPT-3.5';
+                        break;
+                    case 'claude-3-haiku':
+                        modelName = 'Claude 3 Haiku';
+                        break;
+                    case 'claude-3.5-sonnet':
+                        modelName = 'Claude 3 Sonnet';
+                        break;
+                }
+                $('#selected-model').text(modelName);
             }
-            $('#selected-model').text(modelName);
-        }
 
+            function toPersianNumber(number) {
+                const persianMap = { '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴', '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹' };
+                return number.toString().split('').map(char => persianMap[char] || char).join('');
+            }
 
-        function toPersianNumber(number) {
-            const persianMap = { '0': '۰', '1': '۱', '2': '۲', '3': '۳', '4': '۴', '5': '۵', '6': '۶', '7': '۷', '8': '۸', '9': '۹' };
-            return number.toString().split('').map(char => persianMap[char] || char).join('');
-        }
+            function updateWordCount() {
+                const text = $('#input-text-area').val();
+                const wordCount = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+                $('#input-word-count').text("کلمات: " + toPersianNumber(wordCount));
+            }
 
-        function updateWordCount() {
-            const text = $('#input-text-area').val();
-            const wordCount = text.trim().split(/\s+/).filter(word => word.length > 0).length;
-            $('#input-word-count').text("کلمات: " + toPersianNumber(wordCount));
-        }
+            $('#input-text-area').on('input', updateWordCount);
 
-        $('#input-text-area').on('input', updateWordCount);
+            function sendMessage() {
+                const message = $('#input-text-area').val();
+                const selectedModel = $('input[name="llm_model"]:checked').val();
 
-        function sendMessage() {
-            const message = $('#input-text-area').val();
-            const selectedModel = $('input[name="llm_model"]:checked').val();
+                if (message.trim() === '') return;
 
-            if (message.trim() === '') return;
-
-            // Add user message
-            const userMessageHtml = `
-                <li class="d-flex justify-content-start mb-4">
-                    <div class="card mask-custom">
-                        <div class="card-body">
-                            <div class="mb-0">${marked.parse(message)}</div>
-                        </div>
-                    </div>
-                </li>
-            `;
-            $('ul.list-unstyled').append(userMessageHtml);
-
-            // Add loading animation
-            const loadingHtml = `
-                <li id="loading-container" class="d-flex justify-content-center mb-4">
-                    <lottie-player src="{{ url_for('static', filename='media/ai.json') }}"
-                        background="transparent" speed="1" loop autoplay style="width: 72px; height: 72px;"></lottie-player>
-                </li>
-            `;
-            $('ul.list-unstyled').append(loadingHtml);
-
-            // Scroll to bottom of chat
-            const chatContainer = $('ul.list-unstyled');
-            chatContainer.scrollTop(chatContainer[0].scrollHeight);
-
-            $.ajax({
-                type: 'POST',
-                url: '{{url_for("dashboard.chat")}}',
-                data: JSON.stringify({ message, llm_model: selectedModel }),
-                contentType: 'application/json',
-                beforeSend: function () {
-                    $('#input-text-area').prop('disabled', true);
-                    $('#send-btn').prop('disabled', true).text('در حال دریافت پاسخ');
-                },
-                success: function (response) {
-                    // Remove loading animation
-                    $('#loading-container').remove();
-
-                    const botMessageHtml = `
-                        <li class="d-flex justify-content-end mb-4">
-                            <div class="card mask-custom">
-                                <div class="card-header d-flex justify-content-between p-3" style="background: transparent;">
-                                    <p class="fw-bold mb-0">Matn.ai (${selectedModel})</p>
-                                    <button class="btn btn-sm btn-outline-secondary copy-btn border-0" data-message="${response.answer}">
-                                        <i class="fa-solid fa-copy"></i>
-                                    </button>
-                                </div>
-                                <div class="card-body">
-                                    <div class="mb-0">${marked.parse(response.answer)}</div>
-                                </div>
+                // Add user message
+                const userMessageHtml = `
+                    <li class="d-flex justify-content-start mb-4">
+                        <div class="card mask-custom">
+                            <div class="card-body">
+                                <div class="mb-0">${new showdown.Converter().makeHtml(message)}</div>
                             </div>
-                            <img src="/static/images/matn-ai-short-logo.png" alt="Bot" class="rounded-circle d-flex align-self-start ms-3 shadow-1-strong" width="60">
-                        </li>
-                    `;
-                    $('ul.list-unstyled').append(botMessageHtml);
-                    $('#input-text-area').val('');
-                    updateWordCount();
+                        </div>
+                    </li>
+                `;
+                $('ul.list-unstyled').append(userMessageHtml);
 
-                    // Scroll to bottom of chat
-                    chatContainer.scrollTop(chatContainer[0].scrollHeight);
-                },
-                complete: function () {
-                    $('#input-text-area').prop('disabled', false);
-                    $('#send-btn').prop('disabled', false).text('ارسال');
-                },
-                error: function () {
-                    // Remove loading animation
-                    $('#loading-container').remove();
+                // Add loading animation
+                const loadingHtml = `
+                    <li id="loading-container" class="d-flex justify-content-center mb-4">
+                        <lottie-player src="{{ url_for('static', filename='media/ai.json') }}"
+                            background="transparent" speed="1" loop autoplay style="width: 72px; height: 72px;"></lottie-player>
+                    </li>
+                `;
+                $('ul.list-unstyled').append(loadingHtml);
 
-                    alert('خطایی رخ داده است. لطفا دوباره تلاش کنید.');
-                    $('#input-text-area').prop('disabled', false);
-                    $('#send-btn').prop('disabled', false).text('ارسال');
+                // Scroll to bottom of chat
+                const chatContainer = $('ul.list-unstyled');
+                chatContainer.scrollTop(chatContainer[0].scrollHeight);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{url_for("dashboard.chat")}}',
+                    data: JSON.stringify({ message, llm_model: selectedModel }),
+                    contentType: 'application/json',
+                    beforeSend: function () {
+                        $('#input-text-area').prop('disabled', true);
+                        $('#send-btn').prop('disabled', true).text('در حال دریافت پاسخ');
+                    },
+                    success: function (response) {
+                        // Remove loading animation
+                        $('#loading-container').remove();
+
+                        const botMessageHtml = `
+                            <li class="d-flex justify-content-end mb-4">
+                                <div class="card mask-custom">
+                                    <div class="card-header d-flex justify-content-between پ-3" style="background: transparent;">
+                                        <p class="fw-bold mb-0">Matn.ai (${selectedModel})</p>
+                                        <button class="btn btn-sm btn-outline-secondary copy-btn border-0" data-message="${response.answer}">
+                                            <i class="fa-solid fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-0">${new showdown.Converter().makeHtml(response.answer)}</div>
+                                    </div>
+                                </div>
+                                <img src="/static/images/matn-ai-short-logo.png" alt="Bot" class="rounded-circle d-flex align-self-start ms-3 shadow-1-strong" width="60">
+                            </li>
+                        `;
+                        $('ul.list-unstyled').append(botMessageHtml);
+                        $('#input-text-area').val('');
+                        updateWordCount();
+
+                        // Scroll to bottom of chat
+                        chatContainer.scrollTop(chatContainer[0].scrollHeight);
+                    },
+                    complete: function () {
+                        $('#input-text-area').prop('disabled', false);
+                        $('#send-btn').prop('disabled', false).text('ارسال');
+                    },
+                    error: function () {
+                        // Remove loading animation
+                        $('#loading-container').remove();
+
+                        alert('خطایی رخ داده است. لطفا دوباره تلاش کنید.');
+                        $('#input-text-area').prop('disabled', false);
+                        $('#send-btn').prop('disabled', false).text('ارسال');
+                    }
+                });
+            }
+
+            $('#send-btn').on('click', sendMessage);
+
+            // Handle Enter key press
+            $('#input-text-area').on('keydown', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // Prevent default behavior (new line)
+                    sendMessage();
                 }
             });
-        }
 
-        $('#send-btn').on('click', sendMessage);
+            // Update selected model text when a radio button is clicked
+            $('input[name="llm_model"]').on('change', function() {
+                updateSelectedModelText();
+            });
 
-        // Handle Enter key press
-        $('#input-text-area').on('keydown', function (e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault(); // Prevent default behavior (new line)
-                sendMessage();
-            }
-        });
-
-        // Update selected model text when a radio button is clicked
-        $('input[name="llm_model"]').on('change', function() {
+            // Initially set the selected model text
             updateSelectedModelText();
-        });
-
-        // Initially set the selected model text
-        updateSelectedModelText();
-        // Copy button functionality
-        $(document).on('click', '.copy-btn', function () {
-            const textToCopy = $(this).data('message');
-            navigator.clipboard.writeText(textToCopy).then(function () {
-                // alert('پیام کپی شد');
-            }, function (err) {
-                console.error('خطا در کپی کردن: ', err);
+            // Copy button functionality
+            $(document).on('click', '.copy-btn', function () {
+                const textToCopy = $(this).data('message');
+                navigator.clipboard.writeText(textToCopy).then(function () {
+                    // alert('پیام کپی شد');
+                }, function (err) {
+                    console.error('خطا در کپی کردن: ', err);
+                });
             });
         });
-    });
-</script>
+    </script>
 {% endblock %}
