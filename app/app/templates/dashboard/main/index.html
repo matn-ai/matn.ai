@@ -23,7 +23,7 @@
         <tbody class="table-group-divider">
           {% for content in contents %}
           <tr>
-            <td class="text-center p-4" onclick="openContent('{{ content.content_type }}', '{{ content.id }}')">
+            <td class="text-center p-4" style="max-width: 200px; overflow: hidden;" onclick="openContent('{{ content.content_type }}', '{{ content.id }}')">
               <div id="content-title-{{ content.id }}">
                 {% if content.system_title %}
                 {{ content.system_title | safe }}
