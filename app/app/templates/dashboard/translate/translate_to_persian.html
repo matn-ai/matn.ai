@@ -79,7 +79,7 @@
             <form id="translation-form" method="POST" onsubmit="submitFormViaAjax(); return false;">
                 {{ form.hidden_tag() }}
                 <div class="row">
-                    <div class="col">
+                    <div class="col-12 col-lg-6">
                         <div class="bg-white mr-auto mx-auto rounded p-4 card-shadow w-100 position-relative">
                             <label class="label mb-2 small">
                                 متنی که می‌خواهید به فارسی ترجمه شود را اینجا قرار دهید
@@ -172,7 +172,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col-12 col-lg-6">
                         <div class="bg-white mr-auto mx-auto rounded p-4 card-shadow w-100 position-relative" id="output-container">
                             {{ form.body(id="output-text-area", class="form-control bg-light", style="min-height: 680px;", readonly=True) }}
                             <div class="loading-overlay">

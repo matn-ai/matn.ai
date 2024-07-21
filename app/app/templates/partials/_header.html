@@ -4,71 +4,90 @@
             <a class="navbar-brand" href="{{ url_for('main.index') }}">
                 <img src="{{ url_for('static', filename='images/main_logo.png') }}" width="128 px" />
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
-                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-                <span>
-                    <span></span>
-                </span>
+            <!-- Offcanvas toggle button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarText">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 mt-4 mt-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.index') }}">خانه</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            خدمات
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('dashboard.article_blog') }}">نگارش مقاله بلاگ</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('dashboard.article_pro') }}">نگارش مقاله حرفه‌ای</a></li>
-                            <!-- <li><a class="dropdown-item" href="#">توصیف محصول</a></li>
-                            <li><a class="dropdown-item" href="#">پردازش ایده</a></li> 
-                            <li><a class="dropdown-item" href="#">نوشتن خلاصه کتاب</a></li>
-                            <li><a class="dropdown-item" href="#">شبکه‌های اجتماعی</a></li>
-                            <li><a class="dropdown-item" href="#">پرسش و پاسخ (FAQ)</a></li> -->
-                            <li><a class="dropdown-item" href="{{ url_for('dashboard.translate_to_persian_file') }}">ترجمه هوشمند</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('dashboard.translate_to_persian') }}">ترجمه هوشمند فایل</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('finance.create_pay') }}">خرید اعتبار</a></li>
-                    <!-- <li class="nav-item"><a class="nav-link" href="#">دانشنامه</a></li> -->
-                    <li class="nav-item"><a class="nav-link" href="#">درباره</a></li>
-                </ul>
-                <ul class="navbar-nav flex-row mb-2 mb-lg-0 ms-lg-3" id="left-side">
-                    {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                    <a class="btn btn-outline-primary me-2" href="{{ url_for('finance.create_pay') }}">
-                        <div class="row">
-                          <div class="col-12">موجودی :
-                                {{ current_user.remain_charge | to_persian_num }}
-                            <span class="badge bg-light text-dark">کلمه</span>
-                          </div>
-                        </div>
-                    </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-outline-primary" href="{{ url_for('dashboard.index') }}">
-                            داشبورد
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <!-- <li><a class="dropdown-item" href="{{ url_for('main.edit_profile') }}">پروفایل</a></li> -->
-                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">خروج</a></li>
-                        </ul>
-                    </li>
-                {% else %}
-                    <li class="nav-item me-2">
-                        <a class="btn btn-outline-primary px-3" href="{{ url_for('auth.register') }}">ثبت‌نام</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary px-3" href="{{ url_for('auth.login') }}">ورود</a>
-                    </li>
-                {% endif %}
-                </ul>
+
+            <!-- Offcanvas Menu -->
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel"></h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 mt-4 mt-lg-0" id="top-side">
+                        <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.index') }}">خانه</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                خدمات
+                            </a>
+                            <ul class="dropdown-menu border-0" aria-labelledby="servicesDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.article_blog') }}">نگارش مقاله بلاگ</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.article_pro') }}">نگارش مقاله حرفه‌ای</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.translate_to_persian_file') }}">ترجمه هوشمند فایل</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.translate_to_persian') }}">ترجمه هوشمند</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('finance.create_pay') }}">خرید اعتبار</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">درباره</a></li>
+                    </ul>
+                    <ul class="navbar-nav flex-column flex-lg-row mb-3 mb-lg-0 ms-lg-3" id="left-side">
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item mb-2 mb-lg-0 me-lg-2">
+                            <a class="btn btn-outline-primary w-100" href="{{ url_for('finance.create_pay') }}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>موجودی:</span>
+                                    <span>{{ current_user.remain_charge | to_persian_num }}
+                                        <span class="badge bg-light text-dark">کلمه</span>
+                                    </span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2 mb-lg-0 me-lg-2">
+                            <a class="btn btn-outline-primary w-100" href="{{ url_for('dashboard.index') }}">
+                                داشبورد
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle w-100 text-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">خروج</a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li class="nav-item mb-2 mb-lg-0 me-lg-2">
+                            <a class="btn btn-outline-primary w-100" href="{{ url_for('auth.register') }}">ثبت‌نام</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary w-100" href="{{ url_for('auth.login') }}">ورود</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
 </div>
+<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        function adjustNavbarOrder() {
+          if ($(window).width() <= 991) { // 991px is the default breakpoint for Bootstrap's lg size
+            $('#left-side').insertBefore('#top-side');
+          } else {
+            $('#left-side').insertAfter('#top-side');
+          }
+        }
+      
+        // Call the function on page load
+        adjustNavbarOrder();
+      
+        // Call the function whenever the window is resized
+        $(window).resize(adjustNavbarOrder);
+      });
+</script>

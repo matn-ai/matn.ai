@@ -1,13 +1,155 @@
 {% from "_macros.html" import nav_item %}
+<style>
+  /* Custom styles for the mobile view of the dashboard navigation */
+.navbar-toggler {
+  outline: none;
+}
+.navbar-collapse {
+  transition: height 0.3s ease-in-out;
+  background-color: white;
+}
+.nav-link {
+  padding: 0.75rem 1.25rem;
+/*  border-bottom: 1px solid #e7e7e7; */
+}
+.nav-link span {
+}
+.nav-link .fas {
+  
+}
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
-  <a class="navbar-brand d-lg-none" href="#">منوی داشبورد</a>
-  <button class="navbar-toggler border-0 me-3 mb-2 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+.nav-link[aria-expanded="true"] .fas {
+  transform: rotate(180deg);
+}
+
+.collapse.show {
+  transition: max-height 0.3s ease-in-out;
+}
+
+@media (max-width: 767px) {
+  .nav-item {
+      margin-bottom: 10px;
+  }
+
+  .navbar-brand.d-lg-none {
+      padding-left: 1rem;
+  }
+
+  .nav-item .nav-link {
+      font-size: 1rem;
+  }
+
+  .nav-item .nav-link .badge {
+      font-size: 0.75rem;
+  }
+
+  .collapse {
+      max-height: 0;
+      overflow: hidden;
+  }
+
+  .collapse.show {
+      max-height: 500px; /* or any reasonable height that will allow content to be fully visible */
+  }
+
+  .nav-item small .nav-link {
+      padding-left: 2rem;  /* Indent submenus */
+  }
+
+  .nav-link .fas {
+      margin-left: 0.5rem;
+  }
+}
+Custom styles for the mobile view of the dashboard navigation */
+.navbar-toggler {
+  outline: none;
+}
+.navbar-collapse {
+  transition: height 0.3s ease-in-out;
+  background-color: white;
+}
+.nav-link {
+  padding: 0.75rem 1.25rem;
+}
+.nav-link span {
+}
+.nav-link .fas {
+}
+
+.nav-link[aria-expanded="true"] .fas {
+  transform: rotate(180deg);
+}
+
+.collapse.show {
+  transition: max-height 0.3s ease-in-out;
+}
+
+@media (max-width: 767px) {
+  .nav-item {
+      margin-bottom: 10px;
+  }
+
+  .navbar-brand.d-lg-none {
+      padding-left: 1rem;
+  }
+
+  .nav-item .nav-link {
+      font-size: 1rem;
+  }
+
+  .nav-item .nav-link .badge {
+      font-size: 0.75rem;
+  }
+
+  .collapse {
+      max-height: 0;
+      overflow: hidden;
+  }
+
+  .collapse.show {
+      max-height: 500px;
+  }
+
+  .nav-item small .nav-link {
+      padding-left: 2rem;
+  }
+
+  .nav-link .fas {
+      margin-left: 0.5rem;
+  }
+
+  /* Bottom Navigation Bar Styles */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: white;
+    border-top: 1px solid #e7e7e7;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+  }
+
+  .bottom-nav .nav-item {
+    flex: 1;
+    text-align: center;
+  }
+}
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light w-100 p-2 pb-4">
+  <a class="navbar-brand d-lg-none" href="#">ابزارهای تولید محتوا</a>
+  <button class="navbar-toggler border-0 small mb-2 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <!-- <span class="navbar-toggler-icon small"></span> -->
+    <!-- <i class="fa fa-circle"></i> -->
+    <i class="fa-solid fa-ellipsis-vertical"></i>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="nav flex-column w-100">
-
       <li class="nav-item">
         <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active-nav{% endif %}" href="{{ url_for('dashboard.index') }}">
           داشبورد
@@ -21,25 +163,19 @@
 
       <!-- مقالات Dropdown -->
       <li class="nav-item">
-        <a class="nav-link d-flex justify-content-between align-items-center"
-           id="contentLink"
-           href="#contentCollapse"
-           data-bs-toggle="collapse"
-           role="button"
-           aria-controls="contentCollapse"
-           aria-expanded="{{ 'true' if 'article' in request.path else 'false' }}">
+        <a class="nav-link d-flex justify-content-between align-items-center" id="contentLink" href="#contentCollapse" data-bs-toggle="collapse" role="button" aria-controls="contentCollapse" aria-expanded="{{ 'true' if 'article' in request.path else 'false' }}">
           <span>مقاله</span>
           <i class="fas fa-chevron-down"></i>
         </a>
         <div class="collapse {{ 'show' if 'article' in request.path else '' }}" id="contentCollapse">
           <ul class="nav flex-column ms-3">
             <li class="nav-item small">
-              <a class="nav-link {% if request.endpoint == 'dashboard.article_pro' %}active-nav{% endif %}" id="content حرفه‌ایLink" href="{{ url_for('dashboard.article_pro') }}">
+              <a class="nav-link {% if request.endpoint == 'dashboard.article_pro' %}active-nav{% endif %}" id="content-professional-link" href="{{ url_for('dashboard.article_pro') }}">
                 <i class="fas fa-file-alt me-2"></i>مقاله حرفه‌ای
               </a>
             </li>
             <li class="nav-item small">
-              <a class="nav-link {% if request.endpoint == 'dashboard.article_blog' %}active-nav{% endif %}" id="بلاگLink" href="{{ url_for('dashboard.article_blog') }}">
+              <a class="nav-link {% if request.endpoint == 'dashboard.article_blog' %}active-nav{% endif %}" id="content-blog-link" href="{{ url_for('dashboard.article_blog') }}">
                 <i class="fas fa-blog me-2"></i>مقاله بلاگ
               </a>
             </li>
@@ -48,28 +184,24 @@
       </li>
 
       <li class="nav-item">
-        <a class="nav-link d-flex justify-content-between align-items-center"
-           id="ترجمهLink"
-           href="#ترجمهCollapse"
-           data-bs-toggle="collapse"
-           role="button"
-           aria-controls="ترجمهCollapse"
-           aria-expanded="{{ 'true' if 'translate' in request.path else 'false' }}">
+        <a class="nav-link d-flex justify-content-between align-items-center" id="translationLink" href="#translationCollapse" data-bs-toggle="collapse" role="button" aria-controls="translationCollapse" aria-expanded="{{ 'true' if 'translate' in request.path else 'false' }}">
           <span>ترجمه</span>
           <i class="fas fa-chevron-down"></i>
         </a>
-        <div class="collapse {{ 'show' if 'translate' in request.path else '' }}" id="ترجمهCollapse">
+        <div class="collapse {{ 'show' if 'translate' in request.path else '' }}" id="translationCollapse">
           <ul class="nav flex-column ms-3">
             <li class="nav-item small">
-              <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian_file' %}active-nav{% endif %}" id="از فارسیLink" href="{{ url_for('dashboard.translate_to_persian_file') }}">
-                <i class="fas fa-language me-2"></i>ترجمه به فارسی
+              <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian_file' %}active-nav{% endif %}" id="translate-file-link" href="{{ url_for('dashboard.translate_to_persian_file') }}">
                 <span class="badge text-bg-light">فایل</span>
+                
+                ترجمه به فارسی
               </a>
             </li>
             <li class="nav-item small">
-              <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian' %}active-nav{% endif %}" id="به فارسیLink" href="{{ url_for('dashboard.translate_to_persian') }}">
-                <i class="fas fa-language me-2"></i>ترجمه به فارسی
+              <a class="nav-link {% if request.endpoint == 'dashboard.translate_to_persian' %}active-nav{% endif %}" id="translate-text-link" href="{{ url_for('dashboard.translate_to_persian') }}">
                 <span class="badge text-bg-light">متن</span>
+                
+                ترجمه به فارسی
               </a>
             </li>
           </ul>
@@ -79,3 +211,18 @@
   </div>
 </nav>
 
+<!-- Bottom Navigation Bar for Mobile -->
+<!-- <div class="bottom-nav d-md-none">
+  <a href="{{ url_for('dashboard.index') }}" class="nav-item">
+    <i class="fas fa-home"></i>
+  </a>
+  <a href="{{ url_for('dashboard.chat') }}" class="nav-item">
+    <i class="fas fa-comments"></i>
+  </a>
+  <a href="{{ url_for('dashboard.article_pro') }}" class="nav-item">
+    <i class="fas fa-file-alt"></i>
+  </a>
+  <a href="{{ url_for('dashboard.translate_to_persian_file') }}" class="nav-item">
+    <i class="fas fa-language"></i>
+  </a>
+</div> -->
