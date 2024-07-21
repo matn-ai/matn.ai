@@ -12,8 +12,16 @@
     .is-invalid {
         border-color: red !important;
     }
-    .btn-success{
+
+    .btn-success {
         display: none;
+    }
+
+    /* Custom styles for mobile view */
+    @media (max-width: 767px) {
+        .wizard.vertical .wizard-content {
+            width: 100%;
+        }
     }
 </style>
 <div class="row">
@@ -55,18 +63,21 @@
                                 {{ form.user_topic(id="form_user_topic", size=500, class_="form-control",
                                 style="max-height: 100px;") }}
                                 <div id="user_topic_error" class="form-text text-danger"></div>
-                                <div class="form-text">شرح موضوع مقاله خود را وارد کنید. این شرح شامل گزاره‌های اصلی و نتیجه نهایی مقاله است.</div>
+                                <div class="form-text">شرح موضوع مقاله خود را وارد کنید. این شرح شامل گزاره‌های اصلی و
+                                    نتیجه نهایی مقاله است.</div>
                             </div>
                             <div class="form-group mb-4 mt-2 pb-4">
                                 <label for="tags" class="mb-2">{{ form.main_tag.label }}</label>
                                 {{ form.main_tag(id="main-tag-input", class="form-control") }}
                                 <div id="main_tag_error" class="form-text text-danger"></div>
-                                <div class="form-text">عبارت کلیدی اصلی مقاله که بر اساس آن مقاله برای موتورهای جست‌وجو بهینه می‌شود</div>
+                                <div class="form-text">عبارت کلیدی اصلی مقاله که بر اساس آن مقاله برای موتورهای جست‌وجو
+                                    بهینه می‌شود</div>
                             </div>
                             <div class="form-group mb-4 mt-2 pb-4">
                                 <label for="tags" class="mb-2">{{ form.tags.label }}</label>
                                 {{ form.tags(id="tags-input", class="form-control") }}
-                                <div class="form-text">دیگر گزاره‌های کلیدی که در متن مقاله از آن استفاده می‌شود.<br>پس از نوشتن هر عبارت Enter را بزنید</div>
+                                <div class="form-text">دیگر گزاره‌های کلیدی که در متن مقاله از آن استفاده می‌شود.<br>پس
+                                    از نوشتن هر عبارت Enter را بزنید</div>
                             </div>
                             <div class="row mb-4">
                                 <div class="col-12 col-md-6">
@@ -160,18 +171,19 @@
                                             <div class="card h-100">
                                                 <div class="card-body">
                                                     <input type="radio" class="btn-check" value="gpt-4o-mini"
-                                                        name="language_model" id="gpt-4o-mini-outlined" autocomplete="off">
+                                                        name="language_model" id="gpt-4o-mini-outlined"
+                                                        autocomplete="off">
                                                     <label class="btn btn-outline-primary w-100 h-100"
                                                         for="gpt-4o-mini-outlined">
                                                         <img src="/static/images/logo-gpt-4o-mini.jpeg" alt="OpenAI"
                                                             class="mb-3 rounded" style="height: 72px;">
                                                         <h5 class="card-title">
                                                             GPT-4o mini
-                                                            
+
                                                         </h5>
                                                         <p class="card-text">ضریب کلمه: ۱.۵</p>
                                                         <span class="badge text-bg-success ">جدید</span>
-                                                </label>
+                                                    </label>
                                                 </div>
                                             </div>
                                         </div>
@@ -190,7 +202,7 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                        </div> 
+                                        </div>
                                         <div class="col">
                                             <div class="card h-100">
                                                 <div class="card-body">
@@ -387,8 +399,8 @@
             <div id="loading-content" class="text-center mr-auto mx-auto"
                 style="display: none;  height: 100%; width: 100%; position: absolute; background-color: rgba(255, 255, 255, 0.8); z-index: 100;">
                 <div style="width: 72px;" class="mr-auto mx-auto position-absolute top-50 start-50 translate-middle">
-                    <lottie-player src="{{ url_for('static', filename='media/ai.json') }}"
-                        background="transparent" speed="1" loop autoplay></lottie-player>
+                    <lottie-player src="{{ url_for('static', filename='media/ai.json') }}" background="transparent"
+                        speed="1" loop autoplay></lottie-player>
                 </div>
             </div>
             <div id="text-editor-area">
@@ -563,13 +575,13 @@
                 //$('.btn-outline-dark').hide();
 
 
-    
+
                 // Modify the function to integrate the click event for replacing the image
                 function loadImageForOutline(outline, outlineIndex) {
                     return new Promise((resolve, reject) => {
                         let mainOutlineCounter = outlineIndex + 1;
                         let mainOutlineId = `image-${mainOutlineCounter}`;
-                        let mainHead = outline.head ; // TODO: Add user_input main headline to this to enhance the search
+                        let mainHead = outline.head; // TODO: Add user_input main headline to this to enhance the search
                         let title = $("#form_user_topic").val()
                         $.ajax({
                             type: 'POST',
@@ -633,7 +645,7 @@
                 function loadImageSearch(containerId, mainHead, id) {
                     let user_topic = $("#form_user_topic").val()
                     let query = `${main_tagify.value[0]['value']}`;
-        
+
                     $.ajax({
                         type: 'POST',
                         url: "{{ url_for('dashboard.search_images') }}",  // Replace with correct endpoint
@@ -682,12 +694,12 @@
                     // $('.btn-success').hide();
                     $('.wizard-buttons .btn-outline-primary').hide();
                     $('.wizard-buttons .btn-outline-dark').hide();
-                    
+
 
                     loadBtnLoader()
 
                     // console.log(selected_list)
-                    
+
                     for (let outlineIndex = 0; outlineIndex < selected_list.length; outlineIndex++) {
                         try {
                             if (outlineIndex == 0)
@@ -706,7 +718,7 @@
                     $("#images-container").show()
                     $("#loading-images").hide()
                     $('.btn-success').show();
-//                    $('.wizard-buttons .btn-success').hide();
+                    //                    $('.wizard-buttons .btn-success').hide();
 
                     wizard.unlock();
                 })();
@@ -1268,7 +1280,7 @@
         ClassicEditor
             .create(document.querySelector('#text-editor'), {
                 language: "fa",
-                toolbar: ['heading', '|' ,'undo', 'redo', 'bold', 'italic', 'link','numberedList', 'bulletedList'],
+                toolbar: ['heading', '|', 'undo', 'redo', 'bold', 'italic', 'link', 'numberedList', 'bulletedList'],
                 height: 500
             })
             .then(newEditor => {
@@ -1348,7 +1360,7 @@
 
                     // Redirect to the newly constructed URL
                     window.location.href = redirectUrl;
-    
+
                     // startTimer()
                     // checkJobStatus(jobId, contentId);
                 },

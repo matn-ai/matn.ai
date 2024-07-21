@@ -105,9 +105,33 @@
         text-decoration: underline;
         color: blue;
     }
+
+
+
+    @media (max-width: 767px) {
+        .card-body {
+            padding: 10px;
+        }
+    
+        .model-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column; /* Stack elements vertically */
+        }
+    
+        .model-card img {
+            margin-bottom: 10px; /* Add some space between the image and text */
+            height: 50px; /* Adjust image size for mobile */
+        }
+    
+        .model-info {
+            text-align: center;
+        }
+    }
 </style>
 
-<div class="container py-5">
+<div class="container">
     <div class="row">
         <div class="col-12 mb-3">
         </div>
@@ -132,7 +156,7 @@
                     <a href="{{url_for('dashboard.forget_chat')}}"
                         class="btn btn-outline-danger btn-lg btn-rounded float-start mt-3">مکالمه را پاک کن</a>
                     <button type="button" id="send-btn"
-                        class="btn btn-primary btn-lg btn-rounded float-end mt-3" style="width: 200px;">ارسال</button>
+                        class="btn btn-primary btn-lg btn-rounded float-end mt-3" style="width: 100px;">ارسال</button>
 
                     <div class="clearfix"></div>
                     <div class="col-12">
@@ -151,16 +175,13 @@
 
                                     </div>
                                     <div class="w-100 pt-2" id="llm-container">
-                                        <div class="row row-cols-4 g-2">
+                                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-2">
                                             <div class="col">
                                                 <div class="card-body">
-                                                    <input type="radio" class="btn-check" value="gpt-4o"
-                                                        name="llm_model" id="gpt4-outlined" autocomplete="off" checked>
-                                                    <label class="btn btn-outline-primary w-100 p-0"
-                                                        for="gpt4-outlined">
+                                                    <input type="radio" class="btn-check" value="gpt-4o" name="llm_model" id="gpt4-outlined" autocomplete="off" checked>
+                                                    <label class="btn btn-outline-primary w-100 p-0" for="gpt4-outlined">
                                                         <div class="model-card">
-                                                            <img src="/static/images/logo-gpt4.jpeg" alt="OpenAI"
-                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <img src="/static/images/logo-gpt4.jpeg" alt="OpenAI" class="rounded m-1 me-2" style="height: 54px;">
                                                             <div class="model-info">
                                                                 <p class="card-title m-0 p-0">OpenAI GPT-4o</p>
                                                                 <div class="small mt-1">ضریب کلمه: ۵</div>
@@ -171,13 +192,10 @@
                                             </div>
                                             <div class="col">
                                                 <div class="card-body">
-                                                    <input type="radio" class="btn-check" value="gpt-3.5-turbo"
-                                                        name="llm_model" id="gpt3.5-outlined" autocomplete="off">
-                                                    <label class="btn btn-outline-primary w-100 p-0"
-                                                        for="gpt3.5-outlined">
+                                                    <input type="radio" class="btn-check" value="gpt-3.5-turbo" name="llm_model" id="gpt3.5-outlined" autocomplete="off">
+                                                    <label class="btn btn-outline-primary w-100 p-0" for="gpt3.5-outlined">
                                                         <div class="model-card">
-                                                            <img src="/static/images/logo-gpt3.5.jpeg" alt="OpenAI"
-                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <img src="/static/images/logo-gpt3.5.jpeg" alt="OpenAI" class="rounded m-1 me-2" style="height: 54px;">
                                                             <div class="model-info">
                                                                 <p class="card-title m-0 p-0">OpenAI GPT-3.5</p>
                                                                 <div class="small mt-1">ضریب کلمه: ۱</div>
@@ -188,15 +206,12 @@
                                             </div>
                                             <div class="col">
                                                 <div class="card-body">
-                                                    <input type="radio" class="btn-check" value="gpt-4o-mini"
-                                                        name="llm_model" id="gpt4o-mini-outlined" autocomplete="off">
-                                                    <label class="btn btn-outline-primary w-100 p-0"
-                                                        for="gpt4o-mini-outlined">
+                                                    <input type="radio" class="btn-check" value="gpt-4o-mini" name="llm_model" id="gpt4o-mini-outlined" autocomplete="off">
+                                                    <label class="btn btn-outline-primary w-100 p-0" for="gpt4o-mini-outlined">
                                                         <div class="model-card">
-                                                            <img src="/static/images/logo-gpt-4o-mini.jpeg" alt="OpenAI"
-                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <img src="/static/images/logo-gpt-4o-mini.jpeg" alt="OpenAI" class="rounded m-1 me-2" style="height: 54px;">
                                                             <div class="model-info">
-                                                                <p class="card-title m-0 p-0">OpenAI GPT-4o-mini</p>
+                                                                <p class="card-title m-0 پ-0">OpenAI GPT-4o-mini</p>
                                                                 <div class="small mt-1">ضریب کلمه: ۱.۵</div>
                                                             </div>
                                                         </div>
@@ -205,15 +220,12 @@
                                             </div>
                                             <div class="col">
                                                 <div class="card-body">
-                                                    <input type="radio" class="btn-check" value="claude-3-haiku"
-                                                        name="llm_model" id="claude3-haiku-outlined" autocomplete="off">
-                                                    <label class="btn btn-outline-primary w-100 p-0"
-                                                        for="claude3-haiku-outlined">
+                                                    <input type="radio" class="btn-check" value="claude-3-haiku" name="llm_model" id="claude3-haiku-outlined" autocomplete="off">
+                                                    <label class="btn btn-outline-primary w-100 p-0" for="claude3-haiku-outlined">
                                                         <div class="model-card">
-                                                            <img src="/static/images/logo-claude.jpeg" alt="Haiku"
-                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <img src="/static/images/logo-claude.jpeg" alt="Haiku" class="rounded m-1 me-2" style="height: 54px;">
                                                             <div class="model-info">
-                                                                <p class="card-title m-0 p-0">Claude 3 Haiku</p>
+                                                                <p class="card-title m-0 پ-0">Claude 3 Haiku</p>
                                                                 <div class="small mt-1">ضریب کلمه: ۱</div>
                                                             </div>
                                                         </div>
@@ -222,14 +234,10 @@
                                             </div>
                                             <div class="col">
                                                 <div class="card-body">
-                                                    <input type="radio" class="btn-check" value="claude-3.5-sonnet"
-                                                        name="llm_model" id="claude3-sonnet-outlined"
-                                                        autocomplete="off">
-                                                    <label class="btn btn-outline-primary w-100 p-0"
-                                                        for="claude3-sonnet-outlined">
+                                                    <input type="radio" class="btn-check" value="claude-3.5-sonnet" name="llm_model" id="claude3-sonnet-outlined" autocomplete="off">
+                                                    <label class="btn btn-outline-primary w-100 p-0" for="claude3-sonnet-outlined">
                                                         <div class="model-card">
-                                                            <img src="/static/images/logo-claude.jpeg" alt="Sonnet"
-                                                                class="rounded m-1 me-2" style="height: 54px;">
+                                                            <img src="/static/images/logo-claude.jpeg" alt="Sonnet" class="rounded m-1 me-2" style="height: 54px;">
                                                             <div class="model-info">
                                                                 <p class="card-title m-0 پ-0">Claude 3 Sonnet</p>
                                                                 <div class="small mt-1">ضریب کلمه: ۴</div>
