@@ -249,7 +249,7 @@
                                             <div class="col">
                                                 <div class="card-body">
                                                     <input type="radio" class="btn-check" value="gemini-pro-1.5" name="llm_model" id="gemini-pro-1.5-outlined" autocomplete="off">
-                                                    <label class="btn btn-outline-primary w-100 p-0" for="claude3-sonnet-outlined">
+                                                    <label class="btn btn-outline-primary w-100 p-0" for="gemini-pro-1.5-outlined">
                                                         <div class="model-card">
                                                             <img src="/static/images/logo-gemini.jpeg" alt="Gemini" class="rounded m-1 me-2" style="height: 54px;">
                                                             <div class="model-info">
@@ -301,6 +301,9 @@
                         break;
                     case 'claude-3.5-sonnet':
                         modelName = 'Claude 3 Sonnet';
+                        break;
+                    case 'gemini-pro-1.5':
+                        modelName = 'Gemini 1.5';
                         break;
                 }
                 $('#selected-model').text(modelName);
