@@ -201,16 +201,16 @@ def article_blog(id=None):
 @dashboard.route("/article/pro/create", methods=["POST"])
 @login_required
 def create_article_pro():
-    if current_user.remain_charge < 0:
+    if current_user.remain_charge < 5000:
         flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
-        # return redirect(url_for('finance.create_pay'))
+        return abort(204)
 
     try:
         data = request.data
         article_data = json.loads(data)
         
         content = create_content(user_input=article_data, author=current_user)
-        job = generate_pro_article.delay(content.id, article_data)
+        job = generate_pro_article.delay    (content.id, article_data)
         create_job_record(job_id=job.id, content=content)
         j_date = utils_gre2jalali(content.job.created_at)
 
@@ -225,8 +225,8 @@ def create_article_pro():
 @login_required
 def article_pro():
     try:
-        if current_user.remain_charge < 0:
-            flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+        if current_user.remain_charge < 7500:
+            flash('شارژ شما برای ساخت مقاله حرفه‌ایs کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
             return redirect(url_for('finance.create_pay'))
 
         form = GenerateArticlePro()
