@@ -92,7 +92,7 @@ def html_to_docx(html_string):
     
 def suggest_search_query(input):
     try:
-        llm_type="gpt-3.5-turbo"
+        llm_type="gpt-4o-mini"
         user_prompt = (
             f"Write a SEO-optimized query to image search for this title {input}."
             f"This image is going to use as part of an article"
