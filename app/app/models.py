@@ -187,6 +187,11 @@ class User(UserMixin, db.Model):
         if user is None:
             return False
         user.password = new_password
+
+        if user.location == "" or user.location == None:
+            chat_user_id = User.register_on_chat(user.email, new_password, user.email)
+            user.location = chat_user_id
+
         db.session.add(user)
         return True
 
