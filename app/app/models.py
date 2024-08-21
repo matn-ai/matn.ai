@@ -124,6 +124,7 @@ class User(UserMixin, db.Model):
     @staticmethod
     def register_on_chat(email, password, username):
         url = os.getenv('CHAT_REGISTER_API')
+        logger.debug(f"\nCHAT_REGISTER_API : {url}")
 
         request = {
             "email": email,

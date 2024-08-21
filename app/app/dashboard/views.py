@@ -46,7 +46,7 @@ def redirect_to_chat():
     logger.debug(f"\n\n REDIRECT: {current_user.location}")
     # logger.debug(f"\n\n REDIRECT: {current_user.location}")
 
-    if current_user.location == "":
+    if current_user.location == "false":
         User.register_on_chat(current_user.email, current_user.about_me, current_user.email)
         return redirect("https://chat.matn.ai")
     else:
