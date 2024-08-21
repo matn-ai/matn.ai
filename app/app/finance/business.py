@@ -33,6 +33,10 @@ MODELS_RATIO = {
     'claude-3-haiku': 1,
     'claude-3.5-sonnet': 4,
     'gemini-pro-1.5': 3,
+    'dolphin-mixtral-8x22b': 1.5,
+    'llama-3-sonar-large-32k-online': 1.5,
+    'llama-3-sonar-small-32k-online': 1.5,
+    "phi-3-medium-128k-instruct:free": 1.5,
 }
 
 def calculate_reduce_charge(total_words, model='gpt-3.5-turbo'):
