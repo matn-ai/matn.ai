@@ -17,11 +17,11 @@ from ..dashboard.repository import save_html_to_docx, update_article_pro
 
 from ..file_management.models import File, ContentFile
 
-from logging import getLogger
 
 import pymupdf # imports the pymupdf library
 from .business import persian_translator
 
+from logging import getLogger
 logger = getLogger(__name__)
 
 load_dotenv()

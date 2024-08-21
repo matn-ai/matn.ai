@@ -29,6 +29,7 @@ from .. import app
 from ..tasks import chat
 from .chat import do_chat, forget_conversation
 from ..translator.views import *
+from ..models import User
 
 
 @dashboard.route("/forget_conversation", methods=["GET"])
@@ -39,7 +40,28 @@ def forget_chat():
     flash('مکالمه از نو بارگزاری شد...')
     return redirect(url_for('dashboard.chat'))
     
-    
+
+@dashboard.route('/get_chatuser_charge', methods=["GET"])
+def get_chatuser_charge():
+    form_data = request.json
+    chat_user_id = form_data['chat_user_id']
+    # chat_user_id = request.args.get('chat_user_id')
+    user = User.query.filter_by(location = chat_user_id).first()
+    user_charge = Charge.get_user_charge(user.id)
+    return jsonify({"remain": user_charge})
+
+
+@dashboard.route('/manage_chat', methods=["POST"])
+def manage_chat():
+    form_data = request.json
+    words = form_data['words']
+    chat_user_id = form_data['chat_user_id']
+    model  = form_data['model']
+    user = User.query.filter_by(location = chat_user_id).first()
+    Charge.reduce_user_charge(user.id, words, model)
+    user_charge = Charge.get_user_charge(user.id)
+    return jsonify({"remain": user_charge})
+
 @dashboard.route("/chat", methods=["GET", "POST"])
 @login_required
 def chat():

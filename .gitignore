@@ -8,3 +8,4 @@ venv
 *.sublime*
 .env
 **/static/uploads
+.DS_Store

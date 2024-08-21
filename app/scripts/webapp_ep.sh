@@ -12,4 +12,4 @@ flask create-admin admin2 admin2@admin2.com admin12321admin
 flask create-bank zibal
 
 # Start the Flask development server
-exec flask run --host=0.0.0.0 --port=80
+exec flask run --host=0.0.0.0 --port=5050
