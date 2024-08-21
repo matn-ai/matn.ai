@@ -43,10 +43,10 @@ def forget_chat():
 @dashboard.route('/redirect_to_chat')
 def redirect_to_chat():
     print(current_user.confirmed)
-    logger.debug(f"\n\n REDIRECT: {current_user.confirmed}")
+    logger.debug(f"\n\n REDIRECT: {current_user.location}")
     # logger.debug(f"\n\n REDIRECT: {current_user.location}")
 
-    if not current_user.location:
+    if current_user.location == "":
         User.register_on_chat(current_user.email, current_user.about_me, current_user.email)
         return redirect("https://chat.matn.ai")
     else:
