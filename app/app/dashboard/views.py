@@ -47,7 +47,7 @@ def redirect_to_chat():
         return redirect("https://chat.matn.ai")
     else:
         flash("لطفا حساب خود را فعال کنید:")
-        return False
+        return redirect(url_for('dashboard.index'))
         
 
 @dashboard.route('/get_chatuser_charge', methods=["GET"])
