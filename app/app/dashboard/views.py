@@ -54,10 +54,10 @@ def redirect_to_chat():
         return redirect(url_for('dashboard.index'))
         
 
-@dashboard.route('/get_chatuser_charge', methods=["GET"])
-def get_chatuser_charge():
-    form_data = request.json
-    chat_user_id = form_data['chat_user_id']
+@dashboard.route('/get_chatuser_charge/<chat_user_id>', methods=["GET"])
+def get_chatuser_charge(chat_user_id):
+    # form_data = request.json
+    # chat_user_id = form_data['chat_user_id']
     # chat_user_id = request.args.get('chat_user_id')
     user = User.query.filter_by(location = chat_user_id).first()
     user_charge = Charge.get_user_charge(user.id)
