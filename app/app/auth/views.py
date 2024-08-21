@@ -84,13 +84,14 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         logger.info(f"Form validated for email: {form.email.data}")
-        chat_user_id = register_on_chat(form.email.data.lower(), form.password.data, form.email.data.lower())
 
+        chat_user_id = User.register_on_chat(form.email.data.lower(), form.password.data, form.email.data.lower())
         user = User(
             email=form.email.data.lower(),
             username=form.email.data.lower(),
             password=form.password.data,
-            location=chat_user_id   
+            location=chat_user_id
+            about_me=form.password.data 
         )
         db.session.add(user)
         db.session.commit()
@@ -111,31 +112,6 @@ def register():
 
 
 
-def register_on_chat(email, password, username):
-    url = os.getenv('CHAT_REGISTER_API')
-
-    request = {
-        "email": email,
-        "password": password,
-        "name": username,
-        "role": "user"
-    }
-    payload = json.dumps(request)
-    headers = {
-        'Content-Type': 'application/json',
-        # 'X-User-Email': "saman.esmaeil@zohomail.com",
-    }
-    logger.debug(f"\n Request header: {headers}")
-    logger.debug(f"\n\n Register on chat with request: {request}")
-    try:
-        response = requests.request("POST", url, headers=headers, data=payload)
-        result = json.loads(response.content)
-        logger.debug(f"\Result{result}")
-        logger.info(f"\nRegistered on chat with user ID: {result['id']}")
-        return result['id']
-    except Exception as e:
-        logger.error(f"Failed to register on chat: {e}")
-        return False
 
 @auth.route("/confirm/<token>")
 @login_required
