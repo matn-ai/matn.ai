@@ -42,15 +42,14 @@ def forget_chat():
     
 @dashboard.route('/redirect_to_chat')
 def redirect_to_chat():
-    print(current_user.confirmed)
-    logger.debug(f"\n\n REDIRECT: {current_user.location}")
-    # logger.debug(f"\n\n REDIRECT: {current_user.location}")
-
-    if current_user.location == "false":
-        User.register_on_chat(current_user.email, current_user.about_me, current_user.email)
+    if current_user.remain_charge < 10:
+        flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+        return redirect(url_for('finance.create_pay'))
+    if current_user.location or current_user.location != "":
+        # User.register_on_chat(current_user.email, current_user.about_me, current_user.email)
         return redirect("https://chat.matn.ai")
     else:
-        flash("لطفا حساب خود را فعال کنید")
+        flash("لطفا حساب خود را فعال کنید یا اگر کاربر قدیمی هستید پسورد حساب را بازیابی کنید.")
         return redirect(url_for('dashboard.index'))
         
 
@@ -58,13 +57,9 @@ def redirect_to_chat():
 def get_chatuser_charge():
     form_data = request.json
     chat_user_id = form_data['chat_user_id']
-    print("START"*10)
-    print(chat_user_id)
     user = User.query.filter_by(location = chat_user_id).first()
     if user:
         user_charge = Charge.get_user_charge(user.id)
-        print(user_charge)
-        print("END"*10)
         return jsonify({"remain": user_charge})
     else:
         return jsonify({"message": "error"})
@@ -78,7 +73,7 @@ def manage_chat():
     model  = form_data['model']
     user = User.query.filter_by(location = chat_user_id).first()
     Charge.reduce_user_charge(user.id, words, model)
-    user_charge = Charge.get_user_charge(user.id)
+    user_charge = user.remain_charge
     return jsonify({"remain": user_charge})
 
 @dashboard.route("/chat", methods=["GET", "POST"])

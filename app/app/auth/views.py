@@ -183,6 +183,7 @@ def password_reset_request():
                 token=token,
             )
         flash("یک ایمیل با دستورالعمل‌های بازیابی رمز عبور برای شما ارسال شده است.")
+
         return redirect(url_for("auth.login"))
     return render_template("auth/request_reset_password.html", form=form)
 
@@ -197,6 +198,10 @@ def password_reset(token):
             db.session.commit()
             logger.info(f"Password reset for token: {token}")
             flash("رمز عبور شما بروز رسانی شد.")
+            if current_user.location == "" or current_user.location == None:
+                chat_user_id = User.register_on_chat(current_user.email.lower(), form.password.data, current_user.email.lower())
+                current_user.location = chat_user_id
+                db.session.commit()
             return redirect(url_for("auth.login"))
         else:
             logger.warning(f"Invalid reset request for token: {token}")
