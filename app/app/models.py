@@ -1,7 +1,7 @@
 from datetime import datetime
 
-import pytz
-import hashlib, json
+import pytz, requests
+import hashlib, json, os
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy.dialects.postgresql import TEXT
@@ -16,6 +16,12 @@ from .utils import utils_gre2jalali, to_persian_numerals
 import jdatetime
 
 from .finance.models import *
+
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 class Permission:
@@ -114,6 +120,36 @@ class User(UserMixin, db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    @staticmethod
+    def register_on_chat(email, password, username):
+        url = os.getenv('CHAT_REGISTER_API')
+
+        request = {
+            "email": email,
+            "password": password,
+            "name": username,
+            "role": "user"
+        }
+        payload = json.dumps(request)
+        headers = {
+            'Content-Type': 'application/json',
+            # 'X-User-Email': "saman.esmaeil@zohomail.com",
+        }
+        logger.debug(f"\n Request header: {headers}")
+        logger.debug(f"\n\n Register on chat with request: {request}")
+        try:
+            response = requests.request("POST", url, headers=headers, data=payload)
+            result = json.loads(response.content)
+            logger.debug(f"\Result{result}")
+            logger.info(f"\nRegistered on chat with user ID: {result['id']}")
+            try:
+                return result['id']
+            except:
+                return False
+        except Exception as e:
+            logger.error(f"Failed to register on chat: {e}")
+            return False
 
     def generate_confirmation_token(self):
         s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
