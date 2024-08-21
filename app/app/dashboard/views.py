@@ -43,9 +43,7 @@ def forget_chat():
 @dashboard.route('/redirect_to_chat')
 def redirect_to_chat():
     if current_user and current_user.location == "" and current_user.confirmed == True:
-        User.register_on_chat(current_user.email,
-                              current_user.about_me,
-                              current_user.email)
+        User.register_on_chat(current_user.email, current_user.about_me, current_user.email)
         return redirect("https://chat.matn.ai")
     else:
         flash("لطفا حساب خود را فعال کنید:")

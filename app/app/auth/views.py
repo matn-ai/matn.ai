@@ -90,7 +90,7 @@ def register():
             email=form.email.data.lower(),
             username=form.email.data.lower(),
             password=form.password.data,
-            location=chat_user_id
+            location=chat_user_id,
             about_me=form.password.data 
         )
         db.session.add(user)
