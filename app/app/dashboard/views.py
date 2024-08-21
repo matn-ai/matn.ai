@@ -58,9 +58,13 @@ def redirect_to_chat():
 def get_chatuser_charge():
     form_data = request.json
     chat_user_id = form_data['chat_user_id']
+    print("START"*10)
+    print(chat_user_id)
     user = User.query.filter_by(location = chat_user_id).first()
     if user:
         user_charge = Charge.get_user_charge(user.id)
+        print(user_charge)
+        print("END"*10)
         return jsonify({"remain": user_charge})
     else:
         return jsonify({"message": "error"})

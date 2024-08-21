@@ -3,27 +3,6 @@ from . import api
 from ..models import User, Content
 
 
-
-@api.get("/get_user_charge/<string:chat_user_id>")
-async def get_user_charge(chat_user_id):
-    print(chat_user_id)
-    import requests
-    import json
-    print ("TEST\n\n"*10)
-
-    url = "http://localhost:5050/dashboard/get_chatuser_charge/" +chat_user_id
-
-    payload = json.dumps({
-    "chat_user_id": chat_user_id
-    })
-    headers = {
-    'Content-Type': 'application/json'
-    }
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-    return response
-    # print(response.text)
-
 @api.route('/users/<int:id>')
 def get_user(id):
     user = User.query.get_or_404(id)
