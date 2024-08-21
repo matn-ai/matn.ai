@@ -128,7 +128,7 @@ class User(UserMixin, db.Model):
         if data.get('confirm') != self.id:
             return False
         self.confirmed = True
-        Charge.add_user_charge(user_id=self.id, toman_amount=75000)
+        Charge.add_user_charge(user_id=self.id, toman_amount=105000)
         db.session.add(self)
         return True
 

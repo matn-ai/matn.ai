@@ -2,7 +2,7 @@ SECRET_KEY=MBqRysyAhUUETgFTc5XOTPrKYKZTJ0oi
 
 DB_USERNAME=root
 DB_PASSWORD=123qwer
-DB_HOSTNAME=postgres
+DB_HOSTNAME=localhost
 DB_NAME=app
 
 MAIL_SERVER=smtp.c1.liara.email
@@ -17,7 +17,7 @@ APP_ADMIN=saman.2791@gmail.com
 OPENROUTER_API_KEY=sk-4Nb9KLrui-Vnn0cyA9w4ew
 OPENROUTER_API=https://api.tosiehgar.ir/v1/
 
-CHAT_REGISTER_API=http://localhost:8080/api/v1/auths/signup
+CHAT_REGISTER_API=http://localhost:5050/api/v1/auths/signup
 
 MONGO_USER=admin
 MONGO_PASSWORD=123qwer
@@ -32,5 +32,5 @@ REDIS_SERVER=redis
 REDIS_PORT=6937
 REDIS_DB=0
 
-CELERY_BROKER="redis://redis"
-CELERY_RESULT_BACKEND="redis://redis"
+CELERY_BROKER="redis://localhost"
+CELERY_RESULT_BACKEND="redis://localhost"

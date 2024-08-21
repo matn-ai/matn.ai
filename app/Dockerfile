@@ -8,6 +8,7 @@ EXPOSE 80
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
+    curl \
     libpq-dev
 
 # Copy the current directory contents into the container at /app
@@ -17,7 +18,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Make port 8000 available to the world outside this container
-EXPOSE 8000
+EXPOSE 5050
 
 # Define environment variable
 ENV FLASK_ENV=development
