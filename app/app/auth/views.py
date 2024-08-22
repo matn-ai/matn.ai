@@ -195,13 +195,14 @@ def password_reset(token, email):
     form = PasswordResetForm()
     form.email = email
     if form.validate_on_submit():
-        if User.reset_password(token, form.password.data):
+        user_email = User.query.filter_by(email = email).first()
+        if User.reset_password(token, form.password.data) and user_email:
             db.session.commit()
             logger.info(f"Password reset for token: {token}")
             flash("رمز عبور شما بروز رسانی شد.")
-            if current_user.location == "" or current_user.location == None or not current_user.location:
+            if user_email.location == "" or user_email.location == None or not user_email.location:
                 chat_user_id = User.register_on_chat(form.email.data.lower(), form.password.data, form.email.data.lower())
-                current_user.location = chat_user_id
+                user_email.location = chat_user_id
                 db.session.commit()
             return redirect(url_for("auth.login"))
         else:
