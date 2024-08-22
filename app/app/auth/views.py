@@ -187,12 +187,13 @@ def password_reset_request():
         return redirect(url_for("auth.login"))
     return render_template("auth/request_reset_password.html", form=form)
 
-@auth.route("/reset/<token>", methods=["GET", "POST"])
-def password_reset(token):
+@auth.route("/reset/<token>/<email>", methods=["GET", "POST"])
+def password_reset(token, email):
     logger.debug("password_reset called")
     if not current_user.is_anonymous:
         return redirect(url_for("main.index"))
     form = PasswordResetForm()
+    form.email = email
     if form.validate_on_submit():
         if User.reset_password(token, form.password.data):
             db.session.commit()
