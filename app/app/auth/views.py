@@ -198,8 +198,8 @@ def password_reset(token):
             db.session.commit()
             logger.info(f"Password reset for token: {token}")
             flash("رمز عبور شما بروز رسانی شد.")
-            if current_user.location == "" or current_user.location == None:
-                chat_user_id = User.register_on_chat(current_user.email.lower(), form.password.data, current_user.email.lower())
+            if current_user.location == "" or current_user.location == None or not current_user.location:
+                chat_user_id = User.register_on_chat(form.email.data.lower(), form.password.data, form.email.data.lower())
                 current_user.location = chat_user_id
                 db.session.commit()
             return redirect(url_for("auth.login"))
