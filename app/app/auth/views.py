@@ -208,7 +208,7 @@ def password_reset(token, email):
             logger.warning(f"Invalid reset request for token: {token}")
             flash("درخواست نامعتبر است.")
             return redirect(url_for("main.index"))
-    return render_template("auth/reset_password.html", form=form, token=token)
+    return render_template("auth/reset_password.html", form=form, token=token, email=email)
 
 @auth.route("/change_email", methods=["GET", "POST"])
 @login_required
