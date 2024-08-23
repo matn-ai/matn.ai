@@ -42,15 +42,21 @@ def forget_chat():
     
 @dashboard.route('/redirect_to_chat')
 def redirect_to_chat():
-    if current_user.remain_charge < 10:
-        flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
-        return redirect(url_for('finance.create_pay'))
-    if current_user.location or current_user.location != "":
-        # User.register_on_chat(current_user.email, current_user.about_me, current_user.email)
-        return redirect("https://chat.matn.ai")
+    if current_user.is_anonymous:
+        flash("برای استفاده از چت لطفا وارد شوید.")
+        return redirect(url_for('main.index'))
     else:
-        flash("لطفا حساب خود را فعال کنید یا اگر کاربر قدیمی هستید پسورد حساب را بازیابی کنید.")
-        return redirect(url_for('dashboard.index'))
+        # print(current_user.is_authenticated)
+        if current_user.remain_charge < 10:
+            flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+            return redirect(url_for('finance.create_pay'))
+        if current_user.location or current_user.location != "":
+            # User.register_on_chat(current_user.email, current_user.about_me, current_user.email)
+            return redirect("https://chat.matn.ai")
+        else:
+            flash("لطفا حساب خود را فعال کنید یا اگر کاربر قدیمی هستید پسورد حساب را بازیابی کنید.")
+            return redirect(url_for('dashboard.index'))
+
         
 
 @dashboard.route('/get_chatuser_charge', methods=["POST"])
