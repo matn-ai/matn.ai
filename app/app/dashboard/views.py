@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, abort, request, url_for, send_file
+from flask import render_template, jsonify, abort, request, url_for, send_file, render_template_string
 from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
 from app.dashboard.forms import GenerateArticleBlog, GenerateArticlePro, ChatForm
@@ -23,7 +23,7 @@ from .repository import (
     is_content_has_feedback
 )
 import json, os
-import uuid
+import uuid, requests
 from ..utils import utils_gre2jalali
 from .. import app
 from ..tasks import chat
@@ -39,6 +39,8 @@ def forget_chat():
     forget_conversation(user)        
     flash('مکالمه از نو بارگزاری شد...')
     return redirect(url_for('dashboard.chat'))
+    
+
     
 @dashboard.route('/redirect_to_chat')
 def redirect_to_chat():
