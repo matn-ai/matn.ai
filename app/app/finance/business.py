@@ -29,14 +29,15 @@ MODELS_RATIO = {
     'gpt-4o': 5,
     'gpt-4o-mini': 1.5,
     'gpt-3.5': 1,
+    'claude-3.5-sonnet': 4,
     'gpt-3.5-turbo': 1,
     'claude-3-haiku': 1,
-    'claude-3.5-sonnet': 4,
+    'claude-3.5-opus': 10,
     'gemini-pro-1.5': 3,
+    'codellama-70b-instruct': 1,
     'dolphin-mixtral-8x22b': 1.5,
     'llama-3-sonar-large-32k-online': 1.5,
-    'llama-3-sonar-small-32k-online': 1.5,
-    "phi-3-medium-128k-instruct:free": 1.5,
+    "phi-3-medium-128k-instruct": 1.5,
 }
 
 def calculate_reduce_charge(total_words, model='gpt-3.5-turbo'):
