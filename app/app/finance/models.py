@@ -82,11 +82,12 @@ class Receipt(db.Model):
     def update_additional_data(self, new_data):
         if not isinstance(new_data, dict):
             raise ValueError("new_data must be a dictionary")
-        
+       
         if self.additional_data is None:
             self.additional_data = {}
-
-        self.additional_data.update(new_data)
+        data = self.additional_data.copy()
+        data.update(new_data)
+        self.additional_data = data
         db.session.commit()
         return self
     

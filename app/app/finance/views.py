@@ -17,9 +17,36 @@ logger = logging.getLogger()
 import zibal.zibal as zibal
 
 merchant_id = os.environ.get('ZIBAL_MERCHAND_ID', 'zibal') # zibal for test mode
-callback_url = os.environ.get('ZIBAL_CALLBACK_URL', 'http://localhost/finance/webhook/zibal')
+callback_url = os.environ.get('ZIBAL_CALLBACK_URL', 'http://127.0.0.1:5000/finance/webhook/zibal')
 START_PAYMENT_URL = 'https://gateway.zibal.ir/start/'
-MAIN_URL = os.environ.get('MAIN_URL', 'http://127.0.0.1')
+MAIN_URL = os.environ.get('MAIN_URL', 'http://127.0.0.1:5000')
+
+
+def create_pay_service(user, amount) -> dict:
+    logger.info('Requested amount for user {} is {}'.format(user.id, amount))
+    
+    bank = Bank.get_bank_by_slug('zibal')
+    receipt = Receipt.create_receipt(user_id=user.id, amount=amount, bank_id=bank.id)
+    
+    zb = zibal.zibal(merchant_id, callback_url)
+    description = 'خرید شارژ به میزان {} ریال'.format(amount * 10)  # Amount is in RIAL !!!!!
+    
+    request_to_zibal = zb.request(amount=amount * 10, 
+                                  description=description, 
+                                  order_id=receipt.number)
+    logger.info('Zibal request data {}'.format(request_to_zibal))
+    
+    if request_to_zibal.get('message') != 'success':
+        return jsonify({'error': 'Zibal request is not successful'}), 500
+    
+    receipt.update_additional_data({'request_to_zibal': request_to_zibal})
+    receipt.set_tracker_id(str(request_to_zibal.get('trackId')))
+    redirect_url = START_PAYMENT_URL + str(request_to_zibal.get('trackId'))
+    logger.info(redirect_url)
+    
+    return {'redirect_url': redirect_url, 'receipt': receipt}
+
+
 
 @finance.route('/finance/create_pay', methods=['GET', 'POST'])
 @login_required
@@ -28,29 +55,9 @@ def create_pay():
     if request.method == 'POST' and form.validate_on_submit():
         user = current_user
         amount = float(form.amount.data)
-        logger.info('Requested amount for user {} is {}'.format(user, amount))
-        bank = Bank.get_bank_by_slug('zibal')
-        receipt = Receipt.create_receipt(user_id=user.id, amount=amount, bank_id=bank.id)
-        
-        zb = zibal.zibal(merchant_id, callback_url)
-        description = 'خرید شارژ به میزان {} ریال'.format(amount * 10) # Amount is in RIAL !!!!!
-        
-        request_to_zibal = zb.request(amount=amount * 10, 
-                                      description=description, 
-                                      order_id=receipt.number)
-        logger.info('Zibal request data {}'.format(request_to_zibal))
-        if request_to_zibal.get('message') != 'success':
-            raise Exception('Zibal request is not successful')
-        
-        receipt.update_additional_data({'request_to_zibal': request_to_zibal})
-        receipt.set_tracker_id(str(request_to_zibal.get('trackId')))
-        redirect_url = START_PAYMENT_URL + str(request_to_zibal.get('trackId'))
-        logger.info(redirect_url)
-        
-        return redirect(redirect_url)
-        
-        
-        
+        redirect_dict = create_pay_service(user=user, amount=amount)
+        return redirect(redirect_dict['redirect_url'])
+                
     return render_template('finance/create_pay.html', form=form)
 
 
@@ -102,6 +109,8 @@ def zibal_webhook():
     verify_result = verify_zibal['result']
     logger.info('Verify result {}'.format(verify_result))
     receipt.update_additional_data({'verify_result': verify_result})
+    if receipt.additional_data.get('redirect_url'):
+        return redirect(receipt.additional_data.get('redirect_url'))
     
     return redirect(MAIN_URL + '/finance/status?receipt_number={}&user_charge={}'.format(receipt.number, user_new_charge.word_count))
 
