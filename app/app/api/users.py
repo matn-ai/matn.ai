@@ -27,10 +27,22 @@ def register_external_user():
             return jsonify({'message': f'Missing required field: {field}'}), 400
 
     # Check if email or username already exists
-    if User.query.filter_by(email=data['email']).first():
-        return jsonify({'message': 'Email already registered'}), 400
+    user = User.query.filter_by(email=data['email']).first()
+    if user:
+        return jsonify({'message': 'Email already registered', 'user': {
+            'id': user.id,
+            'email': user.email,
+            'username': user.username,
+            'name': user.name
+        }}), 400
+    user = User.query.filter_by(username=data['username']).first()
     if User.query.filter_by(username=data['username']).first():
-        return jsonify({'message': 'Username already taken'}), 400
+        return jsonify({'message': 'Username already taken','user': {
+            'id': user.id,
+            'email': user.email,
+            'username': user.username,
+            'name': user.name
+        }}), 400
 
     # Create new user
     new_user = User(
