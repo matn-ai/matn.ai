@@ -6,7 +6,7 @@ from . import api
 from ..models import User, Content, db, Role
 from .decorators import token_required
 from flask_login import login_required
-from finance.models import Charge
+from app.finance.models import Charge
 
 
 @api.route('/users/<int:id>')
