@@ -55,8 +55,6 @@ def register_external_user():
         last_seen=datetime.utcnow(),
         avatar_hash=hashlib.md5(data['email'].lower().encode('utf-8')).hexdigest()
     )
-    if data.get('init_charge'):
-        Charge.add_user_charge(user_id=new_user.id, toman_amount=data.get('init_charge'))
 
     # Set role (you might want to set a default role for external users)
     default_role = Role.query.filter_by(name='User').first()
@@ -67,6 +65,8 @@ def register_external_user():
     try:
         db.session.add(new_user)
         db.session.commit()
+        if data.get('init_charge'):
+            Charge.add_user_charge(user_id=new_user.id, toman_amount=data.get('init_charge'))
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': 'An error occurred while registering the user', 'error': str(e)}), 500
