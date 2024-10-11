@@ -6,6 +6,7 @@ from . import api
 from ..models import User, Content, db, Role
 from .decorators import token_required
 from flask_login import login_required
+from finance.models import Charge
 
 
 @api.route('/users/<int:id>')
@@ -54,6 +55,8 @@ def register_external_user():
         last_seen=datetime.utcnow(),
         avatar_hash=hashlib.md5(data['email'].lower().encode('utf-8')).hexdigest()
     )
+    if data.get('init_charge'):
+        Charge.add_user_charge(user_id=new_user.id, toman_amount=data.get('init_charge'))
 
     # Set role (you might want to set a default role for external users)
     default_role = Role.query.filter_by(name='User').first()
