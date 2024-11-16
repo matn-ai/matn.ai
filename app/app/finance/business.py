@@ -10,18 +10,18 @@
 
 
 def calculate_charge_rule(rial_amount):
-    if rial_amount < 20_000 * 15:
-        return rial_amount // 15
-    elif rial_amount < 40_000 * 14:
-        return rial_amount // 14
-    elif rial_amount < 60_000 * 13:
-        return rial_amount // 13
-    elif rial_amount < 80_000 * 12:
-        return rial_amount // 12
-    elif rial_amount < 100_000 * 12:
-        return rial_amount // 10
+    if rial_amount < 20_000 * 7:
+        return rial_amount // 7
+    elif rial_amount < 40_000 * 6.5:
+        return rial_amount // 6.5
+    elif rial_amount < 60_000 * 6:
+        return rial_amount // 6
+    elif rial_amount < 80_000 * 5.5:
+        return rial_amount // 5.5
+    elif rial_amount < 100_000 * 5:
+        return rial_amount // 5
     
-    return rial_amount // 10
+    return rial_amount // 7
 
 
 
