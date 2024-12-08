@@ -124,7 +124,7 @@ class User(UserMixin, db.Model):
     @staticmethod
     def register_on_chat(email, password, username):
         url = os.getenv('CHAT_REGISTER_API')
-        logger.debug(f"\nCHAT_REGISTER_API : {url}")
+        # logger.debug(f"\nCHAT_REGISTER_API : {url}")
 
         request = {
             "email": email,
@@ -137,20 +137,20 @@ class User(UserMixin, db.Model):
             'Content-Type': 'application/json',
             # 'X-User-Email': "saman.esmaeil@zohomail.com",
         }
-        logger.debug(f"\n Request header: {headers}")
-        logger.debug(f"\n\n Register on chat with request: {request}")
+        # logger.info(f"\n Request header: {headers}")
+        # logger.info(f"\n\n Register on chat with request: {request}")
         try:
             response = requests.request("POST", url, headers=headers, data=payload)
             result = json.loads(response.content)
-            logger.debug(f"\Result{result}")
-            logger.info(f"\nRegistered on chat with user ID: {result['id']}")
+            # logger.info(f"\Result{result}")
+            # logger.info(f"\nRegistered on chat with user ID: {result['id']}")
             try:
                 return result['id']
             except:
-                return False
+                return 0
         except Exception as e:
             logger.error(f"Failed to register on chat: {e}")
-            return False
+            return 0
 
     def generate_confirmation_token(self):
         s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])

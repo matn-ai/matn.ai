@@ -183,26 +183,33 @@ def password_reset_request():
                 token=token,
             )
         flash("یک ایمیل با دستورالعمل‌های بازیابی رمز عبور برای شما ارسال شده است.")
+
         return redirect(url_for("auth.login"))
     return render_template("auth/request_reset_password.html", form=form)
 
-@auth.route("/reset/<token>", methods=["GET", "POST"])
-def password_reset(token):
+@auth.route("/reset/<token>/<email>", methods=["GET", "POST"])
+def password_reset(token, email):
     logger.debug("password_reset called")
     if not current_user.is_anonymous:
         return redirect(url_for("main.index"))
     form = PasswordResetForm()
+    form.email = email
     if form.validate_on_submit():
-        if User.reset_password(token, form.password.data):
+        user_email = User.query.filter_by(email = email).first()
+        if User.reset_password(token, form.password.data) and user_email:
             db.session.commit()
             logger.info(f"Password reset for token: {token}")
             flash("رمز عبور شما بروز رسانی شد.")
+            if user_email.location == "" or user_email.location == None or not user_email.location:
+                chat_user_id = User.register_on_chat(form.email.data.lower(), form.password.data, form.email.data.lower())
+                user_email.location = chat_user_id
+                db.session.commit()
             return redirect(url_for("auth.login"))
         else:
             logger.warning(f"Invalid reset request for token: {token}")
             flash("درخواست نامعتبر است.")
             return redirect(url_for("main.index"))
-    return render_template("auth/reset_password.html", form=form, token=token)
+    return render_template("auth/reset_password.html", form=form, token=token, email=email)
 
 @auth.route("/change_email", methods=["GET", "POST"])
 @login_required

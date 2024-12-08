@@ -49,6 +49,11 @@ def index():
     return render_template('index.html', form=form, contents=contents, pagination=pagination)
 
 
+@main.route('/31593641.txt', methods=['GET', 'POST'])
+def index_31593641():
+    return render_template('31593641.txt')
+
+
 @main.route('/privacy-policy', methods=['GET'])
 def privacy_and_policy_view():
     return render_template('privacy_and_policy.html')

@@ -51,6 +51,7 @@ class PasswordResetRequestForm(BaseForm):
     submit = SubmitField('بازنشانی رمزعبور')
 
 class PasswordResetForm(BaseForm):
+    email = StringField('ایمیل')
     password = PasswordField('رمز عبور جدید', validators=[
         DataRequired(), EqualTo('password2', message='رمزعبور باید همسان باشد')])
     password2 = PasswordField('تکرار رمز عبور جدید', validators=[DataRequired()])

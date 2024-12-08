@@ -7,6 +7,48 @@
     cursor: pointer;
   }
 </style>
+
+<style>
+  #listing-table tbody td:hover {
+    cursor: pointer;
+  }
+  .chat-entry-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #e0f7fa; /* Light turquoise background */
+    border: 2px solid #009688; /* Matching border color */
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+  }
+  .chat-entry-button {
+    background-color: #009688; /* Teal background */
+    color: #ffffff; /* White text */
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .chat-entry-button:hover {
+    background-color: #00796b; /* Slightly darker teal on hover */
+  }
+</style>
+
+
+<div class="chat-entry-box">
+  <span class="chat-entry-text">
+    ورود به چت حرفه‌ای
+  </span>
+  <button class="chat-entry-button" onclick="window.location.href='{{ url_for('dashboard.redirect_to_chat') }}'">
+    برو به چت
+  </button>
+</div>
+
+
 <div class="dashboard-card d-flex flex-column align-items-start justify-content-start p-4" style="min-height: 65vh;">
   <div class="w-100 flex-grow-1">
     <div class="table-responsive">

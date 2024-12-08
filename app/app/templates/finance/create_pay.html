@@ -63,15 +63,15 @@
         let pricePerWord;
 
         if (rangeValue <= 19999) {
-            pricePerWord = 15;
+            pricePerWord = 7;
         } else if (rangeValue <= 39999) {
-            pricePerWord = 14;
+            pricePerWord = 6.5;
         } else if (rangeValue <= 59999) {
-            pricePerWord = 13;
+            pricePerWord = 6;
         } else if (rangeValue <= 79999) {
-            pricePerWord = 12;
+            pricePerWord = 5.5;
         } else {
-            pricePerWord = 10;
+            pricePerWord = 5;
         }
 
         const totalPrice = rangeValue * pricePerWord;

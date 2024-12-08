@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, abort, request, url_for, send_file
+from flask import render_template, jsonify, abort, request, url_for, send_file, render_template_string
 from werkzeug.utils import secure_filename
 from flask_login import login_required, current_user
 from app.dashboard.forms import GenerateArticleBlog, GenerateArticlePro, ChatForm
@@ -23,7 +23,7 @@ from .repository import (
     is_content_has_feedback
 )
 import json, os
-import uuid
+import uuid, requests
 from ..utils import utils_gre2jalali
 from .. import app
 from ..tasks import chat
@@ -40,28 +40,37 @@ def forget_chat():
     flash('مکالمه از نو بارگزاری شد...')
     return redirect(url_for('dashboard.chat'))
     
+
+    
 @dashboard.route('/redirect_to_chat')
 def redirect_to_chat():
-    print(current_user.confirmed)
-    logger.debug(f"\n\n REDIRECT: {current_user.location}")
-    # logger.debug(f"\n\n REDIRECT: {current_user.location}")
-
-    if current_user.location == "false":
-        User.register_on_chat(current_user.email, current_user.about_me, current_user.email)
-        return redirect("https://chat.matn.ai")
+    if current_user.is_anonymous:
+        flash("برای استفاده از چت لطفا وارد شوید.")
+        return redirect(url_for('main.index'))
     else:
-        flash("لطفا حساب خود را فعال کنید")
-        return redirect(url_for('dashboard.index'))
+        # print(current_user.is_authenticated)
+        if current_user.remain_charge < 10:
+            flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید', 'error')
+            return redirect(url_for('finance.create_pay'))
+        if current_user.location or current_user.location != "":
+            # User.register_on_chat(current_user.email, current_user.about_me, current_user.email)
+            return redirect("https://chat.matn.ai")
+        else:
+            flash("لطفا حساب خود را فعال کنید یا اگر کاربر قدیمی هستید پسورد حساب را بازیابی کنید.")
+            return redirect(url_for('dashboard.index'))
+
         
 
-@dashboard.route('/get_chatuser_charge/<chat_user_id>', methods=["GET"])
-def get_chatuser_charge(chat_user_id):
-    # form_data = request.json
-    # chat_user_id = form_data['chat_user_id']
-    # chat_user_id = request.args.get('chat_user_id')
+@dashboard.route('/get_chatuser_charge', methods=["POST"])
+def get_chatuser_charge():
+    form_data = request.json
+    chat_user_id = form_data['chat_user_id']
     user = User.query.filter_by(location = chat_user_id).first()
-    user_charge = Charge.get_user_charge(user.id)
-    return jsonify({"remain": user_charge})
+    if user:
+        user_charge = Charge.get_user_charge(user.id)
+        return jsonify({"remain": user_charge})
+    else:
+        return jsonify({"message": "error"})
 
 
 @dashboard.route('/manage_chat', methods=["POST"])
@@ -72,7 +81,7 @@ def manage_chat():
     model  = form_data['model']
     user = User.query.filter_by(location = chat_user_id).first()
     Charge.reduce_user_charge(user.id, words, model)
-    user_charge = Charge.get_user_charge(user.id)
+    user_charge = user.remain_charge
     return jsonify({"remain": user_charge})
 
 @dashboard.route("/chat", methods=["GET", "POST"])
