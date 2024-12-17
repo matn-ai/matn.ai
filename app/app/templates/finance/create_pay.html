@@ -29,7 +29,7 @@
                 </div>
                 <div class="text-center">
                     <span class="badge badge-primary text-dark"> قیمت هر کلمه</span>
-                    <div id="pricePerWord" class="text-muted rounded p-2 bg-light fs-4"> ۲۰
+                    <div id="pricePerWord" class="text-muted rounded p-2 bg-light fs-4"> ۳
                     </div>
                 </div>
             </div>
@@ -42,7 +42,7 @@
 
             <div class="text-center mt-4 pt-4">
                 <span class="badge badge-primary text-dark"> جمع</span>
-                <div id="total" class="font-weight-bold fs-4">۴۰٬۰۰۰ تومان</div>
+                <div id="total" class="font-weight-bold fs-4">۶٬۰۰۰ تومان</div>
             </div>
 
             <div class="text-center mt-4">
@@ -63,19 +63,19 @@
         let pricePerWord;
 
         if (rangeValue <= 19999) {
-            pricePerWord = 7;
+            pricePerWord = 3;
         } else if (rangeValue <= 39999) {
-            pricePerWord = 6.5;
+            pricePerWord = 2.9;
         } else if (rangeValue <= 59999) {
-            pricePerWord = 6;
+            pricePerWord = 2.8;
         } else if (rangeValue <= 79999) {
-            pricePerWord = 5.5;
+            pricePerWord = 2.7;
         } else {
-            pricePerWord = 5;
+            pricePerWord = 2;
         }
 
         const totalPrice = rangeValue * pricePerWord;
-        document.getElementById('pricePerWord').textContent = `${parseInt(pricePerWord).toLocaleString('fa-IR')}`;
+        document.getElementById('pricePerWord').textContent = `${pricePerWord.toLocaleString('fa-IR')}`;
         document.getElementById('total').textContent = `${totalPrice.toLocaleString('fa-IR')} تومان`;
         document.getElementById('rangeThumb').style.right = `${((rangeValue - 2000) / 98000) * 100}%`;
         document.getElementById('rangeThumb').textContent = parseInt(rangeValue).toLocaleString('fa-IR');
