@@ -36,6 +36,36 @@ def reduce_charge():
         'remaining_words': Charge.get_user_charge(user_id)
     }), 200
     
+@api.route('/finance/increase_charge', methods=['POST'])
+@token_required
+def increase_charge():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    charge_toman = data.get('charge_toman')
+
+    if not user_id or not charge_toman:
+        return jsonify({'error': 'User ID and word count are required'}), 400
+
+    try:
+        user_id = int(user_id)
+        charge_toman = int(charge_toman)
+    except ValueError:
+        return jsonify({'error': 'Invalid user ID or word count'}), 400
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    charge = Charge.add_user_charge(user_id, charge_toman)
+    
+    return jsonify({
+        'message': 'Charge reduced successfully',
+        'user_id': user_id,
+        'increased_charge': abs(charge.word_count),
+        'remaining_words': Charge.get_user_charge(user_id)
+    }), 200
+
+
 
 @api.route('/finance/view_charge', methods=['POST'])
 @token_required
