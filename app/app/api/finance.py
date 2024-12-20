@@ -42,6 +42,7 @@ def increase_charge():
     data = request.get_json()
     user_id = data.get('user_id')
     charge_toman = data.get('charge_toman')
+    description = data.get('description', '')
 
     if not user_id or not charge_toman:
         return jsonify({'error': 'User ID and word count are required'}), 400
@@ -56,7 +57,7 @@ def increase_charge():
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    charge = Charge.add_user_charge(user_id, charge_toman)
+    charge = Charge.add_user_charge(user_id, charge_toman, description)
     
     return jsonify({
         'message': 'Charge reduced successfully',
