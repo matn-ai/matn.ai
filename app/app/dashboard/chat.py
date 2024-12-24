@@ -13,6 +13,7 @@ REDIS_DB = int(os.getenv("REDIS_DB", 0))
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_API = os.getenv("OPENROUTER_API")
 
+
 # Initialize Redis client
 redis_client = StrictRedis(host=REDIS_SERVER, port=REDIS_PORT, db=REDIS_DB)
 
