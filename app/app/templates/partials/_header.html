@@ -1,9 +1,6 @@
 <div class="beh-nav">
     <nav class="navbar navbar-expand-lg py-3">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">
-                <img src="{{ url_for('static', filename='images/main_logo.png') }}" width="128 px" />
-            </a>
             <!-- Offcanvas toggle button -->
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
                 aria-controls="offcanvasNavbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,25 +14,14 @@
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 mt-4 mt-lg-0" id="top-side">
-                        <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.index') }}">خانه</a></li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                خدمات
-                            </a>
-                            <ul class="dropdown-menu border-0" aria-labelledby="servicesDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('dashboard.redirect_to_chat') }}">چت حرفه‌ای</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('dashboard.article_blog') }}">نگارش مقاله بلاگ</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('dashboard.article_pro') }}">نگارش مقاله حرفه‌ای</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('dashboard.translate_to_persian_file') }}">ترجمه هوشمند فایل</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('dashboard.translate_to_persian') }}">ترجمه هوشمند</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('finance.create_pay') }}">خرید اعتبار</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">درباره</a></li>
-                    </ul>
-                    <ul class="navbar-nav flex-column flex-lg-row mb-3 mb-lg-0 ms-lg-3" id="left-side">
+                    <ul class="navbar-nav flex-column flex-lg-row mb-3 mb-lg-0 me-lg-3" id="left-side">
                         {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="dropdown-item p-2" style="font-size: 14px;;" href="{{ url_for('auth.logout') }}">خروج</a>
+                        </li>
+                        <li class="p-2" style="border-right: 1px solid rgba(0, 0, 0, 0.5);">
+
+                        </li>
 
                         <li class="nav-item mb-2 mb-lg-0 me-lg-2">
                             <a class="btn btn-outline-primary w-100" href="{{ url_for('finance.create_pay') }}">
@@ -48,22 +34,9 @@
                             </a>
                         </li>
                         <li class="nav-item mb-2 mb-lg-0 me-lg-2">
-                            <a class="btn btn-outline-primary w-100" href="{{ url_for('dashboard.index') }}">
-                                داشبورد
+                            <a class="btn beh-btn w-100" href="{{ url_for('dashboard.index') }}">
+                                ورود به چت
                             </a>
-                        </li>
-                        <!-- <li class="nav-item mb-2 mb-lg-0 me-lg-2">
-                            <a class="btn btn-outline-secondary w-100" href="{{ url_for('dashboard.index') }}">
-                                چت
-                            </a>
-                        </li> -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle w-100 text-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">خروج</a></li>
-                            </ul>
                         </li>
                         {% else %}
                         <li class="nav-item mb-2 mb-lg-0 me-lg-2">
@@ -74,27 +47,51 @@
                         </li>
                         {% endif %}
                     </ul>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 mt-4 mt-lg-0" id="top-side">
+                        <!-- <li class="nav-item"><a class="nav-link active" href="{{ url_for('main.index') }}">خانه</a></li> -->
+                        <!-- <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                خدمات
+                            </a>
+                            <ul class="dropdown-menu border-0" aria-labelledby="servicesDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.redirect_to_chat') }}">چت حرفه‌ای</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.article_blog') }}">نگارش مقاله بلاگ</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.article_pro') }}">نگارش مقاله حرفه‌ای</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.translate_to_persian_file') }}">ترجمه هوشمند فایل</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('dashboard.translate_to_persian') }}">ترجمه هوشمند</a></li>
+                            </ul>
+                        </li> -->
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('finance.create_pay') }}">توسعه‌دهنگان</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('finance.create_pay') }}">خرید اعتبار</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">بلاگ</a></li>
+                    </ul>
+                    
                 </div>
             </div>
+
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <img src="{{ url_for('static', filename='images/main_logo.png') }}" width="128 px" />
+            </a>
+
         </div>
     </nav>
 </div>
 <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 
 <script>
-    $(document).ready(function() {
-        function adjustNavbarOrder() {
-          if ($(window).width() <= 991) { // 991px is the default breakpoint for Bootstrap's lg size
-            $('#left-side').insertBefore('#top-side');
-          } else {
-            $('#left-side').insertAfter('#top-side');
-          }
-        }
-      
-        // Call the function on page load
-        adjustNavbarOrder();
-      
-        // Call the function whenever the window is resized
-        $(window).resize(adjustNavbarOrder);
-      });
+//    $(document).ready(function() {
+//        function adjustNavbarOrder() {
+//          if ($(window).width() <= 991) { // 991px is the default breakpoint for Bootstrap's lg size
+//            $('#left-side').insertBefore('#top-side');
+//          } else {
+//            $('#left-side').insertAfter('#top-side');
+//          }
+//        }
+//      
+//        // Call the function on page load
+//        adjustNavbarOrder();
+//      
+//        // Call the function whenever the window is resized
+//        $(window).resize(adjustNavbarOrder);
+//      });
 </script>

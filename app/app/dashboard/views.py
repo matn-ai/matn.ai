@@ -125,6 +125,7 @@ def chat():
 @dashboard.route("/", methods=["GET"])
 @login_required
 def index():
+    return redirect(url_for('main.index'))
     if current_user.remain_charge < 0:
         flash('شارژ شما کافی نمیباشد. لطفا از قسمت افزایش اعتبار شارژ خود را افزایش دهید' , 'error')
         return redirect(url_for('finance.create_pay'))

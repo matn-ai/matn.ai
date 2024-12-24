@@ -5,19 +5,145 @@
 <section class="dashboard pt-0 pt-lg-4">
   <div class="container">
     <div class="row">
-      <!-- nav -->
-      <div class="col-lg-2">
-        <div class="dashboard-card d-flex flex-md-column align-items-start justify-content-start">
-          {% include "dashboard/nav.html" %}
-        </div>
-      </div>
 
-      <div class="col-lg-10">
-        <!-- content -->
-       {% block dashboard %}{% endblock %}
+      <div class="col-lg-12">
+
+
+
+        <section class="pricing position-relative">
+          <div style="position: absolute; z-index: 0; opacity: 0.5;">
+              <lottie-player class="p-0" src="{{ url_for('static', filename='media/brain.json') }}" background="transparent"
+                  speed="1" loop autoplay></lottie-player>
+          </div>
+          <div class="container">
+              <div class="row mb-5">
+                  <div class="col-lg-12 text-center">
+                      <h2 class="pricing-heading mb-0">بررسی و خرید راحت</h2>
+                  </div>
+              </div>
+              <div class="row align-items-start position-relative" style="z-index: 9;">
+                  <div class="col-md-7">
+                      <div class="w-100 mb-4 rounded p-3 fs-5" style="background-color: rgba(255,255,255,0.9);">
+                          به سادگی می‌توانید تعداد کلماتی که نیاز دارید را خریداری کنید و در ابزارهای مختلف از آن‌ها استفاده
+                          نمایید. توجه داشته باشید که مصرف کلمات در سرویس‌های مختلف هوش مصنوعی متغیر است و باید این موضوع را
+                          مدنظر داشته باشید.
+                          <br />
+                          <br />
+                          هر ابزار و سرویس هوش مصنوعی دارای ویژگی‌ها و نیازهای متنوعی است که بسته به نوع پروژه و کاربری شما،
+                          ممکن است میزان متفاوتی از کلمات را مصرف کند. بنابراین با خرید بسته‌های کلمه‌ای متناسب با نیاز خود،
+                          می‌توانید بهره‌وری و کارایی پروژه‌های خود را به حداکثر برسانید.
+                          <br />
+      
+                          <br />
+                          برای تست و بررسی سرویس ما پس از ثبت نام شما
+                          <span class="fw-bold">۷۰۰۰</span>
+                          کلمه رایگان از ما هدیه میگیرید.
+      
+      
+                      </div>
+      
+                  </div>
+                  <div class="col-md-5 ">
+                      <div class="rounded bg-white p-4">
+                          <div class="w-100 mb-4">
+                              <div class="text-center">
+                                  <span class="badge badge-primary text-dark"> کلمه</span>
+                                  <div id="rangeThumb" class="range-thumb rounded p-2 bg-light fs-4" style="right: 0%;">۲۰۰۰
+                                  </div>
+                              </div>
+                              <div class="text-center">
+                                  <span class="badge badge-primary text-dark"> قیمت هر کلمه</span>
+                                  <div id="pricePerWord" class="text-muted rounded p-2 bg-light fs-4"> ۲۰
+                                  </div>
+                              </div>
+                          </div>
+      
+                          <div class="range-slider mb-4 text-center mt-4 pt-4">
+                              <label for="wordCountSlider" class="form-label">تعداد کلمات مورد نیاز</label>
+                              <input id="wordCountSlider" type="range" class="form-range" min="2000" max="100000" value="2000"
+                                  oninput="updatePrice()">
+                          </div>
+      
+                          <div class="text-center mt-4 pt-4">
+                              <span class="badge badge-primary text-dark"> جمع</span>
+                              <div id="total" class="font-weight-bold fs-4">۱۴٬۰۰۰ تومان</div>
+      
+                          </div>
+                          <div class="w-100 text-center pt-4">
+                              <a class="btn text-bg-primary btn-lg mr-auto mx-auto mt-4"
+                                  href="https://matn.ai/finance/create_pay">خرید</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+      
       </div>
     </div>
   </div>
 </section>
+
+      <!-- In the head section -->
+      <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+      
+      <!-- Before closing body tag -->
+      <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+      <script>
+          function updatePrice() {
+              const rangeValue = document.getElementById('wordCountSlider').value;
+              let pricePerWord;
+      
+              if (rangeValue <= 19999) {
+                  pricePerWord = 7;
+              } else if (rangeValue <= 39999) {
+                  pricePerWord = 6.5;
+              } else if (rangeValue <= 59999) {
+                  pricePerWord = 6;
+              } else if (rangeValue <= 79999) {
+                  pricePerWord = 5.5;
+              } else {
+                  pricePerWord = 5;
+              }
+      
+              const totalPrice = rangeValue * pricePerWord;
+              document.getElementById('pricePerWord').textContent = `${parseInt(pricePerWord).toLocaleString('fa-IR')}`;
+              document.getElementById('total').textContent = `${totalPrice.toLocaleString('fa-IR')} تومان`;
+              document.getElementById('rangeThumb').style.right = `${((rangeValue - 2000) / 98000) * 100}%`;
+              //        document.getElementById('rangeValue').textContent = rangeValue.toLocaleString('fa-IR');
+      
+              document.getElementById('rangeThumb').textContent = parseInt(rangeValue).toLocaleString('fa-IR');
+          }
+      
+          document.addEventListener('DOMContentLoaded', () => {
+              updatePrice();
+          });
+      </script>
+      
+      
+      <script>
+          document.addEventListener('DOMContentLoaded', function () {
+              const swiper = new Swiper('.swiper', {
+                  slidesPerView: 1,
+                  spaceBetween: 30,
+                  loop: true,
+                  navigation: {
+                      nextEl: '.faq-next',
+                      prevEl: '.faq-prev',
+                  },
+                  breakpoints: {
+                      640: {
+                          slidesPerView: 2,
+                      },
+                      1024: {
+                          slidesPerView: 3,
+                      },
+                  },
+              });
+          });
+      </script>
+
+
 {% endblock %}
 

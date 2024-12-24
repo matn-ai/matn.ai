@@ -1,56 +1,71 @@
-<section class="ezy__footer16_GlbeiHOW">
-    <div class="container">
-      <div class="row justify-content-between text-center text-md-start">
-        <div class="col-12 col-lg-3 mt-4 mt-lg-0">
-          <div class="justify-content-center justify-content-lg-start align-items-center h-100">
-            <h2 class="fw-bold mb-0">
-              <img src="{{ url_for('static', filename='images/main_logo.png') }}" width="128 px" />
+<footer class="py-5">
+  <div class="container">
+    <div class="row justify-content-between">
+      <!-- Logo Column -->
 
-            </h2>
-            <!-- <br> -->
-            <!-- <h5 class="fw-bold mb-0 text-secondary">محصولی از 
-              <a href="https://novahub.ir/" class="link-primary text-decoration-none" target="_blank">نووآ هاب</a>
-            </h5> -->
-          </div>
-        </div>
-        <div class="col-12 col-md-7 col-lg-6 mt-4 mt-lg-0">
-          <div
-            class="ezy__footer16_GlbeiHOW-divider py-2 ps-md-4 d-flex flex-column justify-content-center align-items-center align-items-md-start"
-          >
-            <p class="mb-0 opacity-75">
-              سایت متن ارائه دهنده مجموعه ابزار های هوش مصنوعی است که در نیاز های مختلفی را برای افراد و یا شرکت ها برطرف میکند. دیگر نیاز به یک تیم تولید محتوا ندارید ما در متن شما را تا دندان مسلح میکنیم. کاهش هزینه و زمان شما و دقت در تولید محتوا هدف ماست.            </p>
-          </div>
-
-        </div>
-        <div class="col-12 col-md-4 col-lg-3 mt-4 mt-lg-0">
-          <div class="d-flex justify-content-center align-items-center h-100">
-            <ul class="ezy__footer16_GlbeiHOW-social nav">
-              <li>
-                <a href="https://www.linkedin.com/company/novahub-ai/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-              </li>
-            </ul>
-          </div>
+            <!-- Social Links Column -->
+      <div class="col-12 col-lg-3">
+        <div class="text-start">
+          <ul class="list-unstyled d-flex justify-content-start gap-3">
+            <li>
+              <a href="https://www.linkedin.com/company/novahub-ai/" target="_blank" class="text-decoration-none">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+            </li>
+            <li>
+              <a href="https://instagram.com/ai.matn" target="_blank" class="text-decoration-none">
+                <i class="fab fa-instagram"></i>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-    <div class="ezy__footer16_GlbeiHOW-bottom">
-      <div class="container">
-        <div class="row text-center text-md-start">
-          <div class="col-md-6 mb-3 mb-md-0">
-            <p class="mb-0 small opacity-75">&copy; ۱۴۰۳ متن.ai | حق کپی رایت برای 
-              <a href="https://matn.ai" class="link-primary text-decoration-none" target="_blank">تیم متن</a>
 
-              محفوظ است</p>
-          </div>
-          <div class="col-md-6">
-            <div class="d-flex justify-content-center justify-content-md-end align-items-center">
-              <a href="{{ url_for('main.privacy_and_policy_view') }}" class="text-decoration-none">حفظ حریم خصوصی</a>
-              <div class="ezy__footer16_GlbeiHOW-dot mx-2"></div>
-              <a href="{{ url_for('main.terms_and_conditions_view') }}" class="text-decoration-none">شرایط و قوانین</a>
-            </div>
-          </div>
+            
+      <!-- Description Column -->
+      <div class="col-12 col-lg-6">
+        <div class="text-end">
+          <p class="text-muted mb-0">
+          </p>
         </div>
       </div>
+
+
+      <div class="col-12 col-lg-3">
+        <div class="text-end">
+          <img src="{{ url_for('static', filename='images/main_logo.png') }}" width="128" alt="Matn.ai Logo" />
+        </div>
+      </div>
+
+
     </div>
-  </section>
-  
+
+    <!-- Bottom Footer -->
+    <div class="border-top mt-5 pt-4">
+      <div class="row align-items-center">
+
+        <!-- Links -->
+        <div class="col-md-6">
+          <div class="d-flex justify-content-start gap-3">
+            <a href="{{ url_for('main.terms_and_conditions_view') }}" class="text-decoration-none text-muted">
+            درباره ما  
+            </a>
+            <span class="text-muted">•</span>
+            <a href="{{ url_for('main.privacy_and_policy_view') }}" class="text-decoration-none text-muted">داشبورد توسعه‌دهندگان</a>
+            <a href="{{ url_for('main.privacy_and_policy_view') }}" class="text-decoration-none text-muted">قیمت‌گذاری</a>
+            <a href="{{ url_for('main.privacy_and_policy_view') }}" class="text-decoration-none text-muted">ربات تلگرام</a>
+          </div>
+        </div>
+
+        
+        <!-- Copyright -->
+        <div class="col-md-6">
+          <p class="text-muted text-end mb-0">
+            Copyright ©2024 Matn.AI Team Limited
+          </p>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</footer>
