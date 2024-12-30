@@ -428,4 +428,30 @@ class Job(db.Model):
     def __repr__(self):
         return '<Job %r>' % self.id
     
-    
+
+class Contact(db.Model):
+    __tablename__ = 'contacts'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), nullable=False)
+    organization = db.Column(db.String(128))
+    email = db.Column(db.String(64), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now(pytz.timezone('Asia/Tehran')))
+    is_read = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return f'<Contact {self.name}>'
+
+    @staticmethod
+    def create_contact(name, organization, email, phone, message):
+        contact = Contact(
+            name=name,
+            organization=organization, 
+            email=email,
+            phone=phone,
+            message=message
+        )
+        db.session.add(contact)
+        db.session.commit()
+        return contact

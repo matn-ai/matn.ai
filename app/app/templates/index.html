@@ -375,10 +375,12 @@
 <section class="contact py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8 text-center">
-                <h2 class="mb-4">ارتباط با ما</h2>
+            <div class="col-lg-8 text-right">
+                <h2 class="mb-4" style="font-size: 16px; color: #333333;">برای همکاری تجاری</h2>
+                <h1 class="mb-4">ارتباط با ما</h2>
                 <p class="text-muted mb-5">
                     ما می توانیم هرگونه نمونه اختصاصی شده، قیمت گذاری منحصر به فرد، مدل مناسب شما را 
+                    <br>
                     ارائه دهیم. برای کسب و کار شما و آن را تنظیم یا سفارشی سازی کنیم.
                 </p>
             </div>
@@ -386,43 +388,52 @@
         
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <form class="contact-form bg-white p-5 rounded-4 shadow-sm">
+                <form class="contact-form bg-white p-5 rounded-4 shadow-sm" id="contactForm">
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <div class="form-group">
-                                <label class="mb-2">نام و نام خانوادگی</label>
-                                <input type="text" class="form-control p-3 rounded-3" placeholder="نام خود را وارد کنید">
+                                <label class="mb-2">نام و نام خانوادگی <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="text-center form-control p-3 rounded-3" placeholder="نام خود را وارد کنید">
+                                <div class="invalid-feedback"></div>
                             </div>
                         </div>
                         <div class="col-md-6 mb-4">
                             <div class="form-group">
                                 <label class="mb-2">نام سازمان</label>
-                                <input type="text" class="form-control p-3 rounded-3" placeholder="نام سازمان خود را وارد کنید">
+                                <input type="text" name="organization" class="text-center form-control p-3 rounded-3" placeholder="نام سازمان خود را وارد کنید">
+                                <div class="invalid-feedback"></div>
                             </div>
                         </div>
                         <div class="col-md-6 mb-4">
                             <div class="form-group">
-                                <label class="mb-2">آدرس ایمیل</label>
-                                <input type="email" class="form-control p-3 rounded-3" placeholder="ایمیل خود را وارد کنید">
+                                <label class="mb-2">آدرس ایمیل <span class="text-danger">*</span></label>
+                                <input type="email" name="email" class="text-center form-control p-3 rounded-3" placeholder="ایمیل خود را وارد کنید">
+                                <div class="invalid-feedback"></div>
                             </div>
                         </div>
                         <div class="col-md-6 mb-4">
                             <div class="form-group">
-                                <label class="mb-2">شماره تماس</label>
-                                <input type="tel" class="form-control p-3 rounded-3" placeholder="شماره تماس خود را وارد کنید">
+                                <label class="mb-2">شماره تماس <span class="text-danger">*</span></label>
+                                <input type="tel" name="phone" class="text-center form-control p-3 rounded-3" placeholder="شماره تماس خود را وارد کنید">
+                                <div class="invalid-feedback"></div>
                             </div>
                         </div>
                         <div class="col-12 mb-4">
                             <div class="form-group">
-                                <label class="mb-2">پیام شما</label>
-                                <textarea class="form-control p-3 rounded-3" rows="5" placeholder="پیام خود را وارد کنید"></textarea>
+                                <label class="mb-2">پیام شما <span class="text-danger">*</span></label>
+                                <textarea name="message" class="text-center form-control p-3 rounded-3" rows="5" placeholder="پیام خود را وارد کنید"></textarea>
+                                <div class="invalid-feedback"></div>
                             </div>
                         </div>
                         <div class="col-12 text-center">
-                            <button type="submit" class="btn btn-primary px-5 py-3 rounded-3">ثبت نام</button>
+                            <button type="submit" class="btn btn-primary px-5 py-3 rounded-3" id="submitContact">
+                                <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                                ارسال پیام
+                            </button>
                         </div>
                     </div>
                 </form>
+                
             </div>
         </div>
     </div>
@@ -491,7 +502,7 @@ a.gradient-text.btn:hover {
 </style>
 <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Before closing body tag -->
 <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 
@@ -547,5 +558,100 @@ a.gradient-text.btn:hover {
         });
     });
 </script>
+
+
+
+<style>
+    /* Add these styles to your existing CSS */
+    .form-group label {
+        font-weight: 500;
+    }
+    
+    .form-control:focus {
+        border-color: #160042;
+        box-shadow: 0 0 0 0.2rem rgba(22, 0, 66, 0.25);
+    }
+    
+    .invalid-feedback {
+        display: none;
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+    }
+    
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+    
+    .is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+    </style>
+
+<script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Reset previous errors
+        this.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        
+        // Get form data
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => data[key] = value);
+        
+        // Show loading state
+        const submitBtn = document.getElementById('submitContact');
+        const spinner = submitBtn.querySelector('.spinner-border');
+        submitBtn.disabled = true;
+        spinner.classList.remove('d-none');
+        
+        // Send request
+        fetch('/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'موفقیت',
+                    text: result.message,
+                    confirmButtonText: 'باشه'
+                });
+                
+                // Reset form
+                this.reset();
+            } else {
+                // Show error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطا',
+                    text: result.message,
+                    confirmButtonText: 'باشه'
+                });
+            }
+        })
+        .catch(error => {
+            // Show error message
+            Swal.fire({
+                icon: 'error',
+                title: 'خطا',
+                text: 'متاسفانه خطایی رخ داد. لطفا دوباره تلاش کنید',
+                confirmButtonText: 'باشه'
+            });
+        })
+        .finally(() => {
+            // Reset loading state
+            submitBtn.disabled = false;
+            spinner.classList.add('d-none');
+        });
+    });
+    </script>
 
 {% endblock %}
