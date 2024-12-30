@@ -95,34 +95,33 @@
       <!-- Before closing body tag -->
       <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
       <script>
-          function updatePrice() {
-              const rangeValue = document.getElementById('wordCountSlider').value;
-              let pricePerWord;
-      
-              if (rangeValue <= 19999) {
-                  pricePerWord = 7;
-              } else if (rangeValue <= 39999) {
-                  pricePerWord = 6.5;
-              } else if (rangeValue <= 59999) {
-                  pricePerWord = 6;
-              } else if (rangeValue <= 79999) {
-                  pricePerWord = 5.5;
-              } else {
-                  pricePerWord = 5;
-              }
-      
-              const totalPrice = rangeValue * pricePerWord;
-              document.getElementById('pricePerWord').textContent = `${parseInt(pricePerWord).toLocaleString('fa-IR')}`;
-              document.getElementById('total').textContent = `${totalPrice.toLocaleString('fa-IR')} تومان`;
-              document.getElementById('rangeThumb').style.right = `${((rangeValue - 2000) / 98000) * 100}%`;
-              //        document.getElementById('rangeValue').textContent = rangeValue.toLocaleString('fa-IR');
-      
-              document.getElementById('rangeThumb').textContent = parseInt(rangeValue).toLocaleString('fa-IR');
-          }
-      
-          document.addEventListener('DOMContentLoaded', () => {
-              updatePrice();
-          });
+            function updatePrice() {
+            const rangeValue = document.getElementById('wordCountSlider').value;
+            let pricePerWord;
+
+            if (rangeValue <= 19999) {
+                pricePerWord = 7;
+            } else if (rangeValue <= 39999) {
+                pricePerWord = 6.5;
+            } else if (rangeValue <= 59999) {
+                pricePerWord = 6;
+            } else if (rangeValue <= 79999) {
+                pricePerWord = 5.5;
+            } else {
+                pricePerWord = 5;
+            }
+
+            const totalPrice = rangeValue * pricePerWord;
+            document.getElementById('pricePerWord').textContent = `${parseInt(pricePerWord).toLocaleString('fa-IR')}`;
+            document.getElementById('total').textContent = `${totalPrice.toLocaleString('fa-IR')} تومان`;
+            document.getElementById('rangeThumb').style.right = `${((rangeValue - 2000) / 98000) * 100}%`;
+            document.getElementById('rangeThumb').textContent = parseInt(rangeValue).toLocaleString('fa-IR');
+            document.getElementById('amount').value = totalPrice;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePrice();
+        });
       </script>
       
       
