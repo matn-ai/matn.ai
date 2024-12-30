@@ -130,10 +130,11 @@ class Charge(db.Model):
     
     
     @classmethod
-    def add_user_charge(cls, user_id, toman_amount):
+    def add_user_charge(cls, user_id, toman_amount, description=''):
         total_words = calculate_charge_rule(toman_amount)
         obj = cls(user_id=user_id,
-                  word_count=total_words)
+                  word_count=total_words,
+                  description=description)
         db.session.add(obj)
         db.session.commit()
         return obj
