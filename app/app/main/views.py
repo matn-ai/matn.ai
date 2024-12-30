@@ -1,13 +1,13 @@
 from flask import render_template, redirect, url_for, abort, flash, request,\
-    current_app, make_response
+    current_app, make_response, jsonify
 from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
 from . import main
 from .forms import EditProfileForm, ContentForm
 from .. import db
-from ..models import Permission, Role, User, Content
+from ..models import Permission, Contact, User, Content
 from ..decorators import admin_required, permission_required
-
+import re
 
 @main.after_app_request
 def after_request(response):
@@ -112,3 +112,57 @@ def edit(id):
     form.body.data = content.body
     return render_template('edit_content.html', form=form)
 
+
+
+
+@main.route('/contact', methods=['POST'])
+def contact():
+    # Get form data
+    data = request.get_json()
+    
+    # Validate required fields
+    required_fields = ['name', 'email', 'phone', 'message']
+    for field in required_fields:
+        if not data.get(field):
+            return jsonify({
+                'status': 'error',
+                'message': f'فیلد {field} الزامی است'
+            }), 400
+
+    # Validate email format
+    email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not re.match(email_pattern, data['email']):
+        return jsonify({
+            'status': 'error',
+            'message': 'فرمت ایمیل نامعتبر است'
+        }), 400
+
+    # Validate phone number (simple Iranian format)
+    phone_pattern = r'^(\+98|0)?9\d{9}$'
+    if not re.match(phone_pattern, data['phone']):
+        return jsonify({
+            'status': 'error',
+            'message': 'شماره موبایل نامعتبر است'
+        }), 400
+
+    try:
+        # Create contact record
+        Contact.create_contact(
+            name=data['name'],
+            organization=data.get('organization', ''),
+            email=data['email'],
+            phone=data['phone'],
+            message=data['message']
+        )
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'پیام شما با موفقیت ارسال شد'
+        }), 200
+
+    except Exception as e:
+        current_app.logger.error(f"Contact form error: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': 'متاسفانه خطایی رخ داد. لطفا دوباره تلاش کنید'
+        }), 500
