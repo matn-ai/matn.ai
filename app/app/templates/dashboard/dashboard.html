@@ -69,10 +69,14 @@
                               <div id="total" class="font-weight-bold fs-4">۱۴٬۰۰۰ تومان</div>
       
                           </div>
-                          <div class="w-100 text-center pt-4">
-                              <a class="btn text-bg-primary btn-lg mr-auto mx-auto mt-4"
-                                  href="https://matn.ai/finance/create_pay">خرید</a>
-                          </div>
+                          <div class="text-center mt-4">
+                            <form method="POST" action="{{ url_for('finance.create_pay') }}">
+                                {{ form.hidden_tag() }}
+                                <input type="hidden" id="amount" name="amount" value="0">
+                                <button type="submit" class="btn btn-primary w-50 text-white">خرید</button>
+                            </form>
+                        </div>
+            
                       </div>
                   </div>
               </div>
@@ -91,34 +95,33 @@
       <!-- Before closing body tag -->
       <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
       <script>
-          function updatePrice() {
-              const rangeValue = document.getElementById('wordCountSlider').value;
-              let pricePerWord;
-      
-              if (rangeValue <= 19999) {
-                  pricePerWord = 7;
-              } else if (rangeValue <= 39999) {
-                  pricePerWord = 6.5;
-              } else if (rangeValue <= 59999) {
-                  pricePerWord = 6;
-              } else if (rangeValue <= 79999) {
-                  pricePerWord = 5.5;
-              } else {
-                  pricePerWord = 5;
-              }
-      
-              const totalPrice = rangeValue * pricePerWord;
-              document.getElementById('pricePerWord').textContent = `${parseInt(pricePerWord).toLocaleString('fa-IR')}`;
-              document.getElementById('total').textContent = `${totalPrice.toLocaleString('fa-IR')} تومان`;
-              document.getElementById('rangeThumb').style.right = `${((rangeValue - 2000) / 98000) * 100}%`;
-              //        document.getElementById('rangeValue').textContent = rangeValue.toLocaleString('fa-IR');
-      
-              document.getElementById('rangeThumb').textContent = parseInt(rangeValue).toLocaleString('fa-IR');
-          }
-      
-          document.addEventListener('DOMContentLoaded', () => {
-              updatePrice();
-          });
+            function updatePrice() {
+            const rangeValue = document.getElementById('wordCountSlider').value;
+            let pricePerWord;
+
+            if (rangeValue <= 19999) {
+                pricePerWord = 7;
+            } else if (rangeValue <= 39999) {
+                pricePerWord = 6.5;
+            } else if (rangeValue <= 59999) {
+                pricePerWord = 6;
+            } else if (rangeValue <= 79999) {
+                pricePerWord = 5.5;
+            } else {
+                pricePerWord = 5;
+            }
+
+            const totalPrice = rangeValue * pricePerWord;
+            document.getElementById('pricePerWord').textContent = `${parseInt(pricePerWord).toLocaleString('fa-IR')}`;
+            document.getElementById('total').textContent = `${totalPrice.toLocaleString('fa-IR')} تومان`;
+            document.getElementById('rangeThumb').style.right = `${((rangeValue - 2000) / 98000) * 100}%`;
+            document.getElementById('rangeThumb').textContent = parseInt(rangeValue).toLocaleString('fa-IR');
+            document.getElementById('amount').value = totalPrice;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePrice();
+        });
       </script>
       
       
