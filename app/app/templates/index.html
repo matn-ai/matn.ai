@@ -6,12 +6,19 @@
     <div class="container position-relative">
         <div class="row align-items-center justify-content-center">
             <div class="col-lg-12 text-center">
-                <p class="heading_one-sub-heading px-5">
+                <p class="heading_one-sub-heading px-5" style="color: #6B7094;">
                     محصولات ما
                 </p>
 
-                <h2 class="heading_one-heading mb-1">دسترسی به صد ها مدل</h2>
-                <h2 class="heading_one-heading mb-4">هوش مصنوعی در یک پلتفرم</h2>
+                <h2 class="gradient-text heading_one-heading mb-1">دسترسی به صد ها مدل</h2>
+                <h2 class="gradient-text heading_one-heading mb-4">هوش مصنوعی در یک پلتفرم</h2>
+
+                <div class="col-lg-12 text-center" style="color: #333333; font-size: 18px; line-height: 30px;">
+                    دسترسی به طیف گسترده ای هوش های مصنوعی خارجی و داخلی
+                    <br/>
+                    کم هزینه ترین راه دسترسی به انوع مدل های زبانی و تولید تصویر 
+                </div>
+    
                 <a href="{{ url_for('auth.login') }}" class="btn beh-btn fs-5 mt-4 mt-md-5 p-3"
                     style="border-radius: 20px;"></span>ورود به چت با هوش مصنوعی</a>
             </div>
@@ -23,52 +30,54 @@
 </section>
 
 
-
-<section class="headingLLM">
+<section class="headingLLM py-4 py-lg-5">
     <div class="container">
-        <div class="row pt-4 align-items-center justify-content-between">
-            <div class="col-12 mt-4 col-md-12">
-                <h3 class="mb-4 text-center pb-4 text-dark">
+        <div class="row align-items-center justify-content-between">
+            <div class="col-12">
+                <h3 class="mb-4 text-center pb-4 text-dark" style="font-size: clamp(24px, 3vw, 32px);">
                     Powered By
                 </h3>
-                <div class="row g-4">
-                    <div class="col-3">
+                <div class="row row-cols-2 row-cols-md-4 g-4">
+                    <div class="col">
                         <div class="card h-100 border-0">
-                            <div class="card-body ">
-                                <label class="w-100 h-100"
-                                    style="text-align: center; text-decoration: none; vertical-align: middle;">
-                                    <img src="/static/images/Open_AI.png" alt="Open AI" class="mb-3 rounded p-3">
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <label class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <img src="/static/images/Open_AI.png" alt="Open AI" 
+                                        class="img-fluid mb-3 rounded p-2 p-md-3"
+                                        style="max-height: 100px; object-fit: contain;">
                                 </label>
                             </div>
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col">
                         <div class="card h-100 border-0">
-                            <div class="card-body">
-                                <label class="w-100 h-100"
-                                    style="text-align: center; text-decoration: none; vertical-align: middle;">
-                                    <img src="/static/images/Google_AI.png" alt="Google AI" class="mb-3 rounded p-3">
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <label class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <img src="/static/images/Google_AI.png" alt="Google AI" 
+                                        class="img-fluid mb-3 rounded p-2 p-md-3"
+                                        style="max-height: 100px; object-fit: contain;">
                                 </label>
                             </div>
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col">
                         <div class="card h-100 border-0">
-                            <div class="card-body">
-                                <label class="w-100 h-100"
-                                    style="text-align: center; text-decoration: none; vertical-align: middle;">
-                                    <img src="/static/images/Anthropic.png" alt="Anthropic" class="mb-3 rounded p-3">
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <label class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <img src="/static/images/Anthropic.png" alt="Anthropic" 
+                                        class="img-fluid mb-3 rounded p-2 p-md-3"
+                                        style="max-height: 100px; object-fit: contain;">
                                 </label>
                             </div>
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col">
                         <div class="card h-100 border-0">
-                            <div class="card-body">
-                                <label class="w-100 h-100"
-                                    style="text-align: center; text-decoration: none; vertical-align: middle;">
-                                    <img src="/static/images/Hugging_Face.png" alt="Hugging Face"
-                                        class="mb-3 rounded p-3">
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <label class="w-100 h-100 d-flex align-items-center justify-content-center">
+                                    <img src="/static/images/Hugging_Face.png" alt="Hugging Face" 
+                                        class="img-fluid mb-3 rounded p-2 p-md-3"
+                                        style="max-height: 100px; object-fit: contain;">
                                 </label>
                             </div>
                         </div>
@@ -79,32 +88,45 @@
     </div>
 </section>
 
-
-
-
-<section class="headingTwo">
+<section class="headingTwo py-4 py-lg-5">
     <div class="container">
-        <div class="row align-items-center justify-content-between">
-            <div class="col-12 col-md-6">
-                <h2 class="mb-1 text-dark">
+        <div class="row align-items-center justify-content-between flex-column-reverse flex-lg-row">
+            <div class="col-12 col-lg-6 mt-4 mt-lg-0">
+                <h2 class="mb-1 text-dark" style="font-size: clamp(24px, 4vw, 32px);">
                     دسترسی به طیف
-                    </h3>
-                    <h2 class="mb-1 text-dark">
-                        گسترده ای از نسخه های
-                        </h3>
-                        <h2 class="mb-4 text-dark">
-                            پریمیوم هوش های مصنوعی
-                            </h3>
+                </h2>
+                <h2 class="mb-1 text-dark" style="font-size: clamp(24px, 4vw, 32px);">
+                    گسترده ای از نسخه های
+                </h2>
+                <h2 class="mb-4 text-dark" style="font-size: clamp(24px, 4vw, 32px);">
+                    پریمیوم هوش های مصنوعی
+                </h2>
 
-                            <p class="headingTwo-sub-heading">
-                                امکان اضافه شدن هرگونه مدل جدید با توجه به نیاز کاربران و سازمان ها
-                            </p>
+                <p class="headingTwo-sub-heading">
+                    امکان اضافه شدن هرگونه مدل جدید با توجه به نیاز کاربران و سازمان ها
+                </p>
 
-                            <div class="p-3" style="width: 370px;">
+                <div class="p-3" style="max-width: 370px; width: 100%;">
+                    <div>
+                        <h5 class="d-flex align-items-center">
+                            <svg class="me-3" width="40" height="40" viewBox="0 0 40 40" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <!-- ... existing code ... -->
+                            </svg>
+                            دسترسی همگانی به چت حرفه ای
+                        </h5>
+                    </div>
+                    <div class="ps-5" style="font-size: clamp(16px, 2vw, 18px); line-height: 2rem;">
+                        در همکاری سازمانی امکان ارائه این سرویس به هر شرکت و سازمانی برای استفاده داخلی شدنی
+                        است.
+                    </div>
+                </div>
 
-                                <div>
+                <div class="p-3" style="max-width: 370px; width: 100%;">
+                    <div>
+                        <h5 class="d-flex align-items-center">
 
-                                    <h5>
+
                                         <svg style="margin-left: 20px;" width="40" height="40" viewBox="0 0 40 40"
                                             fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path
@@ -117,54 +139,20 @@
                                         دسترسی همگانی به چت حرفه ای
                                     </h5>
                                 </div>
-                                <div style="font-size: 18px; line-height: 2rem; padding-right: 60px;">
-                                    در همکاری سازمانی امکان ارائه این سرویس به هر شرکت و سازمانی برای استفاده داخلی شدنی
-                                    است.
-                                </div>
-
-                            </div>
-
-
-
-                            <div class="p-3" style="width: 350px;">
-
-                                <div>
-
-                                    <h5>
-
-                                        <svg style="margin-left: 20px;" width="40" height="40" viewBox="0 0 40 40"
-                                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M0 3.99951C0 1.79037 1.79086 -0.000488281 4 -0.000488281H36C38.2091 -0.000488281 40 1.79037 40 3.99951V35.9995C40 38.2086 38.2091 39.9995 36 39.9995H4C1.79086 39.9995 0 38.2087 0 35.9995V3.99951Z"
-                                                fill="#F7F9FD" />
-                                            <path
-                                                d="M20.3333 27.6667C15.7308 27.6667 12 23.9358 12 19.3333C12 14.7308 15.7308 11 20.3333 11C24.9358 11 28.6667 14.7308 28.6667 19.3333C28.6667 23.9358 24.9358 27.6667 20.3333 27.6667ZM19.185 16.3458C19.1349 16.3124 19.0766 16.2931 19.0164 16.2902C18.9561 16.2872 18.8962 16.3007 18.8431 16.3291C18.7899 16.3574 18.7454 16.3997 18.7143 16.4514C18.6833 16.5031 18.6668 16.5622 18.6667 16.6225V22.0442C18.6668 22.1045 18.6833 22.1636 18.7143 22.2153C18.7454 22.2669 18.7899 22.3092 18.8431 22.3376C18.8962 22.366 18.9561 22.3794 19.0164 22.3765C19.0766 22.3735 19.1349 22.3543 19.185 22.3208L23.2509 19.6108C23.2966 19.5804 23.3341 19.5392 23.36 19.4907C23.3859 19.4423 23.3995 19.3883 23.3995 19.3333C23.3995 19.2784 23.3859 19.2243 23.36 19.1759C23.3341 19.1275 23.2966 19.0863 23.2509 19.0558L19.185 16.3458Z"
-                                                fill="#160042" />
-                                        </svg>
-
-                                        دسترسی در بخش چت حرفه ای
-                                    </h5>
-                                </div>
-                                <div style="font-size: 18px; line-height: 2rem; padding-right: 60px;">
+                                <div class="ps-5" style="font-size: clamp(16px, 2vw, 18px); line-height: 2rem;">
                                     ارائه API یکی دیگر از راهکار های همکاری سازمانی است که امکان ارائه هر یکی از مدل ها
                                     به صورت مصرف سازمانی بر بستر API شدی شده است.
                                 </div>
-
                             </div>
-
-            </div>
-            <!-- image -->
-            <div class="col-12 col-md-5 position-relative">
-
-                <img src="{{ url_for('static', filename='images/llms.png') }}" />
-
-            </div>
-
-        </div>
-
-    </div>
-</section>
-
+            
+                        </div>
+                        <!-- image -->
+                        <div class="col-12 col-lg-5 position-relative">
+                            <img src="{{ url_for('static', filename='images/llms.png') }}" class="img-fluid" alt="LLMs" />
+                        </div>
+                    </div>
+                </div>
+            </section>
 
 <section class="features py-5 position-relative overflow-hidden">
     <!-- Background Pattern -->
@@ -227,6 +215,7 @@
 </section>
 
 <style>
+    
     .features {
         background-image: url('/static/images/services_bg.png');
         background-size: cover;
@@ -277,25 +266,23 @@
     }
 </style>
 
-
 <section class="headingTwo">
     <div class="container">
-        <div class="row">
-            <div class="col-6">
+        <div class="row flex-column-reverse flex-lg-row">
+            <div class="col-12 col-lg-6">
                 <p class="mb-3" style="line-height: 2rem; color: rgba(0,0,0,0.5)">
                     تولید عکس یا هر متن دلخواه
                 </p>
-                <h1 class="mb-4 text-dark" style="font-size: 52px;">
+                <h1 class="mb-4 text-dark" style="font-size: clamp(32px, 5vw, 52px);">
                     با چند کلمه
                     <br />
                     یک عکس حرفه ای
-                    <br />
+                    <br /> 
                     برای خود بسازید
                 </h1>
                 <p class="mb-4" style="line-height: 2rem; color: rgba(0,0,0,0.5)">
                     به نظر خلاقه است! میتونید رایگان تست کنید
                 </p>
-
 
                 <p class="mb-0" style="line-height: 2rem; color: rgba(0,0,0,0.5)">
                 <div class="d-flex align-items-center mb-2">
@@ -317,10 +304,9 @@
                     امکان اختصاصی سازی مدل ها و دادن شخصیت به آنها
                 </div>
                 </p>
-
             </div>
-            <div class="col-6">
-                <img src="/static/images/s_image.png" alt="" />
+            <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+                <img src="/static/images/s_image.png" alt="" class="img-fluid" />
             </div>
         </div>
     </div>
@@ -386,6 +372,126 @@
     </div>
 </section>
 
+<!-- ... existing code ... -->
+
+<section class="contact py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="mb-4">ارتباط با ما</h2>
+                <p class="text-muted mb-5">
+                    ما می توانیم هرگونه نمونه اختصاصی شده، قیمت گذاری منحصر به فرد، مدل مناسب شما را 
+                    ارائه دهیم. برای کسب و کار شما و آن را تنظیم یا سفارشی سازی کنیم.
+                </p>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <form class="contact-form bg-white p-5 rounded-4 shadow-sm">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="form-group">
+                                <label class="mb-2">نام و نام خانوادگی</label>
+                                <input type="text" class="form-control p-3 rounded-3" placeholder="نام خود را وارد کنید">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="form-group">
+                                <label class="mb-2">نام سازمان</label>
+                                <input type="text" class="form-control p-3 rounded-3" placeholder="نام سازمان خود را وارد کنید">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="form-group">
+                                <label class="mb-2">آدرس ایمیل</label>
+                                <input type="email" class="form-control p-3 rounded-3" placeholder="ایمیل خود را وارد کنید">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="form-group">
+                                <label class="mb-2">شماره تماس</label>
+                                <input type="tel" class="form-control p-3 rounded-3" placeholder="شماره تماس خود را وارد کنید">
+                            </div>
+                        </div>
+                        <div class="col-12 mb-4">
+                            <div class="form-group">
+                                <label class="mb-2">پیام شما</label>
+                                <textarea class="form-control p-3 rounded-3" rows="5" placeholder="پیام خود را وارد کنید"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-primary px-5 py-3 rounded-3">ثبت نام</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    
+
+.gradient-text {
+    background: linear-gradient(90deg, #1565C0 0%, #957FEF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* Ensure the button gradient shows as background instead of text */
+a.gradient-text.btn {
+    background: linear-gradient(90deg, #1565C0 0%, #957FEF 100%);
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    -webkit-text-fill-color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+a.gradient-text.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.contact {
+    background-color: #f8f9fa;
+}
+
+.contact-form {
+    border: 1px solid #eee;
+}
+
+.contact-form input,
+.contact-form textarea {
+    border: 1px solid #e5e5e5;
+    background-color: #f8f9fa;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    box-shadow: none;
+    border-color: #160042;
+}
+
+.contact-form label {
+    color: #160042;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #160042;
+    border-color: #160042;
+}
+
+.btn-primary:hover {
+    background-color: #0d002b;
+    border-color: #0d002b;
+}
+</style>
+
 <style>
     .faq {
         background-color: #f8f9fa;
@@ -415,112 +521,7 @@
     }
 </style>
 
-<!-- 
-<section class="pricing position-relative">
-    <div style="position: absolute; z-index: 0; opacity: 0.5;">
-        <lottie-player class="p-0" src="{{ url_for('static', filename='media/brain.json') }}" background="transparent"
-            speed="1" loop autoplay></lottie-player>
-    </div>
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-lg-12 text-center">
-                <h2 class="pricing-heading mb-0">بررسی و خرید راحت</h2>
-            </div>
-        </div>
-        <div class="row align-items-start position-relative" style="z-index: 9;">
-            <div class="col-md-7">
-                <div class="w-100 mb-4 rounded p-3 fs-5" style="background-color: rgba(255,255,255,0.9);">
-                    به سادگی می‌توانید تعداد کلماتی که نیاز دارید را خریداری کنید و در ابزارهای مختلف از آن‌ها استفاده
-                    نمایید. توجه داشته باشید که مصرف کلمات در سرویس‌های مختلف هوش مصنوعی متغیر است و باید این موضوع را
-                    مدنظر داشته باشید.
-                    <br />
-                    <br />
-                    هر ابزار و سرویس هوش مصنوعی دارای ویژگی‌ها و نیازهای متنوعی است که بسته به نوع پروژه و کاربری شما،
-                    ممکن است میزان متفاوتی از کلمات را مصرف کند. بنابراین با خرید بسته‌های کلمه‌ای متناسب با نیاز خود،
-                    می‌توانید بهره‌وری و کارایی پروژه‌های خود را به حداکثر برسانید.
-                    <br />
-
-                    <br />
-                    برای تست و بررسی سرویس ما پس از ثبت نام شما
-                    <span class="fw-bold">۷۰۰۰</span>
-                    کلمه رایگان از ما هدیه میگیرید.
-
-
-                </div>
-
-            </div>
-            <div class="col-md-5 ">
-                <div class="rounded bg-white p-4">
-                    <div class="w-100 mb-4">
-                        <div class="text-center">
-                            <span class="badge badge-primary text-dark"> کلمه</span>
-                            <div id="rangeThumb" class="range-thumb rounded p-2 bg-light fs-4" style="right: 0%;">۲۰۰۰
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <span class="badge badge-primary text-dark"> قیمت هر کلمه</span>
-                            <div id="pricePerWord" class="text-muted rounded p-2 bg-light fs-4"> ۳
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="range-slider mb-4 text-center mt-4 pt-4">
-                        <label for="wordCountSlider" class="form-label">تعداد کلمات مورد نیاز</label>
-                        <input id="wordCountSlider" type="range" class="form-range" min="2000" max="100000" value="2000"
-                            oninput="updatePrice()">
-                    </div>
-
-                    <div class="text-center mt-4 pt-4">
-                        <span class="badge badge-primary text-dark"> جمع</span>
-                        <div id="total" class="font-weight-bold fs-4">۶٬۰۰۰ تومان</div>
-
-                    </div>
-                    <div class="w-100 text-center pt-4">
-                        <a class="btn text-bg-primary btn-lg mr-auto mx-auto mt-4"
-                            href="https://matn.ai/finance/create_pay">خرید</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section> -->
-
-<!-- In the head section -->
-<link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-
-<!-- Before closing body tag -->
-<script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
-<script>
-    function updatePrice() {
-        const rangeValue = document.getElementById('wordCountSlider').value;
-        let pricePerWord;
-
-        if (rangeValue <= 19999) {
-            pricePerWord = 3;
-        } else if (rangeValue <= 39999) {
-            pricePerWord = 2.9;
-        } else if (rangeValue <= 59999) {
-            pricePerWord = 2.8;
-        } else if (rangeValue <= 79999) {
-            pricePerWord = 2.7;
-        } else {
-            pricePerWord = 2.5;
-        }
-
-        const totalPrice = rangeValue * pricePerWord;
-        document.getElementById('pricePerWord').textContent = `${pricePerWord.toLocaleString('fa-IR')}`;
-        document.getElementById('total').textContent = `${totalPrice.toLocaleString('fa-IR')} تومان`;
-        document.getElementById('rangeThumb').style.right = `${((rangeValue - 2000) / 98000) * 100}%`;
-        //        document.getElementById('rangeValue').textContent = rangeValue.toLocaleString('fa-IR');
-
-        document.getElementById('rangeThumb').textContent = parseInt(rangeValue).toLocaleString('fa-IR');
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        updatePrice();
-    });
-</script>
 
 
 <script>
