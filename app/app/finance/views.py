@@ -55,6 +55,7 @@ def create_pay():
     if request.method == 'POST' and form.validate_on_submit():
         user = current_user
         amount = float(form.amount.data)
+        print(amount)
         redirect_dict = create_pay_service(user=user, amount=amount)
         return redirect(redirect_dict['redirect_url'])
                 
