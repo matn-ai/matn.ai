@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, jsonify
 from flask_login import login_user, logout_user, login_required, \
     current_user
 from . import finance
@@ -55,7 +55,6 @@ def create_pay():
     if request.method == 'POST' and form.validate_on_submit():
         user = current_user
         amount = float(form.amount.data)
-        print(amount)
         redirect_dict = create_pay_service(user=user, amount=amount)
         return redirect(redirect_dict['redirect_url'])
                 
